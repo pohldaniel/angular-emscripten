@@ -1,21 +1,20 @@
-in vec4 fPosition;
-in vec4 fColor;
-in vec4 fLightPosition;
-in vec3 fNormal;
+in vec4 fP;
+in vec4 fC;
+in vec4 fL;
+in vec3 fN;
 
-// output
 out vec4 color;
 
 void main(void)
 {       
-    vec3 o =-normalize(fPosition.xyz);
-    vec3 n = normalize(fNormal);
+    vec3 o =-normalize(fP.xyz);
+    vec3 n = normalize(fN);
     vec3 r = reflect(o,n);
-    vec3 l = normalize(fLightPosition.xyz-fPosition.xyz);
+    vec3 l = normalize(fL.xyz-fP.xyz);
 
-    float ambient = 0.1;
-    float diffus = 0.7*max(0.0,dot(n,l));
-    float specular = 0.6*pow(max(0.0,-dot(r,l)),4.0);
+    float a = 0.1;
+    float d = 0.7*max(0.0,dot(n,l));
+    float s = 0.6*pow(max(0.0,-dot(r,l)),4.0);
 
-    color = fColor * ( ambient + diffus + specular );
+    color = fC * ( a + d + s);
 }
