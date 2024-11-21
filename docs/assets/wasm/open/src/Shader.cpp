@@ -28,41 +28,18 @@ const std::string shader_header =
 "#version 330\n";
 #endif
 
-// file reading
-void getFileContents(const char* filename, vector<char>& buffer) {
-  ifstream file(filename, ios_base::binary);
-  if (file) {
-    // Load shader header.
-    for (const auto& c : shader_header)
-      buffer.push_back(c);
-
-    file.seekg(0, ios_base::end);
-    streamsize size = file.tellg();
-    if (size > 0) {
-      file.seekg(0, ios_base::beg);
-      buffer.resize(static_cast<size_t>(size + shader_header.size()));
-      file.read(&buffer[shader_header.size()], size);
-    }
-    buffer.push_back('\0');
-  } else {
-    std::cerr << "Cannot load " << filename << std::endl;
-  }
-}
-
 void ReadTextFile(const char *pszFilename, std::string &buffer) {
 	std::ifstream file(pszFilename, std::ios::binary);
 	if (file.is_open()) {
 		file.seekg(0, std::ios::end);
 
 		std::ifstream::pos_type fileSize = file.tellg();
-    std::cout << "Size: " << static_cast<int>(fileSize) << std::endl;
     file.seekg(-static_cast<int>(fileSize), ios::cur);
 		buffer.resize(static_cast<int>(fileSize) + shader_header.size());
 		file.read(&buffer[0], fileSize);
 
     buffer = shader_header + buffer;
 	}
-
 }
 
 Shader::Shader(const char* buffer, GLenum type, bool flag) {
@@ -97,16 +74,8 @@ Shader::Shader(const char* buffer, GLenum type, bool flag) {
 }
 
 Shader::Shader(const std::string& filename, GLenum type) {
-  // file loading
-  //vector<char> fileContent;
-  //getFileContents(filename.c_str(), fileContent);
-  //std::string str(fileContent.begin(), fileContent.end());   
-  //std::cout << str << std::endl; 
-
   std::string buffer;
 	ReadTextFile(filename.c_str(), buffer);
-  std::cout << buffer << std::endl; 
-
   // creation
   handle = glCreateShader(type);
   if (handle == 0) {

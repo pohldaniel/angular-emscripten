@@ -14,4 +14,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  {
+    path: '',
+    component: ImguiComponent
+  },
+  {
+    path: '**',
+    redirectTo: ''
+  } 
 ];
