@@ -56,9 +56,11 @@ void ReadTextFile(const char *pszFilename, std::string &buffer) {
 
 		std::ifstream::pos_type fileSize = file.tellg();
     std::cout << "Size: " << static_cast<int>(fileSize) << std::endl;
-    //file.clear();
-    //file.seekg(0);
-    file.seekg(-static_cast<int>(fileSize) - 10, ios::cur);
+
+
+    file.clear();
+    file.seekg(0);
+    //file.seekg(-static_cast<int>(fileSize) - 10, ios::cur);
 		buffer.resize(static_cast<int>(fileSize) + shader_header.size());
 		//file.seekg(0, std::ios::beg);
 		file.read(&buffer[0], fileSize);
