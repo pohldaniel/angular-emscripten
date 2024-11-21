@@ -9,7 +9,7 @@ import {intercept} from './interceptor/session.interceptor';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }), 
-    provideRouter(routes, withComponentInputBinding(), withHashLocation()),
+    provideRouter(routes, withComponentInputBinding()),
     importProvidersFrom(BrowserAnimationsModule),
     provideHttpClient(withInterceptors([intercept])),
     {provide: IMAGE_CONFIG, useValue: {disableImageSizeWarning: true}},
