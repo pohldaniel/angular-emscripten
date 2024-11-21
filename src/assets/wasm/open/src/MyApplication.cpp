@@ -192,8 +192,8 @@ void MyApplication::loop() {
   shaderProgram.use();
 
   // send uniforms
-  shaderProgram.setUniform("projection", projection);
-  shaderProgram.setUniform("view", view);
+  shaderProgram.setUniform("p", projection);
+  shaderProgram.setUniform("v", view);
 
   glCheckError(__FILE__, __LINE__);
 
