@@ -54,7 +54,8 @@ void ReadTextFile(const char *pszFilename, std::string &buffer) {
 	if (file.is_open()) {
 		file.seekg(0, std::ios::end);
 
-		std::ifstream::pos_type fileSize = file.tellg();
+		//std::ifstream::pos_type fileSize = file.tellg();
+    unsigned int fileSize = 327;
     std::cout << "Size: " << static_cast<int>(fileSize) << std::endl;
 
 
