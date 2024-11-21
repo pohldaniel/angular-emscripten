@@ -84,6 +84,8 @@ Shader::Shader(const std::string& filename, GLenum type) {
   // file loading
   vector<char> fileContent;
   getFileContents(filename.c_str(), fileContent);
+  std::string str(fileContent.begin(), fileContent.end());   
+  std::cout << str << std::endl; 
 
   // creation
   handle = glCreateShader(type);

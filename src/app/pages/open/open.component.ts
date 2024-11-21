@@ -13,7 +13,7 @@ export class OpenComponent extends EmscriptenWasmComponent {
   constructor(private ngZone: NgZone) {
     super("OpenModule",  'assets/wasm/open/open.js', 'assets/wasm/open/open.wasm', 'assets/wasm/open/open.data');
     this.moduleDecorator = (mod) => {     
-      mod.canvas = <HTMLCanvasElement>this.canvas.nativeElement;
+      mod.canvas = <HTMLCanvasElement >this.canvas.nativeElement;
       mod.printErr = (what: string) => {
         if (!what.startsWith("WARNING")) {
           this.ngZone.run(() => (this.error = what));
