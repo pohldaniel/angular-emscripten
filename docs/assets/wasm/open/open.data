@@ -1,23 +1,22 @@
-in vec4 fPosition;
-in vec4 fColor;
-in vec4 fLightPosition;
-in vec3 fNormal;
+in vec4 fP;
+in vec4 fC;
+in vec4 fL;
+in vec3 fN;
 
-// output
 out vec4 color;
 
 void main(void)
 {       
-    vec3 o =-normalize(fPosition.xyz);
-    vec3 n = normalize(fNormal);
+    vec3 o =-normalize(fP.xyz);
+    vec3 n = normalize(fN);
     vec3 r = reflect(o,n);
-    vec3 l = normalize(fLightPosition.xyz-fPosition.xyz);
+    vec3 l = normalize(fL.xyz-fP.xyz);
 
-    float ambient = 0.1;
-    float diffus = 0.7*max(0.0,dot(n,l));
-    float specular = 0.6*pow(max(0.0,-dot(r,l)),4.0);
+    float a = 0.1;
+    float d = 0.7*max(0.0,dot(n,l));
+    float s = 0.6*pow(max(0.0,-dot(r,l)),4.0);
 
-    color = fColor * ( ambient + diffus + specular );
+    color = fC * ( a + d + s);
 }
 in vec3 position;
 in vec3 normal;
@@ -26,18 +25,18 @@ in vec4 color;
 uniform mat4 projection;
 uniform mat4 view;
 
-out vec4 fPosition;
-out vec4 fColor;
-out vec4 fLightPosition;
-out vec3 fNormal;
+out vec4 fP;
+out vec4 fC;
+out vec4 fL;
+out vec3 fN;
 
 void main(void)
 {
-    fPosition = view * vec4(position,1.0);
-    fLightPosition = view * vec4(0.0,0.0,1.0,1.0);
+    fP = view * vec4(position,1.0);
+    fL = view * vec4(0.0,0.0,1.0,1.0);
 
-    fColor = color;
-    fNormal = vec3(view * vec4(normal,0.0));
+    fC = color;
+    fN= vec3(view * vec4(normal,0.0));
 
-    gl_Position = projection * fPosition;
+    gl_Position = projection * fP;
 }
