@@ -15,11 +15,7 @@ export const routes: Routes = [
     data : {showSidebar: true}
   },
   {
-    path: '',
-    component: ImguiComponent
-  },
-  {
     path: '**',
-    redirectTo: ''
+    redirectTo: 'imgui'
   } 
 ];
