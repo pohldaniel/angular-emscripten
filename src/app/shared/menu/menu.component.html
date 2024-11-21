@@ -1,0 +1,32 @@
+<div style="height: 100%;display: flex;flex-flow: column;"> 
+  <img class="logo" src="assets/img/science.png">
+  <nav class ="accordion">
+    <ul class ="menu" (click)="onClick($event)" role="presentation">        
+      <li id="two">
+        <button [attr.tabindex]="storeTargetedSubmenu=='two' ? -1 : 0" [class.active]="storeTargetedSubmenu=='two'">Examples</button>
+        <ul class="sub-menu" [class.sub-menu-open]="storeTargetedSubmenu=='two'" (click)="onClickSub($event)" role="presentation">         
+          <li id="two-one" class="list-item-button">
+            <button [attr.tabindex]="router.url=='/imgui' ? -1 : (storeTargetedSubmenu=='imgui' ? 0 : -1)" (click)="navigate('/imgui')" [class.active]="router.url == '/imgui'">Im Gui
+              <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1"  (click)="updateFavorites($event, 0, checked[0]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
+                <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[0] ? 'star' : 'star_outline'}}</mat-icon>                 
+              </span>                       
+            </button>  
+          </li> 
+          <li id="two-two" class="list-item-button">
+            <button [attr.tabindex]="router.url=='/open' ? -1 : (storeTargetedSubmenu=='open' ? 0 : -1)" (click)="navigate('/open')" [class.active]="router.url == '/open'">OpenGL
+              <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1"  (click)="updateFavorites($event, 1, checked[1]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
+                <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[1] ? 'star' : 'star_outline'}}</mat-icon>                 
+              </span>                       
+            </button>  
+          </li> 
+        </ul>
+      </li>
+    </ul>
+    <ul class="logout" role="presentation">
+      <li id="one" style="position: absolute; bottom: 10px;"> 
+        <button tabindex="0" [class.active]="router.url == '/login'">Logout</button>      
+      </li>
+    </ul> 
+  </nav>
+</div>
+
