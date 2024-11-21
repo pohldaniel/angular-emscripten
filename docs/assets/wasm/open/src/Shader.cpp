@@ -23,7 +23,7 @@ const std::string shader_header =
 "#version 300 es\n"
 "precision mediump float;\n"
 "precision mediump int;\n"
-"precision mediump sampler2DArray;\n";
+"precision mediump sampler2DArray;\n\n";
 #else
 "#version 330\n";
 #endif
@@ -47,6 +47,22 @@ void getFileContents(const char* filename, vector<char>& buffer) {
   } else {
     std::cerr << "Cannot load " << filename << std::endl;
   }
+}
+
+void ReadTextFile(const char *pszFilename, std::string &buffer) {
+	std::ifstream file(pszFilename, std::ios::binary);
+	if (file.is_open()) {
+		file.seekg(0, std::ios::end);
+
+		std::ifstream::pos_type fileSize = file.tellg();
+
+		buffer.resize(static_cast<unsigned int>(fileSize) + shader_header.size());
+		file.seekg(0, std::ios::beg);
+		file.read(&buffer[0], fileSize);
+
+    buffer = shader_header + buffer;
+	}
+
 }
 
 Shader::Shader(const char* buffer, GLenum type, bool flag) {
@@ -82,10 +98,14 @@ Shader::Shader(const char* buffer, GLenum type, bool flag) {
 
 Shader::Shader(const std::string& filename, GLenum type) {
   // file loading
-  vector<char> fileContent;
-  getFileContents(filename.c_str(), fileContent);
-  std::string str(fileContent.begin(), fileContent.end());   
-  std::cout << str << std::endl; 
+  //vector<char> fileContent;
+  //getFileContents(filename.c_str(), fileContent);
+  //std::string str(fileContent.begin(), fileContent.end());   
+  //std::cout << str << std::endl; 
+
+  std::string buffer;
+	ReadTextFile(filename.c_str(), buffer);
+  std::cout << buffer << std::endl; 
 
   // creation
   handle = glCreateShader(type);
@@ -95,7 +115,7 @@ Shader::Shader(const std::string& filename, GLenum type) {
   }
 
   // code source assignation
-  const char* shaderText(&fileContent[0]);
+  const char* shaderText(&buffer[0]);
   glShaderSource(handle, 1, (const GLchar**)&shaderText, NULL);
 
   // compilation
