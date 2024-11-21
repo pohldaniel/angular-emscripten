@@ -59,7 +59,8 @@
                 "./"
               ]
             },
-            "scripts": []
+            "scripts": [],
+            "baseHref": "/angular-emscripten/"
           },
           "defaultConfiguration": "dev",
           "configurations": {

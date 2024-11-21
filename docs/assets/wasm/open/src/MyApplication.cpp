@@ -102,8 +102,10 @@ const char* vertex_shader_text =
 
 MyApplication::MyApplication()
     : Application(),
-      vertexShader(vertex_shader_text, GL_VERTEX_SHADER, true),
-      fragmentShader(fragment_shader_text, GL_FRAGMENT_SHADER, true),
+      vertexShader(SHADER_DIR "/shader.vert", GL_VERTEX_SHADER),
+      fragmentShader(SHADER_DIR "/shader.frag", GL_FRAGMENT_SHADER),
+      //vertexShader(vertex_shader_text, GL_VERTEX_SHADER, true),
+      //fragmentShader(fragment_shader_text, GL_FRAGMENT_SHADER, true),
       shaderProgram({vertexShader, fragmentShader}) {
   glCheckError(__FILE__, __LINE__);
 
