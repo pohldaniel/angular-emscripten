@@ -1,2 +1,42 @@
-in vec4 fP;in vec4 fC;in vec4 fL;in vec3 fN;out vec4 color;void main(void){vec3 o =-normalize(fP.xyz);vec3 n = normalize(fN);vec3 r = reflect(o,n);vec3 l = normalize(fL.xyz-fP.xyz);float a = 0.1;float d = 0.7*max(0.0,dot(n,l));float s = 0.6*pow(max(0.0,-dot(r,l)),4.0);color = fC * ( a + d + s);}
-in vec3 position;in vec3 normal;in vec4 color;uniform mat4 p;uniform mat4 v;out vec4 fP;out vec4 fC;out vec4 fL;out vec3 fN;void main(void){fP = v * vec4(position,1.0);fL = v * vec4(0.0,0.0,1.0,1.0);fC = color;fN= vec3(v * vec4(normal,0.0));gl_Position = p * fP;}
+in vec4 fP;
+in vec4 fC;
+in vec4 fL;
+in vec3 fN;
+
+out vec4 color;
+
+void main(void)
+{       
+    vec3 o =-normalize(fP.xyz);
+    vec3 n = normalize(fN);
+    vec3 r = reflect(o,n);
+    vec3 l = normalize(fL.xyz-fP.xyz);
+
+    float a = 0.1;
+    float d = 0.7*max(0.0,dot(n,l));
+    float s = 0.6*pow(max(0.0,-dot(r,l)),4.0);
+
+    color = fC * ( a + d + s);
+}
+in vec3 position;
+in vec3 normal;
+in vec4 color;
+
+uniform mat4 p;
+uniform mat4 v;
+
+out vec4 fP;
+out vec4 fC;
+out vec4 fL;
+out vec3 fN;
+
+void main(void)
+{
+    fP = v * vec4(position,1.0);
+    fL = v * vec4(0.0,0.0,1.0,1.0);
+
+    fC = color;
+    fN= vec3(v * vec4(normal,0.0));
+
+    gl_Position = p * fP;
+}
