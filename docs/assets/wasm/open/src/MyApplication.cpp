@@ -44,10 +44,66 @@ VertexType getHeightMap(const glm::vec2 position) {
   return v;
 }
 
+const char* vertex_shader_text =
+  "#version 300 es\n"
+  "precision mediump float;\n"
+  "precision mediump int;\n"
+  "precision mediump sampler2DArray;\n"
+  "in vec3 position;\n"
+  "in vec3 normal;\n"
+  "in vec4 color;\n\n"
+
+  "uniform mat4 projection;\n"
+  "uniform mat4 view;\n\n"
+
+  "out vec4 fPosition;\n"
+  "out vec4 fColor;\n"
+  "out vec4 fLightPosition;\n"
+  "out vec3 fNormal;\n\n"
+
+  "void main(void)\n"
+  "{\n"
+    "fPosition = view * vec4(position,1.0);\n"
+    "fLightPosition = view * vec4(0.0,0.0,1.0,1.0);\n\n"
+
+    "fColor = color;\n"
+    "fNormal = vec3(view * vec4(normal,0.0));\n\n"
+
+    "gl_Position = projection * fPosition;\n"
+  "}";
+
+	const char* fragment_shader_text =
+	"#version 300 es\n"
+  "precision mediump float;\n"
+  "precision mediump int;\n"
+  "precision mediump sampler2DArray;\n"
+  "\n"
+	"in vec4 fPosition;\n"
+  "in vec4 fColor;\n"
+  "in vec4 fLightPosition;\n"
+  "in vec3 fNormal;\n"
+  "\n"
+  "out vec4 color;\n"
+  "\n"
+  "void main(void)\n"
+  "{\n"
+    "vec3 o =-normalize(fPosition.xyz);\n"
+    "vec3 n = normalize(fNormal);\n"
+    "vec3 r = reflect(o,n);\n"
+    "vec3 l = normalize(fLightPosition.xyz-fPosition.xyz);\n"
+
+    "float ambient = 0.1;\n"
+    "float diffus = 0.7*max(0.0,dot(n,l));\n"
+    "float specular = 0.6*pow(max(0.0,-dot(r,l)),4.0);\n"
+    "\n"
+    "color = fColor * ( ambient + diffus + specular );\n"
+
+  "}";
+
 MyApplication::MyApplication()
     : Application(),
-      vertexShader(SHADER_DIR "/shader.vert", GL_VERTEX_SHADER),
-      fragmentShader(SHADER_DIR "/shader.frag", GL_FRAGMENT_SHADER),
+      vertexShader(vertex_shader_text, GL_VERTEX_SHADER, true),
+      fragmentShader(fragment_shader_text, GL_FRAGMENT_SHADER, true),
       shaderProgram({vertexShader, fragmentShader}) {
   glCheckError(__FILE__, __LINE__);
 

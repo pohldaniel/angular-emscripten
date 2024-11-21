@@ -23,7 +23,7 @@ class Shader {
  public:
   // Load Shader from a file
   Shader(const std::string& filename, GLenum type);
-
+  Shader(const char* buffer, GLenum type, bool flag);
   // provide opengl shader identifiant.
   GLuint getHandle() const;
 

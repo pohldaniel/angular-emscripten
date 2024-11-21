@@ -49,6 +49,37 @@ void getFileContents(const char* filename, vector<char>& buffer) {
   }
 }
 
+Shader::Shader(const char* buffer, GLenum type, bool flag) {
+  
+   // creation
+  handle = glCreateShader(type);
+  if (handle == 0) {
+    std::cerr << "[Error] Impossible to create a new Shader" << std::endl;
+    throw std::runtime_error("[Error] Impossible to create a new Shader");
+  }
+
+  glShaderSource(handle, 1, &buffer, NULL);
+
+  // compilation
+  glCompileShader(handle);
+
+  // compilation check
+  GLint compile_status;
+  glGetShaderiv(handle, GL_COMPILE_STATUS, &compile_status);
+  if (compile_status != GL_TRUE) {
+    GLsizei logsize = 0;
+    glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &logsize);
+
+    char* log = new char[logsize + 1];
+    glGetShaderInfoLog(handle, logsize, &logsize, log);
+
+    cout << "[Error] compilation error: " << buffer << endl;
+    cout << log << endl;
+
+    exit(EXIT_FAILURE);
+  } 
+}
+
 Shader::Shader(const std::string& filename, GLenum type) {
   // file loading
   vector<char> fileContent;

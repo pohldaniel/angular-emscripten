@@ -11,7 +11,7 @@ export class OpenComponent extends EmscriptenWasmComponent {
   @ViewChild("canvas") canvas!: ElementRef;
   error!: string;
   constructor(private ngZone: NgZone) {
-    super("OpenModule",  'assets/wasm/open/open.js', 'assets/wasm/open/open.wasm', 'assets/wasm/open/open.data');
+    super("OpenModule",  'assets/wasm/open/open.js', 'assets/wasm/open/open.wasm');
     this.moduleDecorator = (mod) => {     
       mod.canvas = <HTMLCanvasElement>this.canvas.nativeElement;
       mod.printErr = (what: string) => {
