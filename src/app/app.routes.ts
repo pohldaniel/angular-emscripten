@@ -1,7 +1,8 @@
 import {Routes} from '@angular/router';
 import {authGuard} from './guard/auth.guard';
 import {ImguiComponent} from './pages/imgui/imgui.component';
-import {OpenComponent} from './pages/open/open.component';
+import {OpenComponentGL} from './pages/open-gl/open-gl.component';
+import {CubeComponent} from './pages/cube/cube.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -9,8 +10,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true},
   },  
-  { path: 'open', 
-    component: OpenComponent,
+  { path: 'open-gl', 
+    component: OpenComponentGL,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
+  { path: 'cube', 
+    component: CubeComponent,
     canActivate: [authGuard],
     data : {showSidebar: true}
   },

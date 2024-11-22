@@ -65,8 +65,9 @@ export class MenuComponent implements OnInit{
     this.checked = [];
     let map = new Map<number, MenuItem>()
     .set(Math.pow(2, 0), {target : '/imgui', description: 'Im GUI', descriptionLineBreak: '', class : 'two-one', index : 0} as MenuItem)
-    .set(Math.pow(2, 1), {target : '/open', description: 'OpenGL', descriptionLineBreak: '', class : 'two-two', index : 1} as MenuItem);
-   
+    .set(Math.pow(2, 1), {target : '/open-gl', description: 'OpenGL', descriptionLineBreak: '', class : 'two-two', index : 1} as MenuItem)
+    .set(Math.pow(2, 2), {target : '/cube', description: 'Cube', descriptionLineBreak: '', class : 'two-three', index : 1} as MenuItem);
+    
     for(let key of map.keys()) {
 
       if((this.settings.favorites | key) == this.settings.favorites){
