@@ -1,5 +1,5 @@
 import {Component, OnInit, AfterViewInit,ViewChild,ElementRef, OnDestroy, NgZone} from '@angular/core';
-import {EmscriptenWasmComponent} from "src/app/emscripten-wasm.component";
+import {EmscriptenWasmComponent} from 'src/app/emscripten-wasm.component';
 
 @Component({
   selector: 'app-imgui-cpp',

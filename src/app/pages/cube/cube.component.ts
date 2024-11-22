@@ -1,8 +1,8 @@
-import {Component, ViewChild, ElementRef, NgZone} from "@angular/core";
+import {Component, ViewChild, ElementRef, NgZone} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient} from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
-import {EmscriptenWasmComponent} from "src/app/emscripten-wasm.component";
+import {EmscriptenWasmComponent} from 'src/app/emscripten-wasm.component';
 
 const getFileName = (filePath: string) => filePath.split("/").reverse()[0];
 

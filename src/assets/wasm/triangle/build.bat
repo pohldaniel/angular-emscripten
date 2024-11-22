@@ -1,0 +1,1 @@
+em++ triangle.cpp --js-library library.js -o triangle.js -s "EXPORTED_FUNCTIONS=['_WAFNDraw','_main']" -s "EXPORTED_RUNTIME_METHODS=['ccall', 'print', 'printErr']" -s MODULARIZE=1 -s EXPORT_NAME='TriangleModule'

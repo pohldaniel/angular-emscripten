@@ -3,6 +3,7 @@ import {authGuard} from './guard/auth.guard';
 import {ImguiComponent} from './pages/imgui/imgui.component';
 import {OpenComponentGL} from './pages/open-gl/open-gl.component';
 import {CubeComponent} from './pages/cube/cube.component';
+import {TriangleComponent} from './pages/triangle/triangle.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -17,6 +18,11 @@ export const routes: Routes = [
   },
   { path: 'cube', 
     component: CubeComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
+  { path: 'triangle', 
+    component: TriangleComponent,
     canActivate: [authGuard],
     data : {showSidebar: true}
   },

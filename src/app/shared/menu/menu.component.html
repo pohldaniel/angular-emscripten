@@ -26,6 +26,13 @@
               </span>                       
             </button>  
           </li> 
+          <li id="two-four" class="list-item-button">
+            <button [attr.tabindex]="router.url=='/triangle' ? -1 : (storeTargetedSubmenu=='triangle' ? 0 : -1)" (click)="navigate('/triangle')" [class.active]="router.url == '/triangle'">Triangle
+              <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1"  (click)="updateFavorites($event, 3, checked[3]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
+                <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[3] ? 'star' : 'star_outline'}}</mat-icon>                 
+              </span>                       
+            </button>  
+          </li> 
         </ul>
       </li>
     </ul>
