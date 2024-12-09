@@ -64,10 +64,11 @@ export class MenuComponent implements OnInit{
     this.favoriteList = [];
     this.checked = [];
     let map = new Map<number, MenuItem>()
-    .set(Math.pow(2, 0), {target : '/imgui', description: 'Im GUI', descriptionLineBreak: '', class : 'two-one', index : 0} as MenuItem)
+    .set(Math.pow(2, 0), {target : '/imgui', description: 'ImGUI', descriptionLineBreak: '', class : 'two-one', index : 0} as MenuItem)
     .set(Math.pow(2, 1), {target : '/open-gl', description: 'OpenGL', descriptionLineBreak: '', class : 'two-two', index : 1} as MenuItem)
-    .set(Math.pow(2, 2), {target : '/cube', description: 'Cube', descriptionLineBreak: '', class : 'two-three', index : 1} as MenuItem)
-    .set(Math.pow(2, 3), {target : '/triangle', description: 'Triangle', descriptionLineBreak: '', class : 'two-four', index : 1} as MenuItem);
+    .set(Math.pow(2, 2), {target : '/cube', description: 'Cube', descriptionLineBreak: '', class : 'two-three', index : 2} as MenuItem)
+    .set(Math.pow(2, 3), {target : '/triangle', description: 'Triangle', descriptionLineBreak: '', class : 'two-four', index : 3} as MenuItem)
+    .set(Math.pow(2, 4), {target : '/shape', description: 'Shape', descriptionLineBreak: '', class : 'two-five', index : 4} as MenuItem);
 
     for(let key of map.keys()) {
 

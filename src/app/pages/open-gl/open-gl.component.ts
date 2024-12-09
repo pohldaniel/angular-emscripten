@@ -7,7 +7,7 @@ import {EmscriptenWasmComponent} from "src/app/emscripten-wasm.component";
   styleUrls: ['./open-gl.component.sass'],
   standalone: true,
 })
-export class OpenComponentGL extends EmscriptenWasmComponent {
+export class OpenGLComponent extends EmscriptenWasmComponent {
   @ViewChild("canvas") canvas!: ElementRef;
   error!: string;
   constructor(private ngZone: NgZone) {

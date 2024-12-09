@@ -1,9 +1,10 @@
 import {Routes} from '@angular/router';
 import {authGuard} from './guard/auth.guard';
 import {ImguiComponent} from './pages/imgui/imgui.component';
-import {OpenComponentGL} from './pages/open-gl/open-gl.component';
+import {OpenGLComponent} from './pages/open-gl/open-gl.component';
 import {CubeComponent} from './pages/cube/cube.component';
 import {TriangleComponent} from './pages/triangle/triangle.component';
+import {ShapeComponent} from './pages/shape/shape.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -12,7 +13,7 @@ export const routes: Routes = [
     data : {showSidebar: true},
   },  
   { path: 'open-gl', 
-    component: OpenComponentGL,
+    component: OpenGLComponent,
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
@@ -23,6 +24,11 @@ export const routes: Routes = [
   },
   { path: 'triangle', 
     component: TriangleComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
+  { path: 'shape', 
+    component: ShapeComponent,
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
