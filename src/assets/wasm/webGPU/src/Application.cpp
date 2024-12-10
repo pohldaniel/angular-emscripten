@@ -1,31 +1,47 @@
 #include <GLFW/glfw3.h>
 #include <glfw3webgpu.h>
 #include <GL/glew.h>
-#include "webgpu-utils.h"
-#include "Application.h"
 #include <emscripten.h>
 
+#include <States/Shape.h>
+
+#include "WebGpuUtils.h"
+#include "Application.h"
+
+
 GLFWwindow* Application::Window = nullptr;
+StateMachine* Application::Machine = nullptr;
+WGPUDevice Application::Device;
+WGPUQueue Application::Queue;
+WGPUSurface Application::Surface;
+
 int Application::Width;
 int Application::Height;
+double Application::Time;
 
 void Application::MessageLopp(void *arg) {
   Application* application  = reinterpret_cast<Application*>(arg);
+
+  Time = glfwGetTime();
+  application->dt = float(Time - application->last);
+  application->last = Time;
+
   application->messageLopp();
 }
 
-Application::Application(){
+Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
   Application::Width = 512;
   Application::Height = 512;
   initWindow();
   initWebGPU();
+  initStates();
 }
 
 Application::~Application() {
-  wgpuSurfaceUnconfigure(surface);
-  wgpuQueueRelease(queue);
-  wgpuSurfaceRelease(surface);
-  wgpuDeviceRelease(device);
+  wgpuSurfaceUnconfigure(Surface);
+  wgpuQueueRelease(Queue);
+  wgpuSurfaceRelease(Surface);
+  wgpuDeviceRelease(Device);
   glfwDestroyWindow(Window);
   glfwTerminate();
 }
@@ -51,8 +67,8 @@ void Application::initWebGPU(){
   WGPUSurfaceDescriptor surfaceDesc = {};
   surfaceDesc.nextInChain = &canvasDesc.chain;
   surfaceDesc.label = NULL;
-  surface = wgpuInstanceCreateSurface(instance, &surfaceDesc);*/
-  surface = glfwGetWGPUSurface(instance, Window);
+  Surface = wgpuInstanceCreateSurface(instance, &surfaceDesc);*/
+  Surface = glfwGetWGPUSurface(instance, Window);
 
   WGPUDeviceDescriptor deviceDesc = {};
   deviceDesc.nextInChain = nullptr;
@@ -62,8 +78,8 @@ void Application::initWebGPU(){
   deviceDesc.defaultQueue.nextInChain = nullptr;
   deviceDesc.defaultQueue.label = "The default queue";
 	
-  device = requestDeviceSync(adapter, &deviceDesc);
-  queue = wgpuDeviceGetQueue(device);
+  Device = requestDeviceSync(adapter, &deviceDesc);
+  Queue = wgpuDeviceGetQueue(Device);
   
   // Configure the surface
   WGPUSurfaceConfiguration config = {};
@@ -73,17 +89,17 @@ void Application::initWebGPU(){
   config.width = Width;
   config.height = Height;
   config.usage = WGPUTextureUsage_RenderAttachment;
-  WGPUTextureFormat surfaceFormat = wgpuSurfaceGetPreferredFormat(surface, adapter);
+  WGPUTextureFormat surfaceFormat = wgpuSurfaceGetPreferredFormat(Surface, adapter);
   config.format = surfaceFormat;
 
   // And we do not need any particular view format:
   config.viewFormatCount = 0;
   config.viewFormats = nullptr;
-  config.device = device;
+  config.device = Device;
   config.presentMode = WGPUPresentMode_Fifo;
   config.alphaMode = WGPUCompositeAlphaMode_Auto;
 
-  wgpuSurfaceConfigure(surface, &config);
+  wgpuSurfaceConfigure(Surface, &config);
 
   // Release the adapter only after it has been fully utilized
   wgpuAdapterRelease(adapter);
@@ -94,77 +110,20 @@ bool Application::isRunning(){
   return glfwWindowShouldClose(Window);
 }
 
-void Application::update(){
-
-}
-
-void Application::render(){
-  // Get the next target texture view
-  WGPUTextureView targetView = GetNextSurfaceTextureView();
-  if (!targetView) return;
-
-  // Create a command encoder for the draw call
-  WGPUCommandEncoderDescriptor encoderDesc = {};
-  encoderDesc.nextInChain = nullptr;
-  encoderDesc.label = "My command encoder";
-  WGPUCommandEncoder encoder = wgpuDeviceCreateCommandEncoder(device, &encoderDesc);
-
-  // Create the render pass that clears the screen with our color
-  WGPURenderPassDescriptor renderPassDesc = {};
-  renderPassDesc.nextInChain = nullptr;
-
-  // The attachment part of the render pass descriptor describes the target texture of the pass
-  WGPURenderPassColorAttachment renderPassColorAttachment = {};
-  renderPassColorAttachment.view = targetView;
-  renderPassColorAttachment.resolveTarget = nullptr;
-  renderPassColorAttachment.loadOp = WGPULoadOp_Clear;
-  renderPassColorAttachment.storeOp = WGPUStoreOp_Store;
-  renderPassColorAttachment.clearValue = WGPUColor{ 0.0, 1.0, 0.2, 1.0 };
-#ifndef WEBGPU_BACKEND_WGPU
-  renderPassColorAttachment.depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
-#endif // NOT WEBGPU_BACKEND_WGPU
-
-  renderPassDesc.colorAttachmentCount = 1;
-  renderPassDesc.colorAttachments = &renderPassColorAttachment;
-  renderPassDesc.depthStencilAttachment = nullptr;
-  renderPassDesc.timestampWrites = nullptr;
-
-  // Create the render pass and end it immediately (we only clear the screen but do not draw anything)
-  WGPURenderPassEncoder renderPass = wgpuCommandEncoderBeginRenderPass(encoder, &renderPassDesc);
-  wgpuRenderPassEncoderEnd(renderPass);
-  wgpuRenderPassEncoderRelease(renderPass);
-
-  // Finally encode and submit the render pass
-  WGPUCommandBufferDescriptor cmdBufferDescriptor = {};
-  cmdBufferDescriptor.nextInChain = nullptr;
-  cmdBufferDescriptor.label = "Command buffer";
-  WGPUCommandBuffer command = wgpuCommandEncoderFinish(encoder, &cmdBufferDescriptor);
-  wgpuCommandEncoderRelease(encoder);
-
-  wgpuQueueSubmit(queue, 1, &command);
-  wgpuCommandBufferRelease(command);
-
-  // At the end of the frame
-  wgpuTextureViewRelease(targetView);
-#ifndef __EMSCRIPTEN__
-  wgpuSurfacePresent(surface);
-#endif
-
-#if defined(WEBGPU_BACKEND_DAWN)
-  wgpuDeviceTick(device);
-#elif defined(WEBGPU_BACKEND_WGPU)
-  wgpuDevicePoll(device, false, nullptr);
-#endif
-}
-
 void Application::messageLopp(){
-  glfwPollEvents();
-  render();
+    glfwPollEvents();
+    Machine->update();
+    Machine->render();
+}
+
+void Application::initStates(){
+    Machine = new StateMachine(dt, fdt);
+    Machine->addStateAtTop(new Shape(*Machine));
 }
 
 WGPUTextureView Application::GetNextSurfaceTextureView() {
   WGPUSurfaceTexture surfaceTexture;
-  wgpuSurfaceGetCurrentTexture(surface, &surfaceTexture);
+  wgpuSurfaceGetCurrentTexture(Surface, &surfaceTexture);
   if (surfaceTexture.status != WGPUSurfaceGetCurrentTextureStatus_Success) {
     return nullptr;
   }

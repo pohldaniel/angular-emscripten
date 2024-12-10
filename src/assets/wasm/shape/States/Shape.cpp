@@ -124,7 +124,7 @@ void Shape::render() {
   // set matrix : projection + view
   projection = glm::perspective(float(2.0 * atan(Application::Height / 1920.f)),
                                 float(Application::Width) / float(Application::Height), 0.1f, 100.f);
-  view = glm::lookAt(glm::vec3(20.0 * sin(m_dt), 20.0 * cos(m_dt), 20.0),
+  view = glm::lookAt(glm::vec3(20.0 * sin(Application::Time), 20.0 * cos(Application::Time), 20.0),
                      glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 1.0));
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

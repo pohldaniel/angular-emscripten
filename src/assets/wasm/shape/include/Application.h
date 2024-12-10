@@ -8,14 +8,13 @@ public:
 	Application(float& dt, float& fdt);
 	~Application();
 
-	//void update();
-	//void render();
 	bool isRunning();
 
 	static void MessageLopp(void *arg);
 
 	static int Width;
 	static int Height;
+	static double Time;
 
 private:
 
@@ -27,8 +26,7 @@ private:
 	float& fdt;
 	float& dt;
 
-	double begin;
-	double end;
+	double last;
 	
     static GLFWwindow* Window;
 	static StateMachine* Machine;

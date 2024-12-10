@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-#include "webgpu-utils.h"
+#include "WebGpuUtils.h"
 
 #ifdef __EMSCRIPTEN__
 #  include <emscripten.h>

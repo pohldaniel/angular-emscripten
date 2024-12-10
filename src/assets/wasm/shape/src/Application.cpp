@@ -9,17 +9,19 @@ StateMachine* Application::Machine = nullptr;
 
 int Application::Width;
 int Application::Height;
+double Application::Time;
 
 void Application::MessageLopp(void *arg) {
 	Application* application  = reinterpret_cast<Application*>(arg);
 
-    application->end = glfwGetTime();
-    application->dt = float(application->end - application->begin);
+    Time = glfwGetTime();
+    application->dt = float(Time - application->last);
+    application->last = Time;
 
 	application->messageLopp();
 }
 
-Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), begin(0.0f), end(0.0){
+Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
     Application::Width = 640;
     Application::Height = 480;
 	initWindow();
