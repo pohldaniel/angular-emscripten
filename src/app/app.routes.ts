@@ -40,6 +40,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'imgui'
+    redirectTo: 'shape'
   } 
 ];
