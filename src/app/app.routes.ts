@@ -8,7 +8,11 @@ import {WebGPUComponent} from './pages/web-gpu/web-gpu.component';
 import {ShapeComponent} from './pages/shape/shape.component';
 
 export const routes: Routes = [
-  
+  { path: 'imgui', 
+    component: ImguiComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true},
+  },  
   { path: 'open-gl', 
     component: OpenGLComponent,
     canActivate: [authGuard],
