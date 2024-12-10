@@ -49,11 +49,9 @@ export class MenuComponent implements OnInit{
     this.matIconRegistry.addSvgIcon("custom_star",this.domSanitizer.bypassSecurityTrustResourceUrl("./assets/svg/star.svg"));
   }
 
-  ngOnInit() {
-    if(this.router.url == "/imgui" || this.router.url == "/open"){
-      this.targetedSubmenu = "two";
-      this.storeTargetedSubmenu = "two";     
-    }
+  ngOnInit() {  
+    this.targetedSubmenu = "two";
+    this.storeTargetedSubmenu = "two";       
   }
 
   ngAfterViewInit(){
