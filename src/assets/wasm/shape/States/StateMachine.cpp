@@ -1,0 +1,60 @@
+#include <GL/glew.h>
+#include "StateMachine.h"
+#include "Application.h"
+
+StateMachine::StateMachine(const float& dt, const float& fdt) : m_fdt(fdt),  m_dt(dt) {
+
+}
+
+void StateMachine::fixedUpdate() {
+	if (!m_states.empty())
+		m_states.top()->fixedUpdate();
+}
+
+void StateMachine::update() {
+	if (!m_states.empty()) {
+		m_states.top()->update();
+		if (!m_states.top()->isRunning()) {
+			States state = m_states.top()->getCurrentState();
+			delete m_states.top();
+			m_states.pop();
+			if (!m_states.empty())
+				m_states.top()->OnReEnter(state);
+		}
+	}else {
+		m_isRunning = false;
+	}
+}
+
+void StateMachine::render() {
+
+	if (!m_states.empty()) {
+		m_states.top()->render();
+	}
+}
+
+void StateMachine::resizeState(int deltaW, int deltaH, States state) {
+	if (m_states.empty()) return;
+
+	if (m_states.top()->getCurrentState() == state) {
+		m_states.top()->resize(deltaW, deltaH);
+	}else {
+		State* temp = m_states.top();
+		m_states.pop();
+		resizeState(deltaW, deltaH, state);
+		m_states.push(temp);
+	}
+}
+
+/////////////////////////////////////////////
+State::State(StateMachine& machine, States currentState) : m_machine(machine), m_fdt(machine.m_fdt), m_dt(machine.m_dt) {
+	m_currentState = currentState;
+}
+
+State::~State() {
+
+}
+
+States State::getCurrentState() {
+	return m_currentState;
+}

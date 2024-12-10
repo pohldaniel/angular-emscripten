@@ -1,3 +1,8 @@
+#version 300 es
+precision mediump float;
+precision mediump int;
+precision mediump sampler2DArray;
+
 in vec3 position;
 in vec3 normal;
 in vec4 color;

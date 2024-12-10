@@ -1,21 +1,30 @@
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
+#include <States/Shape.h>
+
 #include "Application.h"
 
 GLFWwindow* Application::Window = nullptr;
+StateMachine* Application::Machine = nullptr;
+
 int Application::Width;
 int Application::Height;
 
 void Application::MessageLopp(void *arg) {
 	Application* application  = reinterpret_cast<Application*>(arg);
+
+    application->end = glfwGetTime();
+    application->dt = float(application->end - application->begin);
+
 	application->messageLopp();
 }
 
-Application::Application(){
+Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), begin(0.0f), end(0.0){
     Application::Width = 640;
     Application::Height = 480;
 	initWindow();
 	initOpenGL();
+    initStates();
 }
 
 Application::~Application() {
@@ -71,15 +80,11 @@ bool Application::isRunning(){
 
 void Application::messageLopp(){
     glfwPollEvents();
-    update();
-    render();
+    Machine->update();
+    Machine->render();
 }
 
-void Application::update(){
-
+void Application::initStates(){
+    Machine = new StateMachine(dt, fdt);
+    Machine->addStateAtTop(new Shape(*Machine));
 }
-
-void Application::render(){
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-

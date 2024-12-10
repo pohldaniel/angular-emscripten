@@ -1,8 +1,12 @@
 #include <emscripten.h>
 #include "Application.h"
 
+
 int main(int argc, const char* argv[]) {
-  Application application;
+  
+  float deltaTime = 0.0f;
+	float fixedDeltaTime = 0.0f;
+  Application application(deltaTime, fixedDeltaTime);
 
   //while(application.isRunning()){
   //  application.update();

@@ -1,3 +1,8 @@
+#version 300 es
+precision mediump float;
+precision mediump int;
+precision mediump sampler2DArray;
+
 in vec4 fP;
 in vec4 fC;
 in vec4 fL;
