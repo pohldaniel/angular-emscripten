@@ -1,1 +1,0 @@
-emar rcs imgui.a imgui.o imgui_demo.o imgui_draw.o imgui_impl_glfw.o imgui_impl_opengl3.o imgui_tables.o imgui_widgets.o && exit

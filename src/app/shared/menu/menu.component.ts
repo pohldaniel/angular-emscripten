@@ -68,7 +68,8 @@ export class MenuComponent implements OnInit{
     .set(Math.pow(2, 1), {target : '/open-gl', description: 'OpenGL', descriptionLineBreak: '', class : 'two-two', index : 1} as MenuItem)
     .set(Math.pow(2, 2), {target : '/cube', description: 'Cube', descriptionLineBreak: '', class : 'two-three', index : 2} as MenuItem)
     .set(Math.pow(2, 3), {target : '/triangle', description: 'Triangle', descriptionLineBreak: '', class : 'two-four', index : 3} as MenuItem)
-    .set(Math.pow(2, 4), {target : '/shape', description: 'Shape', descriptionLineBreak: '', class : 'two-five', index : 4} as MenuItem);
+    .set(Math.pow(2, 4), {target : '/web-gpu', description: 'WebGPU', descriptionLineBreak: '', class : 'two-five', index : 4} as MenuItem)
+    .set(Math.pow(2, 5), {target : '/shape', description: 'Shape', descriptionLineBreak: '', class : 'two-six', index : 5} as MenuItem);
 
     for(let key of map.keys()) {
 

@@ -4,6 +4,7 @@ import {ImguiComponent} from './pages/imgui/imgui.component';
 import {OpenGLComponent} from './pages/open-gl/open-gl.component';
 import {CubeComponent} from './pages/cube/cube.component';
 import {TriangleComponent} from './pages/triangle/triangle.component';
+import {WebGPUComponent} from './pages/web-gpu/web-gpu.component';
 import {ShapeComponent} from './pages/shape/shape.component';
 
 export const routes: Routes = [
@@ -24,6 +25,11 @@ export const routes: Routes = [
   },
   { path: 'triangle', 
     component: TriangleComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
+  { path: 'web-gpu', 
+    component: WebGPUComponent,
     canActivate: [authGuard],
     data : {showSidebar: true}
   },

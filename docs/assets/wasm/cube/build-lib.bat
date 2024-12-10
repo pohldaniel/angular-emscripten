@@ -1,1 +1,0 @@
-emar rcs libsoil.a image_DXT.o image_helper.o SOIL.o stb_image_aug.o && exit
