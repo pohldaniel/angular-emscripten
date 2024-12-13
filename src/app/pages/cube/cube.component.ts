@@ -27,7 +27,7 @@ export class CubeComponent extends EmscriptenWasmComponent {
   supportsFullscreen: boolean;
 
   constructor(private httpClient: HttpClient, private ngZone: NgZone) {
-    super("CubeModule",  'assets/wasm/cube/cube.js', 'assets/wasm/cube/cube.wasm');
+    super("CubeModule",  'assets/wasm/03Cube/cube.js', 'assets/wasm/03Cube/cube.wasm');
 
     this.supportsFullscreen = !!requestFullscreen;
     this.fileUploadAccept = allowedMimeTypes.join(",");

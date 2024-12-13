@@ -11,7 +11,7 @@ export class OpenGLComponent extends EmscriptenWasmComponent {
   @ViewChild("canvas") canvas!: ElementRef;
   error!: string;
   constructor(private ngZone: NgZone) {
-    super("OpenGLModule",  'assets/wasm/openGL/open-gl.js', 'assets/wasm/openGL/open-gl.wasm', 'assets/wasm/openGL/open-gl.data');
+    super("OpenGLModule",  'assets/wasm/02OpenGL/open-gl.js', 'assets/wasm/02OpenGL/open-gl.wasm', 'assets/wasm/02OpenGL/open-gl.data');
     this.moduleDecorator = (mod) => {     
       mod.canvas = <HTMLCanvasElement >this.canvas.nativeElement;
       mod.printErr = (what: string) => {

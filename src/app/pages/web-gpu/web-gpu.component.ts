@@ -11,7 +11,7 @@ export class WebGPUComponent extends EmscriptenWasmComponent {
   @ViewChild("canvas") canvas!: ElementRef;
   error!: string;
   constructor(private ngZone: NgZone) {
-    super("WebGPUModule",  'assets/wasm/webGPU/web-gpu.js', 'assets/wasm/webGPU/web-gpu.wasm', 'assets/wasm/webGPU/web-gpu.data');
+    super("WebGPUModule",  'assets/wasm/05WebGPU/web-gpu.js', 'assets/wasm/05WebGPU/web-gpu.wasm', 'assets/wasm/05WebGPU/web-gpu.data');
     this.moduleDecorator = (mod) => {     
       mod.canvas = <HTMLCanvasElement >this.canvas.nativeElement;
       mod.printErr = (what: string) => {

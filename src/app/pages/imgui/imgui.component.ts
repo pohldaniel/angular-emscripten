@@ -11,7 +11,7 @@ export class ImguiComponent extends EmscriptenWasmComponent {
   @ViewChild("canvas") canvas!: ElementRef;
   error!: string;
   constructor(private ngZone: NgZone) {
-    super("ImguiWebModule",  'assets/wasm/imgui/ImguiWeb.js', 'assets/wasm/imgui/ImguiWeb.wasm');
+    super("ImguiWebModule",  'assets/wasm/01Imgui/ImguiWeb.js', 'assets/wasm/01Imgui/ImguiWeb.wasm');
     this.moduleDecorator = (mod) => {     
       mod.canvas = <HTMLCanvasElement>this.canvas.nativeElement;
       mod.printErr = (what: string) => {

@@ -1,0 +1,1 @@
+emar rcs glfw3webgpu.a glfw3webgpu.o && exit
