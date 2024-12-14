@@ -67,10 +67,24 @@ Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
 }
 
 Application::~Application() {
-  //wgpuSurfaceUnconfigure(Surface);
-  //wgpuQueueRelease(Queue);
-  //wgpuSurfaceRelease(Surface);
-  //wgpuDeviceRelease(Device);
+  vertexBuffer.destroy();
+  vertexBuffer.release();
+
+  textureView.release();
+  texture.destroy();
+  texture.release();
+
+  depthTextureView.release();
+  depthTexture.destroy();
+  depthTexture.release();
+
+  SwapChain.release();
+  Queue.release();
+  Device.release();
+  adapter.release();
+  instance.release();
+  Surface.release();
+
   glfwDestroyWindow(Window);
   glfwTerminate();
 }

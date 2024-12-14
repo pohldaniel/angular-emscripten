@@ -6,6 +6,7 @@ import {CubeComponent} from './pages/cube/cube.component';
 import {TriangleComponent} from './pages/triangle/triangle.component';
 import {WebGPUComponent} from './pages/web-gpu/web-gpu.component';
 import {WebGPU2Component} from './pages/web-gpu-2/web-gpu-2.component';
+import {WebGPU3Component} from './pages/web-gpu-3/web-gpu-3.component';
 import {ShapeComponent} from './pages/shape/shape.component';
 
 export const routes: Routes = [
@@ -36,6 +37,11 @@ export const routes: Routes = [
   }, 
   { path: 'web-gpu-2', 
     component: WebGPU2Component,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
+  { path: 'web-gpu-3', 
+    component: WebGPU3Component,
     canActivate: [authGuard],
     data : {showSidebar: true}
   },

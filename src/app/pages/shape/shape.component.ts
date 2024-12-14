@@ -11,7 +11,7 @@ export class ShapeComponent extends EmscriptenWasmComponent {
   @ViewChild("canvas") canvas!: ElementRef;
   error!: string;
   constructor(private ngZone: NgZone) {
-    super("ShapeModule",  'assets/wasm/07Shape/shape.js', 'assets/wasm/07Shape/shape.wasm', 'assets/wasm/07Shape/shape.data');
+    super("ShapeModule",  'assets/wasm/08Shape/shape.js', 'assets/wasm/08Shape/shape.wasm', 'assets/wasm/08Shape/shape.data');
     this.moduleDecorator = (mod) => {     
       mod.canvas = <HTMLCanvasElement >this.canvas.nativeElement;
       mod.printErr = (what: string) => {

@@ -48,13 +48,19 @@
             </button>  
           </li> 
           <li id="two-seven" class="list-item-button">
-            <button [attr.tabindex]="router.url=='/shape' ? -1 : (storeTargetedSubmenu=='shape' ? 0 : -1)" (click)="navigate('/shape')" [class.active]="router.url == '/shape'">Shape
+            <button [attr.tabindex]="router.url=='/web-gpu-3' ? -1 : (storeTargetedSubmenu=='web-gpu-3' ? 0 : -1)" (click)="navigate('/web-gpu-3')" [class.active]="router.url == '/web-gpu-3'">WebGPU3
               <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1"  (click)="updateFavorites($event, 6, checked[6]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
                 <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[6] ? 'star' : 'star_outline'}}</mat-icon>                 
               </span>                       
             </button>  
           </li> 
-         
+          <li id="two-eight" class="list-item-button">
+            <button [attr.tabindex]="router.url=='/shape' ? -1 : (storeTargetedSubmenu=='shape' ? 0 : -1)" (click)="navigate('/shape')" [class.active]="router.url == '/shape'">Shape
+              <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1"  (click)="updateFavorites($event, 7, checked[7]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
+                <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[7] ? 'star' : 'star_outline'}}</mat-icon>                 
+              </span>                       
+            </button>  
+          </li>      
         </ul>
       </li>
     </ul>
