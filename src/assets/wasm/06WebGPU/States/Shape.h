@@ -1,13 +1,8 @@
 #pragma once
 
 #include <filesystem>
-#include <webgpu/webgpu.h>
 #include <States/StateMachine.h>
 #include "Shader.h"
-
-
-
-
 
 class Shape : public State {
 
