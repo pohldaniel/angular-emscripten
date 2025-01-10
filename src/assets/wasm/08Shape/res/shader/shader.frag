@@ -12,5 +12,5 @@ in vec4 vertColor;
 out vec4 color;
 
 void main(void){
-	color = vertColor;	
+	color = vertColor * texture( u_texture, texCoord );
 }

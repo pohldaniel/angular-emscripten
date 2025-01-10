@@ -15,8 +15,8 @@
 ShapeState::ShapeState(StateMachine& machine) : State(machine, States::SHAPE) {
 
   shader = new Shader("res/shader/shader.vert", "res/shader/shader.frag");
-	glClearColor(0.494f, 0.686f, 0.796f, 1.0f);
-	glClearDepth(1.0f);
+  glClearColor(0.494f, 0.686f, 0.796f, 1.0f);
+  glClearDepth(1.0f);
 
   projection = glm::perspective(float(2.0 * atan(Application::Height / 1920.f)),
                                 float(Application::Width) / float(Application::Height), 0.1f, 100.f);
@@ -25,6 +25,8 @@ ShapeState::ShapeState(StateMachine& machine) : State(machine, States::SHAPE) {
 
   m_sphere.buildSphere(5.0f, glm::vec3(0.0f, 0.0f, 0.0f), 49, 49, true, false, false);
   m_sphere.markForDelete();
+
+  m_grid.loadFromFile("res/textures/grid512.png", true);
 }
 
 ShapeState::~ShapeState() {
@@ -47,7 +49,7 @@ void ShapeState::update() {
 void ShapeState::render() {
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+  m_grid.bind();
   shader->use();
   shader->loadMatrix("u_projection", projection);
   shader->loadMatrix("u_view", view);

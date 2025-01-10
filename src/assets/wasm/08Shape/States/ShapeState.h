@@ -1,6 +1,7 @@
 #include <States/StateMachine.h>
 #include <MeshObject/Shape.h>
 #include "Shader.h"
+#include "Texture.h"
 
 class ShapeState : public State {
 
@@ -26,4 +27,5 @@ private:
 	glm::mat4 projection = glm::mat4(1.0);
 	glm::mat4 view = glm::mat4(1.0);
 	Shape m_sphere;
+	Texture m_grid;
 };
