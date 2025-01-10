@@ -1,6 +1,10 @@
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
-#include <States/Shape.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
+#include <States/ShapeState.h>
 
 #include "Application.h"
 
@@ -22,14 +26,18 @@ void Application::MessageLopp(void *arg) {
 }
 
 Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
-    Application::Width = 640;
-    Application::Height = 480;
+    Application::Width = 1260;
+    Application::Height = 720;
 	initWindow();
 	initOpenGL();
+    initImGUI();
     initStates();
 }
 
 Application::~Application() {
+    //ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 	glfwDestroyWindow(Window);
 	glfwTerminate();
 }
@@ -44,11 +52,13 @@ void Application::initWindow() {
 
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
-    Window = glfwCreateWindow(640, 480, "Shape", NULL, NULL);
+    Window = glfwCreateWindow(Application::Width, Application::Height, "Shape", NULL, NULL);
     if (!Window) {
         glfwTerminate();
         throw std::runtime_error("Couldn't create a window");
     }
+
+    //glViewport(0, 0, Application::Width, Application::Height);
 }
 
 void Application::initOpenGL(){
@@ -75,6 +85,19 @@ void Application::initOpenGL(){
     glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 }
 
+void Application::initImGUI() {
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.IniFilename = NULL;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	// Setup Platform/Renderer backends
+	ImGui_ImplGlfw_InitForOther(Window, true);
+    ImGui_ImplGlfw_InstallEmscriptenCallbacks(Window, "#canvas");
+    ImGui_ImplOpenGL3_Init("#version 300 es");
+}
+
 bool Application::isRunning(){
     messageLopp();
     return glfwWindowShouldClose(Window);
@@ -88,5 +111,5 @@ void Application::messageLopp(){
 
 void Application::initStates(){
     Machine = new StateMachine(dt, fdt);
-    Machine->addStateAtTop(new Shape(*Machine));
+    Machine->addStateAtTop(new ShapeState(*Machine));
 }

@@ -1,1 +1,6 @@
-emcc src/glError.cpp src/Shader.cpp src/Application.cpp src/main.cpp states/Shape.cpp states/StateMachine.cpp -o shape.js -Wall -std=c++14 -Wno-missing-braces -Wunused-result -Os -I "./" -I "./include" -I "./glm" --use-port=contrib.glfw3 -s USE_WEBGL2=1 -s MIN_WEBGL_VERSION=2 --preload-file res/shader -s ASYNCIFY -s TOTAL_MEMORY=67108864 -s ALLOW_MEMORY_GROWTH=1 -s "EXPORTED_FUNCTIONS=['_main']" -s "EXPORTED_RUNTIME_METHODS=['ccall']" -s MODULARIZE=1 -s EXPORT_NAME='ShapeModule'
+rem start /w compile-libsoil.bat
+rem start /w build-libsoil.bat
+rem start /w compile-libimgui.bat
+rem start /w build-libimgui.bat
+start /w compile-wasm.bat
+rem del *.o

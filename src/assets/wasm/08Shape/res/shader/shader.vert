@@ -3,25 +3,22 @@ precision mediump float;
 precision mediump int;
 precision mediump sampler2DArray;
 
-in vec3 position;
-in vec3 normal;
-in vec4 color;
+layout(location = 0) in vec3 i_position;
+layout(location = 1) in vec2 i_texCoord;
+layout(location = 2) in vec3 i_normal;
 
-uniform mat4 p;
-uniform mat4 v;
+uniform mat4 u_projection;
+uniform mat4 u_view;
+uniform mat4 u_model;
+uniform vec4 u_color;
 
-out vec4 fP;
-out vec4 fC;
-out vec4 fL;
-out vec3 fN;
+out vec2 texCoord;
+out vec3 normal;
+out vec4 vertColor;
 
-void main(void)
-{
-    fP = v * vec4(position,1.0);
-    fL = v * vec4(0.0,0.0,1.0,1.0);
-
-    fC = color;
-    fN= vec3(v * vec4(normal,0.0));
-
-    gl_Position = p * fP;
+void main(void){
+	gl_Position = u_projection * u_view * u_model * vec4(i_position, 1.0); 
+	texCoord = i_texCoord;
+	normal = i_normal;
+	vertColor = u_color;
 }

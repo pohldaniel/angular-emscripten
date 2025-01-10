@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include <States/StateMachine.h>
 
 struct GLFWwindow;
@@ -19,6 +20,7 @@ public:
 private:
 
 	void initWindow();
+	void initImGUI();
 	void initOpenGL();
 	void initStates();
 	void messageLopp();
