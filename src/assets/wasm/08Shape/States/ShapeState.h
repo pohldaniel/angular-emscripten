@@ -2,6 +2,8 @@
 #include <MeshObject/Shape.h>
 #include "Shader.h"
 #include "Texture.h"
+#include "Camera.h"
+#include "TrackBall.h"
 
 class ShapeState : public State {
 
@@ -19,13 +21,12 @@ private:
 
 	void renderUi();
 
-	Shader* shader;
 	bool m_initUi = true;
 	bool m_drawUi = true;
 	bool m_rotate = false;
 
-	glm::mat4 projection = glm::mat4(1.0);
-	glm::mat4 view = glm::mat4(1.0);
+    Shader* shader;
 	Shape m_sphere;
 	Texture m_grid;
+	Camera m_camera;
 };

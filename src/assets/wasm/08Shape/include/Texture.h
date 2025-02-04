@@ -1,3 +1,6 @@
+#ifndef __textureH__
+#define __textureH__
+
 #include <string>
 #include <vector>
 #include <map>
@@ -34,3 +37,5 @@ private:
 
   static std::map<unsigned int, unsigned int> ActiveTextures;
 };
+
+#endif
