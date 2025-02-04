@@ -17,9 +17,9 @@ public:
 	void orthographic(float left, float right, float bottom, float top, float znear, float zfar);
 	void lookAt(const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up);
 
-	/*void move(float dx, float dy, float dz);
+	//void move(float dx, float dy, float dz);
 	void move(const glm::vec3& direction);
-	void moveRelative(const glm::vec3& direction);
+	/*void moveRelative(const glm::vec3& direction);
 	void moveX(float dx);
 	void moveY(float dy);
 	void moveZ(float dx);
@@ -27,12 +27,19 @@ public:
 	virtual void rotate(float yaw, float pitch);
 	void rotate(float yaw, float pitch, const glm::vec3& target);*/
 
+    void setPosition(float x, float y, float z);
+    void setPosition(const glm::vec3& position);
+
     const glm::mat4& getViewMatrix() const;
 	const glm::mat4& getInvViewMatrix() const;
 	const glm::mat4& getPerspectiveMatrix() const;
 	const glm::mat4& getInvPerspectiveMatrix() const;
 	const glm::mat4& getOrthographicMatrix() const;
 	const glm::mat4& getInvOrthographicMatrix() const;
+
+protected:
+
+   void updateViewMatrix();
 
 private:
 

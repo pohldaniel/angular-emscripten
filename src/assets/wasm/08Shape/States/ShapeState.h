@@ -1,5 +1,6 @@
 #include <States/StateMachine.h>
 #include <MeshObject/Shape.h>
+#include "Mouse.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "Camera.h"

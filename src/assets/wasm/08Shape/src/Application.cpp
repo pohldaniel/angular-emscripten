@@ -5,7 +5,7 @@
 #include <imgui_impl_opengl3.h>
 
 #include <States/ShapeState.h>
-
+#include "Mouse.h"
 #include "Application.h"
 
 GLFWwindow* Application::Window = nullptr;
@@ -105,6 +105,7 @@ bool Application::isRunning(){
 
 void Application::messageLopp(){
     glfwPollEvents();
+    Mouse::instance().update();
     Machine->update();
     Machine->render();
 }

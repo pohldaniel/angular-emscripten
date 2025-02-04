@@ -11,7 +11,7 @@ Camera::Camera(){
 
 	m_accumPitchDegrees = 0.0f;
 	m_rotationSpeed = 0.05f;
-	m_movingSpeed = 1.0f;
+	m_movingSpeed = 5.0f;
 	m_offsetDistance = 0.0f;
 
     m_xAxis = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -37,7 +37,7 @@ Camera::Camera(const glm::vec3 &eye, const glm::vec3& target, const glm::vec3& u
 
 	m_accumPitchDegrees = 0.0f;
 	m_rotationSpeed = 0.1f;
-	m_movingSpeed = 1.0f;
+	m_movingSpeed = 5.0f;
 	m_offsetDistance = 0.0f;
 
 	m_persMatrix = glm::mat4(1.0f);
@@ -152,6 +152,36 @@ void Camera::lookAt(const glm::vec3& eye, const glm::vec3& target, const glm::ve
 	m_invViewMatrix[3][1] = m_eye[1];
 	m_invViewMatrix[3][2] = m_eye[2];
 	m_invViewMatrix[3][3] = 1.0f;
+}
+
+void Camera::updateViewMatrix() {
+
+	m_viewMatrix[3][0] = -glm::dot(m_xAxis, m_eye);
+	m_viewMatrix[3][1] = -glm::dot(m_yAxis, m_eye);
+	m_viewMatrix[3][2] = -glm::dot(m_zAxis, m_eye);
+	m_viewMatrix[3][3] = 1.0f;
+
+	m_invViewMatrix[3][0] = m_eye[0];
+	m_invViewMatrix[3][1] = m_eye[1];
+	m_invViewMatrix[3][2] = m_eye[2];
+	m_invViewMatrix[3][3] = 1.0f;
+}
+
+void Camera::move(const glm::vec3& direction) {
+	m_eye += m_xAxis * direction[0] * m_movingSpeed;
+	m_eye += WORLD_YAXIS * direction[1] * m_movingSpeed;
+	m_eye += m_viewDir * direction[2] * m_movingSpeed;
+	updateViewMatrix();
+}
+
+void Camera::setPosition(float x, float y, float z){
+    m_eye = glm::vec3(x, y, z);
+    updateViewMatrix();
+}
+
+void Camera::setPosition(const glm::vec3& position){
+    m_eye = position;
+    updateViewMatrix();
 }
 
 const glm::mat4& Camera::getPerspectiveMatrix() const{

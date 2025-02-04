@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <States/StateMachine.h>
 
 struct GLFWwindow;
@@ -16,6 +14,7 @@ public:
 	static int Width;
 	static int Height;
 	static double Time;
+    static GLFWwindow* Window;
 
 private:
 
@@ -29,7 +28,6 @@ private:
 	float& dt;
 
 	double last;
-	
-    static GLFWwindow* Window;
+	 
 	static StateMachine* Machine;
 };

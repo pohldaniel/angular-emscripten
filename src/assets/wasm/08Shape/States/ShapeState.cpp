@@ -1,10 +1,13 @@
+#include <GLFW/glfw3.h>
 #include <GL/glew.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui_internal.h>
 #include <glm/glm.hpp>
+#include <iostream>
 
+#include "Mouse.h"
 #include "ShapeState.h"
 #include "Application.h"
 
@@ -15,12 +18,14 @@ ShapeState::ShapeState(StateMachine& machine) : State(machine, States::SHAPE) {
   glClearDepth(1.0f);
 
   m_camera.perspective(45.0f, static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 1000.0f);
-  m_camera.lookAt(glm::vec3(0.0f, 0.0f, 1.5f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0, 1.0, 0.0));
+  m_camera.lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0, 1.0, 0.0));
 
   m_sphere.buildSphere(5.0f, glm::vec3(0.0f, 0.0f, 0.0f), 49, 49, true, false, false);
   m_sphere.markForDelete();
 
   m_grid.loadFromFile("res/textures/grid512.png", true);
+
+  Mouse::instance().attach(Application::Window, false, false, false);
 }
 
 ShapeState::~ShapeState() {
@@ -32,7 +37,51 @@ void ShapeState::fixedUpdate() {
 }
 
 void ShapeState::update() {
-	
+	glm::vec3 direction = glm::vec3();
+
+	float dx = 0.0f;
+	float dy = 0.0f;
+	bool move = false;
+
+	if (glfwGetKey(Application::Window, GLFW_KEY_W) == GLFW_PRESS) {
+		direction += glm::vec3(0.0f, 0.0f, 1.0f);
+		move |= true;
+	}
+
+	if (glfwGetKey(Application::Window, GLFW_KEY_S) == GLFW_PRESS) {
+		direction += glm::vec3(0.0f, 0.0f, -1.0f);
+		move |= true;
+	}
+
+	if (glfwGetKey(Application::Window, GLFW_KEY_A) == GLFW_PRESS) {
+		direction += glm::vec3(-1.0f, 0.0f, 0.0f);
+		move |= true;
+	}
+
+	if (glfwGetKey(Application::Window, GLFW_KEY_D) == GLFW_PRESS) {
+		direction += glm::vec3(1.0f, 0.0f, 0.0f);
+		move |= true;
+	}
+
+	if (glfwGetKey(Application::Window, GLFW_KEY_Q) == GLFW_PRESS) {
+		direction += glm::vec3(0.0f, -1.0f, 0.0f);
+		move |= true;
+	}
+
+	if (glfwGetKey(Application::Window, GLFW_KEY_E) == GLFW_PRESS) {
+		direction += glm::vec3(0.0f, 1.0f, 0.0f);
+		move |= true;
+	}
+
+  Mouse &mouse = Mouse::instance();
+  if (glfwGetMouseButton(Application::Window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+		dx = mouse.xDelta();
+		dy = mouse.yDelta();
+	}
+
+  if (move) {
+		m_camera.move(direction * m_dt);
+	}
 }
 
 void ShapeState::render() {
