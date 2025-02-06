@@ -22,13 +22,15 @@ public:
 	/*void moveRelative(const glm::vec3& direction);
 	void moveX(float dx);
 	void moveY(float dy);
-	void moveZ(float dx);
+	void moveZ(float dx);*/
 
 	virtual void rotate(float yaw, float pitch);
-	void rotate(float yaw, float pitch, const glm::vec3& target);*/
+	//void rotate(float yaw, float pitch, const glm::vec3& target);
 
     void setPosition(float x, float y, float z);
     void setPosition(const glm::vec3& position);
+    void setRotationSpeed(float rotationSpeed);
+	void setMovingSpeed(float movingSpeed);
 
     const glm::mat4& getViewMatrix() const;
 	const glm::mat4& getInvViewMatrix() const;
@@ -43,11 +45,15 @@ protected:
 
 private:
 
+    void rotateFirstPerson(float yaw, float pitch);
+    void orthogonalize();
+
     glm::vec3 WORLD_XAXIS;
 	glm::vec3 WORLD_YAXIS;
 	glm::vec3 WORLD_ZAXIS;
 
 	float			m_accumPitchDegrees;
+	float			m_accumYawDegrees;
 	float			m_rotationSpeed;
 	float			m_movingSpeed;
 	float			m_offsetDistance;

@@ -10,8 +10,9 @@ Camera::Camera(){
 	WORLD_ZAXIS = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	m_accumPitchDegrees = 0.0f;
-	m_rotationSpeed = 0.05f;
-	m_movingSpeed = 5.0f;
+	m_accumYawDegrees = 0.0f;
+	m_rotationSpeed = 1.0f;
+	m_movingSpeed = 1.0f;
 	m_offsetDistance = 0.0f;
 
     m_xAxis = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -25,8 +26,8 @@ Camera::Camera(){
 	m_orthMatrix = glm::mat4(1.0f);
 	m_invOrthMatrix = glm::mat4(1.0f);
 
-	//orthogonalize();
-	//updateViewMatrix();
+	orthogonalize();
+	updateViewMatrix();
 }
 
 Camera::Camera(const glm::vec3 &eye, const glm::vec3& target, const glm::vec3& up) {
@@ -36,8 +37,9 @@ Camera::Camera(const glm::vec3 &eye, const glm::vec3& target, const glm::vec3& u
 	WORLD_ZAXIS = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	m_accumPitchDegrees = 0.0f;
-	m_rotationSpeed = 0.1f;
-	m_movingSpeed = 5.0f;
+	m_accumYawDegrees = 0.0f;
+	m_rotationSpeed = 1.0f;
+	m_movingSpeed = 1.0f;
 	m_offsetDistance = 0.0f;
 
 	m_persMatrix = glm::mat4(1.0f);
@@ -102,7 +104,7 @@ void Camera::orthographic(float left, float right, float bottom, float top, floa
 void Camera::lookAt(const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up){
 	m_eye = eye;
 	m_target = target;
-	//m_offsetDistance = (m_target - m_eye).length();
+	m_offsetDistance = (m_target - m_eye).length();
 
 	m_zAxis = glm::normalize(m_eye - target);
 	m_xAxis = glm::normalize(glm::cross(up, m_zAxis));
@@ -167,6 +169,85 @@ void Camera::updateViewMatrix() {
 	m_invViewMatrix[3][3] = 1.0f;
 }
 
+void Camera::rotate(float yaw, float pitch) {
+	rotateFirstPerson(yaw * m_rotationSpeed, pitch * m_rotationSpeed);
+	orthogonalize();
+	updateViewMatrix();
+}
+
+void Camera::rotateFirstPerson(float yaw, float pitch){
+
+	m_accumPitchDegrees += pitch;
+	m_accumYawDegrees += yaw;
+	
+	if (m_accumPitchDegrees > 90.0f){
+		pitch = 90.0f - (m_accumPitchDegrees - pitch);
+		m_accumPitchDegrees = 90.0f;
+	}
+
+	if (m_accumPitchDegrees < -90.0f){
+		pitch = -90.0f - (m_accumPitchDegrees - pitch);
+		m_accumPitchDegrees = -90.0f;
+	}
+	
+	glm::mat4 rotMtx;
+
+	// Rotate camera's existing x and z axes about the world y axis.
+	if (yaw != 0.0f){
+		rotMtx = glm::rotate(rotMtx, yaw, WORLD_YAXIS);
+		m_xAxis = rotMtx * glm::vec4(m_xAxis, 0.0f);
+		m_zAxis = rotMtx * glm::vec4(m_zAxis, 0.0f);
+	}
+
+	// Rotate camera's existing y and z axes about its existing x axis.
+	if (pitch != 0.0f){
+		//rotMtx.rotate(m_xAxis, pitch);
+		rotMtx = glm::mat4(1.0f);
+		rotMtx = glm::rotate(rotMtx, pitch, m_xAxis);
+		m_yAxis = rotMtx * glm::vec4(m_yAxis, 0.0f);
+		m_zAxis = rotMtx * glm::vec4(m_zAxis, 0.0f);
+	}
+}
+
+void Camera::orthogonalize() {
+
+    m_zAxis = glm::normalize(m_zAxis);
+    m_yAxis = glm::normalize(glm::cross(m_zAxis, m_xAxis));
+	m_xAxis = glm::normalize(glm::cross(m_yAxis, m_zAxis));
+
+	m_viewDir = -m_zAxis;
+
+	m_viewMatrix[0][0] = m_xAxis[0];
+	m_viewMatrix[0][1] = m_yAxis[0];
+	m_viewMatrix[0][2] = m_zAxis[0];
+	m_viewMatrix[0][3] = 0.0f;
+
+	m_viewMatrix[1][0] = m_xAxis[1];
+	m_viewMatrix[1][1] = m_yAxis[1];
+	m_viewMatrix[1][2] = m_zAxis[1];
+	m_viewMatrix[1][3] = 0.0f;
+
+	m_viewMatrix[2][0] = m_xAxis[2];
+	m_viewMatrix[2][1] = m_yAxis[2];
+	m_viewMatrix[2][2] = m_zAxis[2];
+	m_viewMatrix[2][3] = 0.0f;
+
+	m_invViewMatrix[0][0] = m_xAxis[0];
+	m_invViewMatrix[0][1] = m_xAxis[1];
+	m_invViewMatrix[0][2] = m_xAxis[2];
+	m_invViewMatrix[0][3] = 0.0f;
+
+	m_invViewMatrix[1][0] = m_yAxis[0];
+	m_invViewMatrix[1][1] = m_yAxis[1];
+	m_invViewMatrix[1][2] = m_yAxis[2];
+	m_invViewMatrix[1][3] = 0.0f;
+
+	m_invViewMatrix[2][0] = m_zAxis[0];
+	m_invViewMatrix[2][1] = m_zAxis[1];
+	m_invViewMatrix[2][2] = m_zAxis[2];
+	m_invViewMatrix[2][3] = 0.0f;
+}
+
 void Camera::move(const glm::vec3& direction) {
 	m_eye += m_xAxis * direction[0] * m_movingSpeed;
 	m_eye += WORLD_YAXIS * direction[1] * m_movingSpeed;
@@ -182,6 +263,14 @@ void Camera::setPosition(float x, float y, float z){
 void Camera::setPosition(const glm::vec3& position){
     m_eye = position;
     updateViewMatrix();
+}
+
+void Camera::setRotationSpeed(float rotationSpeed){
+	m_rotationSpeed = rotationSpeed;
+}
+
+void Camera::setMovingSpeed(float movingSpeed){
+	m_movingSpeed = movingSpeed;
 }
 
 const glm::mat4& Camera::getPerspectiveMatrix() const{

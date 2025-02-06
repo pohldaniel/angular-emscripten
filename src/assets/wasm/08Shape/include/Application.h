@@ -15,6 +15,8 @@ public:
 	static int Height;
 	static double Time;
     static GLFWwindow* Window;
+    static StateMachine* Machine;
+
 
 private:
 
@@ -28,6 +30,4 @@ private:
 	float& dt;
 
 	double last;
-	 
-	static StateMachine* Machine;
 };

@@ -17,10 +17,15 @@ public:
 	void update() override;
 	void render() override;
 	//void resize(int deltaW, int deltaH) override;
+
+	void OnMouseMotion(const Event::MouseMoveEvent& event) override;
+	void OnMouseButtonDown(const Event::MouseButtonEvent& event) override;
+	void OnMouseButtonUp(const Event::MouseButtonEvent& event) override;
 	
 private:
 
 	void renderUi();
+    void applyTransformation(const TrackBall& arc);
 
 	bool m_initUi = true;
 	bool m_drawUi = true;
@@ -30,4 +35,6 @@ private:
 	Shape m_sphere;
 	Texture m_grid;
 	Camera m_camera;
+	TrackBall m_trackball;
+	glm::mat4 m_transform;
 };

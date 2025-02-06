@@ -18,7 +18,9 @@ ShapeState::ShapeState(StateMachine& machine) : State(machine, States::SHAPE) {
   glClearDepth(1.0f);
 
   m_camera.perspective(45.0f, static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 1000.0f);
-  m_camera.lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0, 1.0, 0.0));
+  m_camera.lookAt(glm::vec3(0.0f, 0.0f, 15.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0, 1.0, 0.0));
+  m_camera.setRotationSpeed(0.01f);
+  m_camera.setMovingSpeed(5.0f);
 
   m_sphere.buildSphere(5.0f, glm::vec3(0.0f, 0.0f, 0.0f), 49, 49, true, false, false);
   m_sphere.markForDelete();
@@ -26,6 +28,8 @@ ShapeState::ShapeState(StateMachine& machine) : State(machine, States::SHAPE) {
   m_grid.loadFromFile("res/textures/grid512.png", true);
 
   Mouse::instance().attach(Application::Window, false, false, false);
+
+  m_trackball.reshape(Application::Width, Application::Height);
 }
 
 ShapeState::~ShapeState() {
@@ -79,9 +83,19 @@ void ShapeState::update() {
 		dy = mouse.yDelta();
 	}
 
-  if (move) {
-		m_camera.move(direction * m_dt);
+  if (move || dx != 0.0f || dy != 0.0f) {
+		if (dx || dy) {
+			m_camera.rotate(dx, dy);
+
+		}
+
+		if (move) {
+			m_camera.move(direction * m_dt);
+		}
 	}
+
+  m_trackball.idle();
+	applyTransformation(m_trackball);
 }
 
 void ShapeState::render() {
@@ -91,7 +105,7 @@ void ShapeState::render() {
   shader->use();
   shader->loadMatrix("u_projection", m_camera.getPerspectiveMatrix());
   shader->loadMatrix("u_view", m_camera.getViewMatrix());
-  shader->loadMatrix("u_model", glm::mat4(1.0f));
+  shader->loadMatrix("u_model", m_transform);
   shader->loadVector("u_color", glm::vec4(1.0f));
  
   m_sphere.drawRaw();
@@ -100,6 +114,29 @@ void ShapeState::render() {
 
   if (m_drawUi)
 		renderUi();
+}
+
+void ShapeState::OnMouseButtonDown(const Event::MouseButtonEvent& event) {
+	if (event.button == 1u) {
+		m_trackball.mouse(TrackBall::Button::ELeftButton, TrackBall::Modifier::ENoModifier, true, event.x, event.y);
+		applyTransformation(m_trackball);
+	}
+}
+
+void ShapeState::OnMouseButtonUp(const Event::MouseButtonEvent& event) {
+	if (event.button == 1u) {
+		m_trackball.mouse(TrackBall::Button::ELeftButton, TrackBall::Modifier::ENoModifier, false, event.x, event.y);
+		applyTransformation(m_trackball);
+	} 
+}
+
+void ShapeState::OnMouseMotion(const Event::MouseMoveEvent& event) {
+  m_trackball.motion(event.x, event.y);
+	applyTransformation(m_trackball);
+}
+
+void ShapeState::applyTransformation(const TrackBall& arc) {
+  m_transform = arc.getTransform();
 }
 
 void ShapeState::renderUi() {

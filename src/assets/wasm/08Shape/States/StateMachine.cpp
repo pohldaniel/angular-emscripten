@@ -58,3 +58,15 @@ State::~State() {
 States State::getCurrentState() {
 	return m_currentState;
 }
+
+void State::OnMouseMotion(const Event::MouseMoveEvent& event){
+
+}
+
+void State::OnMouseButtonDown(const Event::MouseButtonEvent& event){
+
+}
+
+void State::OnMouseButtonUp(const Event::MouseButtonEvent& event){
+
+}

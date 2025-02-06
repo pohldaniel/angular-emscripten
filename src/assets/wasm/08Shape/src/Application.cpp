@@ -7,6 +7,7 @@
 #include <States/ShapeState.h>
 #include "Mouse.h"
 #include "Application.h"
+#include "Event.h"
 
 GLFWwindow* Application::Window = nullptr;
 StateMachine* Application::Machine = nullptr;
@@ -14,6 +15,10 @@ StateMachine* Application::Machine = nullptr;
 int Application::Width;
 int Application::Height;
 double Application::Time;
+
+void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos);
 
 void Application::MessageLopp(void *arg) {
 	Application* application  = reinterpret_cast<Application*>(arg);
@@ -32,6 +37,11 @@ Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
 	initOpenGL();
     initImGUI();
     initStates();
+
+    glfwSetWindowUserPointer(Window, this);
+    glfwSetKeyCallback(Window, glfwKeyCallback);
+    glfwSetMouseButtonCallback(Window, glfwMouseButtonCallback);
+    glfwSetCursorPosCallback(Window, glfwMouseMoveCallback);
 }
 
 Application::~Application() {
@@ -113,4 +123,38 @@ void Application::messageLopp(){
 void Application::initStates(){
     Machine = new StateMachine(dt, fdt);
     Machine->addStateAtTop(new ShapeState(*Machine));
+}
+
+void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+  //Application* instance = (Application *) glfwGetWindowUserPointer(window);
+  //instance->OnKey(key, scancode, action, mods);
+
+  //Machine->getStates().top()->
+}
+
+void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    
+    Event event;
+    event.type = Event::MOUSEBUTTONDOWN;
+    event.data.mouseButton.x = static_cast<int>(xpos);
+    event.data.mouseButton.y = static_cast<int>(ypos);
+    event.data.mouseButton.button = (button == GLFW_MOUSE_BUTTON_RIGHT) ? Event::MouseButtonEvent::MouseButton::BUTTON_RIGHT : Event::MouseButtonEvent::MouseButton::BUTTON_LEFT;
+
+    if (action == GLFW_PRESS)
+        Application::Machine->getStates().top()->OnMouseButtonDown(event.data.mouseButton);
+
+    if(action == GLFW_RELEASE)
+        Application::Machine->getStates().top()->OnMouseButtonUp(event.data.mouseButton);
+}
+
+void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos){
+    Event event;
+    event.type = Event::MOUSEMOTION;
+    event.data.mouseMove.x = static_cast<int>(xpos);
+    event.data.mouseMove.y = static_cast<int>(ypos);
+    //event.data.mouseMove.button = wParam & MK_RBUTTON ? Event::MouseMoveEvent::MouseButton::BUTTON_RIGHT : wParam & MK_LBUTTON ? Event::MouseMoveEvent::MouseButton::BUTTON_LEFT : Event::MouseMoveEvent::MouseButton::NONE;
+    
+    Application::Machine->getStates().top()->OnMouseMotion(event.data.mouseMove);
 }

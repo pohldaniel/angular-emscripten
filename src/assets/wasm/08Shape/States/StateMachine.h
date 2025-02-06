@@ -1,6 +1,7 @@
 #pragma once
 
 #include <interfaces/IStateMachine.h>
+#include "Event.h"
 
 enum States {
 	SHAPE
@@ -35,6 +36,10 @@ public:
 	virtual ~State();
 
 	States getCurrentState();
+
+	virtual void OnMouseMotion(const Event::MouseMoveEvent& event);
+	virtual void OnMouseButtonDown(const Event::MouseButtonEvent& event);
+	virtual void OnMouseButtonUp(const Event::MouseButtonEvent& event);
 
 protected:
 
