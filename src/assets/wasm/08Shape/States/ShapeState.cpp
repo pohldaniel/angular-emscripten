@@ -186,7 +186,7 @@ void ShapeState::renderUi() {
     ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
             1000.0/static_cast<double>(ImGui::GetIO().Framerate), static_cast<double>(ImGui::GetIO().Framerate));
-    ImGui::Checkbox("Rotate", &m_rotate);
+    ImGui::Checkbox("Check", &m_checked);
     ImGui::End();
 
     ImGui::Render();

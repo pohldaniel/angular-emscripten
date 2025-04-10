@@ -31,7 +31,7 @@ private:
 
 	bool m_initUi = true;
 	bool m_drawUi = true;
-	bool m_rotate = false;
+	bool m_checked = false;
 
     Shader* shader;
 	Shape m_sphere;
