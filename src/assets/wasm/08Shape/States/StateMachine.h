@@ -40,6 +40,8 @@ public:
 	virtual void OnMouseMotion(const Event::MouseMoveEvent& event);
 	virtual void OnMouseButtonDown(const Event::MouseButtonEvent& event);
 	virtual void OnMouseButtonUp(const Event::MouseButtonEvent& event);
+    virtual void OnKeyDown(const Event::KeyboardEvent& event);
+	virtual void OnKeyUp(const Event::KeyboardEvent& event);
 
 protected:
 

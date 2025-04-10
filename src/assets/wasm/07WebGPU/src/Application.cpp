@@ -76,7 +76,6 @@ Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
 }
 
 Application::~Application() {
-  
   glfwDestroyWindow(Window);
   glfwTerminate();
 }
@@ -126,7 +125,7 @@ void Application::initWebGPU(){
 	requiredLimits.limits.maxSampledTexturesPerShaderStage = 3;
 	requiredLimits.limits.maxSamplersPerShaderStage = 1;
 	requiredLimits.limits.maxVertexBufferArrayStride = 68;
-	requiredLimits.limits.maxInterStageShaderComponents = 17;
+	requiredLimits.limits.maxInterStageShaderComponents = WGPU_LIMIT_U32_UNDEFINED;
 	requiredLimits.limits.maxStorageBuffersPerShaderStage = 2;
 	requiredLimits.limits.maxComputeWorkgroupSizeX = 8;
 	requiredLimits.limits.maxComputeWorkgroupSizeY = 8;

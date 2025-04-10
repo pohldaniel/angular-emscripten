@@ -21,7 +21,9 @@ public:
 	void OnMouseMotion(const Event::MouseMoveEvent& event) override;
 	void OnMouseButtonDown(const Event::MouseButtonEvent& event) override;
 	void OnMouseButtonUp(const Event::MouseButtonEvent& event) override;
-	
+	void OnKeyDown(const Event::KeyboardEvent& event) override;
+	void OnKeyUp(const Event::KeyboardEvent& event) override;
+
 private:
 
 	void renderUi();

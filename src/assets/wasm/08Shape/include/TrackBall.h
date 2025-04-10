@@ -2,6 +2,7 @@
 #define __TrackBallH__
 
 #include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 class TrackBall {
 
@@ -134,24 +135,25 @@ public:
 		glm::vec3 offset(static_cast<float>(_width) / 2.0f, static_cast<float>(_height) / 2.0f, 0.0f);
 		glm::vec3 a(static_cast<float>(_x - _dx), static_cast<float>(_y + _dy), 0.0f);
 		glm::vec3 b(static_cast<float>(_x), static_cast<float>(_y), 0.0f);
+
 		a -= offset;
 		b -= offset;
 		a /= min;
 		b /= min;
 
-		a[2] = pow(2.0f, 0.5f * a.length());
+		a[2] = pow(2.0f, 0.5f * glm::length(a));
 		a = glm::normalize(a);
-		b[2] = pow(2.0f, 0.5f * b.length());
+		b[2] = pow(2.0f, 0.5f * glm::length(b));
 		b = glm::normalize(b);
 		glm::vec3 axis = glm::cross(a, b);
-		axis = glm::normalize(axis);
-
-		float rad = acos(glm::dot(a, b));
-
-		//original glh version had an invert flag and a parent frame, do we need one?		
-		_incr = glm::angleAxis(glm::radians(rad) * _tbScale, axis);
-		//_incr =  glm::conjugate(_incr);
-
+		
+		if (glm::length2(axis) < glm::epsilon<float>() * glm::epsilon<float>()) {
+			_incr = glm::quat(1.0f, 0.0f, 0.0, 0.0f);
+		}else {
+			axis = glm::normalize(axis);
+			float rad = acos(glm::dot(a, b));
+			_incr = glm::angleAxis(rad * _tbScale, axis);
+		}
 		_r = _incr * _r;
 	}
 
@@ -187,25 +189,12 @@ public:
 	//
 	//////////////////////////////////////////////////////////////////
 	const glm::mat4 getTransform() const{
-		//m_transform.reset();
-		//m_transform.rotate(_r, _centroid);
-		//m_transform.translate(_pan);
-		//m_transform.translate(_dolly);
-		//return m_transform.getTransformationMatrix();
-        /*glm::mat4 transform = glm::mat(1.0);
-
-        transform = glm::rotate(transform, _r);
+		glm::mat4 transform = glm::translate(glm::mat4(1.0), _dolly);
 		transform = glm::translate(transform, _pan);
-		transform = glm::translate(transform, _dolly);
-
-		return transform;*/
-		glm::mat4 translate1 = glm::translate(glm::mat4(1.0), -_centroid);
-        glm::mat4 rotate = glm::mat4_cast(_r);
-		glm::mat4 translate2 = glm::translate(glm::mat4(1.0), _centroid);
-        glm::mat4 translate3 = glm::translate(glm::mat4(1.0), _pan);
-		glm::mat4 translate4 = glm::translate(glm::mat4(1.0), _dolly);
-
-		return translate1 * rotate * translate2 * translate3 * translate4;
+		transform = glm::translate(transform, _centroid);
+		transform *= glm::mat4_cast(_r);
+		transform = glm::translate(transform, -_centroid);
+		return transform;
 	}
 
 

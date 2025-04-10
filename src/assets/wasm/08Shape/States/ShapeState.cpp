@@ -135,6 +135,14 @@ void ShapeState::OnMouseMotion(const Event::MouseMoveEvent& event) {
 	applyTransformation(m_trackball);
 }
 
+void ShapeState::OnKeyDown(const Event::KeyboardEvent& event){
+
+}
+
+void ShapeState::OnKeyUp(const Event::KeyboardEvent& event) {
+
+}
+
 void ShapeState::applyTransformation(const TrackBall& arc) {
   m_transform = arc.getTransform();
 }
@@ -176,6 +184,8 @@ void ShapeState::renderUi() {
 
     // render widgets
     ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+            1000.0/static_cast<double>(ImGui::GetIO().Framerate), static_cast<double>(ImGui::GetIO().Framerate));
     ImGui::Checkbox("Rotate", &m_rotate);
     ImGui::End();
 

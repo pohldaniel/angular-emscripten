@@ -42,6 +42,7 @@ Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
     glfwSetKeyCallback(Window, glfwKeyCallback);
     glfwSetMouseButtonCallback(Window, glfwMouseButtonCallback);
     glfwSetCursorPosCallback(Window, glfwMouseMoveCallback);
+    ImGui_ImplGlfw_InstallEmscriptenCallbacks(Window, "#canvas");
 }
 
 Application::~Application() {
@@ -104,7 +105,7 @@ void Application::initImGUI() {
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	// Setup Platform/Renderer backends
 	ImGui_ImplGlfw_InitForOther(Window, true);
-    ImGui_ImplGlfw_InstallEmscriptenCallbacks(Window, "#canvas");
+    
     ImGui_ImplOpenGL3_Init("#version 300 es");
 }
 
@@ -126,35 +127,59 @@ void Application::initStates(){
 }
 
 void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-  //Application* instance = (Application *) glfwGetWindowUserPointer(window);
-  //instance->OnKey(key, scancode, action, mods);
+    if(ImGui::GetIO().WantCaptureMouse)
+      ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+    else{
+      Event event;
+      event.data.keyboard.keyCode = static_cast<unsigned int>(scancode);
 
-  //Machine->getStates().top()->
+      if (action == GLFW_PRESS){
+        event.type = Event::KEYDOWN;
+        Application::Machine->getStates().top()->OnKeyDown(event.data.keyboard);
+      }
+
+      if(action == GLFW_RELEASE){
+        event.type = Event::KEYUP;
+        Application::Machine->getStates().top()->OnKeyUp(event.data.keyboard);
+      }
+    }
 }
 
-void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
-    double xpos, ypos;
-    glfwGetCursorPos(window, &xpos, &ypos);
+void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods) { 
+    if(ImGui::GetIO().WantCaptureMouse)
+        ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+    else{
+      double xpos, ypos;
+      glfwGetCursorPos(window, &xpos, &ypos);
     
-    Event event;
-    event.type = Event::MOUSEBUTTONDOWN;
-    event.data.mouseButton.x = static_cast<int>(xpos);
-    event.data.mouseButton.y = static_cast<int>(ypos);
-    event.data.mouseButton.button = (button == GLFW_MOUSE_BUTTON_RIGHT) ? Event::MouseButtonEvent::MouseButton::BUTTON_RIGHT : Event::MouseButtonEvent::MouseButton::BUTTON_LEFT;
+      Event event; 
+      event.data.mouseButton.x = static_cast<int>(xpos);
+      event.data.mouseButton.y = static_cast<int>(ypos);
+      event.data.mouseButton.button = (button == GLFW_MOUSE_BUTTON_RIGHT) ? Event::MouseButtonEvent::MouseButton::BUTTON_RIGHT : Event::MouseButtonEvent::MouseButton::BUTTON_LEFT;
 
-    if (action == GLFW_PRESS)
+      if (action == GLFW_PRESS){
+        event.type = Event::MOUSEBUTTONDOWN;
         Application::Machine->getStates().top()->OnMouseButtonDown(event.data.mouseButton);
+      }
 
-    if(action == GLFW_RELEASE)
+      if(action == GLFW_RELEASE){
+        event.type = Event::MOUSEBUTTONUP;
         Application::Machine->getStates().top()->OnMouseButtonUp(event.data.mouseButton);
+      }
+    }
 }
 
 void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos){
-    Event event;
-    event.type = Event::MOUSEMOTION;
-    event.data.mouseMove.x = static_cast<int>(xpos);
-    event.data.mouseMove.y = static_cast<int>(ypos);
-    //event.data.mouseMove.button = wParam & MK_RBUTTON ? Event::MouseMoveEvent::MouseButton::BUTTON_RIGHT : wParam & MK_LBUTTON ? Event::MouseMoveEvent::MouseButton::BUTTON_LEFT : Event::MouseMoveEvent::MouseButton::NONE;
+   
+    if(ImGui::GetIO().WantCaptureMouse)
+      ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+    else{
+      Event event;
+      event.type = Event::MOUSEMOTION;
+      event.data.mouseMove.x = static_cast<int>(xpos);
+      event.data.mouseMove.y = static_cast<int>(ypos);
+      //event.data.mouseMove.button = (button == GLFW_MOUSE_BUTTON_RIGHT) ? Event::MouseButtonEvent::MouseButton::BUTTON_RIGHT : Event::MouseButtonEvent::MouseButton::BUTTON_LEFT;
     
-    Application::Machine->getStates().top()->OnMouseMotion(event.data.mouseMove);
+      Application::Machine->getStates().top()->OnMouseMotion(event.data.mouseMove);
+    }
 }

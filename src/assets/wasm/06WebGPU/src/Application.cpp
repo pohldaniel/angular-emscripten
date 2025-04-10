@@ -132,7 +132,7 @@ void Application::initWebGPU(){
 	requiredLimits.limits.maxVertexBufferArrayStride = sizeof(VertexAttributes);
 	requiredLimits.limits.minStorageBufferOffsetAlignment = supportedLimits.limits.minStorageBufferOffsetAlignment;
 	requiredLimits.limits.minUniformBufferOffsetAlignment = supportedLimits.limits.minUniformBufferOffsetAlignment;
-	requiredLimits.limits.maxInterStageShaderComponents = 8;
+	requiredLimits.limits.maxInterStageShaderComponents = WGPU_LIMIT_U32_UNDEFINED;
 	requiredLimits.limits.maxBindGroups = 2;
 	//                                    ^ This was a 1
 	requiredLimits.limits.maxUniformBuffersPerShaderStage = 1;

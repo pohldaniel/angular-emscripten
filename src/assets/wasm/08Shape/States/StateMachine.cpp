@@ -70,3 +70,11 @@ void State::OnMouseButtonDown(const Event::MouseButtonEvent& event){
 void State::OnMouseButtonUp(const Event::MouseButtonEvent& event){
 
 }
+
+void State::OnKeyDown(const Event::KeyboardEvent& event){
+
+}
+
+void State::OnKeyUp(const Event::KeyboardEvent& event){
+	
+}
