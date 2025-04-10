@@ -42,7 +42,6 @@ Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
     glfwSetKeyCallback(Window, glfwKeyCallback);
     glfwSetMouseButtonCallback(Window, glfwMouseButtonCallback);
     glfwSetCursorPosCallback(Window, glfwMouseMoveCallback);
-    ImGui_ImplGlfw_InstallEmscriptenCallbacks(Window, "#canvas");
 }
 
 Application::~Application() {
@@ -105,7 +104,7 @@ void Application::initImGUI() {
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	// Setup Platform/Renderer backends
 	ImGui_ImplGlfw_InitForOther(Window, true);
-    
+    ImGui_ImplGlfw_InstallEmscriptenCallbacks(Window, "#canvas");
     ImGui_ImplOpenGL3_Init("#version 300 es");
 }
 
