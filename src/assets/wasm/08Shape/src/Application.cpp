@@ -127,9 +127,9 @@ void Application::initStates(){
 }
 
 void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if(ImGui::GetIO().WantCaptureMouse)
+    //if(ImGui::GetIO().WantCaptureMouse)
       ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
-    else{
+    //else{
       Event event;
       event.data.keyboard.keyCode = static_cast<unsigned int>(scancode);
 
@@ -142,13 +142,13 @@ void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int 
         event.type = Event::KEYUP;
         Application::Machine->getStates().top()->OnKeyUp(event.data.keyboard);
       }
-    }
+    //}
 }
 
 void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods) { 
-    if(ImGui::GetIO().WantCaptureMouse)
+    //if(ImGui::GetIO().WantCaptureMouse)
         ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-    else{
+    //else{
       double xpos, ypos;
       glfwGetCursorPos(window, &xpos, &ypos);
     
@@ -166,14 +166,14 @@ void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mod
         event.type = Event::MOUSEBUTTONUP;
         Application::Machine->getStates().top()->OnMouseButtonUp(event.data.mouseButton);
       }
-    }
+    //}
 }
 
 void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos){
    
-    if(ImGui::GetIO().WantCaptureMouse)
+    //if(ImGui::GetIO().WantCaptureMouse)
       ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
-    else{
+    //else{
       Event event;
       event.type = Event::MOUSEMOTION;
       event.data.mouseMove.x = static_cast<int>(xpos);
@@ -181,5 +181,5 @@ void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos){
       //event.data.mouseMove.button = (button == GLFW_MOUSE_BUTTON_RIGHT) ? Event::MouseButtonEvent::MouseButton::BUTTON_RIGHT : Event::MouseButtonEvent::MouseButton::BUTTON_LEFT;
     
       Application::Machine->getStates().top()->OnMouseMotion(event.data.mouseMove);
-    }
+    //}
 }
