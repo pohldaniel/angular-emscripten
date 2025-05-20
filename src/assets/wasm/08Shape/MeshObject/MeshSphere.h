@@ -16,9 +16,7 @@ public:
 	~MeshSphere();
 
 	void drawRaw();
-	void drawRawInstanced();
-	void createInstancesStatic(const std::vector<glm::mat4>& modelMTX);
-	void addInstance(const glm::mat4& modelMTX);
+
 	void setPrecision(int uResolution, int vResolution);
 	int getNumberOfTriangles();
 	std::vector<glm::vec3>& getPositions();
@@ -43,7 +41,6 @@ private:
 	unsigned int m_vbo[5];
 	unsigned int m_drawCount;
 	unsigned int m_vboInstances = 0;
-	unsigned int m_instanceCount = 0;
 
 	std::vector<unsigned int> m_indexBuffer;
 	std::vector<glm::vec3> m_positions;
@@ -51,10 +48,6 @@ private:
 	std::vector<glm::vec3> m_normals;
 	std::vector<glm::vec3> m_tangents;
 	std::vector<glm::vec3> m_bitangents;
-	std::vector<glm::mat4> m_instances;
-
-	glm::vec3 m_min;
-	glm::vec3 m_max;
 
 	void createBuffer();
 };

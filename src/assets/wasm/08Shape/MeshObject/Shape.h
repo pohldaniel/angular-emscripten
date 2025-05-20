@@ -21,11 +21,10 @@ public:
 	Shape& operator=(Shape&& rhs);
 	~Shape();
 
-	void buildSphere(float radius = 1.0f, const glm::vec3& position = glm::vec3(0.0f, 0.0f, 0.0f), int uResolution = 49, int vResolution = 49, bool generateTexels = true, bool generateNormals = true, bool generateTangents = false);
-	
+	void buildSphere(float radius = 1.0f, const glm::vec3& position = glm::vec3(0.0f, 0.0f, 0.0f), int uResolution = 49, int vResolution = 49, bool generateTexels = true, bool generateNormals = true, bool generateTangents = false);	
+	void buildTorus(float radius = 0.5f, float tubeRadius = 0.25f, const glm::vec3& position = glm::vec3(0.0f, 0.0f, 0.0f), int uResolution = 49, int vResolution = 49, bool generateTexels = true, bool generateNormals = true, bool generateTangents = false);
+	void buildTorusKnot(float radius = 1.0f, float tubeRadius = 0.4f, int p =2, int q =3, const glm::vec3& position = glm::vec3(0.0f, 0.0f, 0.0f), int uResolution = 100, int vResolution = 16, bool generateTexels = true, bool generateNormals = true, bool generateTangents = false);
 	void drawRaw() const;
-	void drawRawInstanced() const;
-	void drawRawInstanced(unsigned int instanceCount) const;
 
 	unsigned int getNumberOfTriangles() const;
 	const std::vector<glm::vec3>& getPositions() const;

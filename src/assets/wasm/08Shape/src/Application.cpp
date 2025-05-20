@@ -8,6 +8,7 @@
 #include "Mouse.h"
 #include "Application.h"
 #include "Event.h"
+#include "Framebuffer.h"
 
 GLFWwindow* Application::Window = nullptr;
 StateMachine* Application::Machine = nullptr;
@@ -42,6 +43,8 @@ Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
     glfwSetKeyCallback(Window, glfwKeyCallback);
     glfwSetMouseButtonCallback(Window, glfwMouseButtonCallback);
     glfwSetCursorPosCallback(Window, glfwMouseMoveCallback);
+
+    Framebuffer::SetDefaultSize(Application::Width, Application::Height);
 }
 
 Application::~Application() {

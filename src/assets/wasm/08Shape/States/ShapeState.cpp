@@ -11,25 +11,37 @@
 #include "ShapeState.h"
 #include "Application.h"
 
-ShapeState::ShapeState(StateMachine& machine) : State(machine, States::SHAPE) {
+ShapeState::ShapeState(StateMachine& machine) : State(machine, States::SHAPE), m_currentShape(m_torus) {
 
-  shader = new Shader("res/shader/shader.vert", "res/shader/shader.frag");
+  shaderTexure = new Shader("res/shader/shader.vert", "res/shader/texture.frag");
+  shaderNormal = new Shader("res/shader/shader.vert", "res/shader/normal.frag");
+  //shaderGeometry = new Shader("res/shader/shader.vert", "res/shader/normalGS.frag", "res/shader/normalGS.gem");
+  shaderTangent = new Shader("res/shader/shader.vert", "res/shader/tangent.frag");
+  shaderBitangent = new Shader("res/shader/shader.vert", "res/shader/bitangent.frag");
+
   glClearColor(0.494f, 0.686f, 0.796f, 1.0f);
   glClearDepth(1.0f);
 
   m_camera.perspective(45.0f, static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 1000.0f);
-  m_camera.lookAt(glm::vec3(0.0f, 0.0f, 15.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0, 1.0, 0.0));
+  m_camera.lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0, 1.0, 0.0));
   m_camera.setRotationSpeed(0.01f);
   m_camera.setMovingSpeed(5.0f);
 
-  m_sphere.buildSphere(5.0f, glm::vec3(0.0f, 0.0f, 0.0f), 49, 49, true, false, false);
+  m_sphere.buildSphere(1.0f, glm::vec3(0.0f, 0.0f, 0.0f), 49, 49, true, true, true);
   m_sphere.markForDelete();
+
+  m_torus.buildTorus(0.5f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f), 49, 49, true, true, true);
+  m_torus.markForDelete();
+
+  m_torusknot.buildTorusKnot(1.0f, 0.25f, 2, 3, glm::vec3(0.0f, 0.0f, 0.0f), 100, 16, true, true, true);
+  m_torusknot.markForDelete();
 
   m_grid.loadFromFile("res/textures/grid512.png", true);
 
   Mouse::instance().attach(Application::Window, false, false, false);
 
   m_trackball.reshape(Application::Width, Application::Height);
+  m_currentShader = shaderTexure;
 }
 
 ShapeState::~ShapeState() {
@@ -102,15 +114,15 @@ void ShapeState::render() {
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   m_grid.bind();
-  shader->use();
-  shader->loadMatrix("u_projection", m_camera.getPerspectiveMatrix());
-  shader->loadMatrix("u_view", m_camera.getViewMatrix());
-  shader->loadMatrix("u_model", m_transform);
-  shader->loadVector("u_color", glm::vec4(1.0f));
+  m_currentShader->use();
+  m_currentShader->loadMatrix("u_projection", m_camera.getPerspectiveMatrix());
+  m_currentShader->loadMatrix("u_view", m_camera.getViewMatrix());
+  m_currentShader->loadMatrix("u_model", m_transform);
+  m_currentShader->loadMatrix("u_normal", glm::inverseTranspose(m_transform));
  
-  m_sphere.drawRaw();
+  m_currentShape.get().drawRaw();
 
-  shader->unuse();
+  m_currentShader->unuse();
 
   if (m_drawUi)
 		renderUi();
@@ -186,7 +198,45 @@ void ShapeState::renderUi() {
     ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
             1000.0/static_cast<double>(ImGui::GetIO().Framerate), static_cast<double>(ImGui::GetIO().Framerate));
-    ImGui::Checkbox("Check", &m_checked);
+
+    int currentModel = model;
+	  if (ImGui::Combo("Model", &currentModel, "Torus\0Sphere\0Torus Knot\0\0")) {
+		  model = static_cast<Model>(currentModel);
+		  switch (model) {
+        case Model::TORUS:
+			    m_currentShape = std::ref(m_torus);
+			    break;
+        case Model::SPHERE:
+			    m_currentShape = std::ref(m_sphere);
+			    break;
+        case Model::TORUSKNOT:
+			    m_currentShape = std::ref(m_torusknot);
+			    break;
+      }
+    }
+
+    int currentRenderMode = renderMode;
+	  if (ImGui::Combo("Render Mode", &currentRenderMode, "Texture\0Normal\0Tangent\0Bitangent\0Geometry\0\0")) {
+		  renderMode = static_cast<RenderMode>(currentRenderMode);
+		  switch (renderMode) {
+		    case RenderMode::TEXTURE:
+			    m_currentShader = shaderTexure;
+			    break;
+		    case RenderMode::NORMAL:
+			    m_currentShader = shaderNormal;
+			    break;
+        case RenderMode::GEOMETRY:
+			    //m_currentShader = shaderGeometry;
+			    break;
+        case RenderMode::TANGENT:
+			    m_currentShader = shaderTangent;
+			    break;
+        case RenderMode::BITANGENT:
+			    m_currentShader = shaderBitangent;
+			    break;
+		  }
+	  }
+
     ImGui::End();
 
     ImGui::Render();

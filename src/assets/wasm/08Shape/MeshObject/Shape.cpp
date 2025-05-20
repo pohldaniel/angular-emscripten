@@ -1,5 +1,7 @@
 #include "Shape.h"
 #include "MeshSphere.h"
+#include "MeshTorus.h"
+#include "MeshTorusKnot.h"
 
 Shape::Shape() : m_markForDelete(false) { 
 
@@ -69,6 +71,16 @@ Shape& Shape::operator=(Shape&& rhs) {
 
 void Shape::buildSphere(float radius, const glm::vec3& position, int uResolution, int vResolution, bool generateTexels, bool generateNormals, bool generateTangents) {
 	MeshSphere::BuildMesh(radius, position, uResolution, vResolution, generateTexels, generateNormals, generateTangents, m_positions, m_texels, m_normals, m_indexBuffer, m_tangents, m_bitangents);
+	createBuffer();
+}
+
+void Shape::buildTorus(float radius, float tubeRadius, const glm::vec3& position, int uResolution, int vResolution, bool generateTexels, bool generateNormals, bool generateTangents) {
+	MeshTorus::BuildMesh(radius, tubeRadius, position, uResolution, vResolution, generateTexels, generateNormals, generateTangents, m_positions, m_texels, m_normals, m_indexBuffer, m_tangents, m_bitangents);
+	createBuffer();
+}
+
+void Shape::buildTorusKnot(float radius, float tubeRadius, int p, int q, const glm::vec3& position, int uResolution, int vResolution, bool generateTexels, bool generateNormals, bool generateTangents) {
+	MeshTorusKnot::BuildMesh(radius, tubeRadius, p, q, position, uResolution, vResolution, generateTexels, generateNormals, generateTangents, m_positions, m_texels, m_normals, m_indexBuffer, m_tangents, m_bitangents);
 	createBuffer();
 }
 

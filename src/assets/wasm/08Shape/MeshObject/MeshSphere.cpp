@@ -17,11 +17,6 @@ MeshSphere::MeshSphere(const glm::vec3& position, float radius, bool generateTex
 
 	m_numBuffers = 1 + generateTexels + generateNormals + generateTangents * 2;
 
-
-
-	m_min = glm::vec3(FLT_MAX, FLT_MAX, FLT_MAX);
-	m_max = glm::vec3(FLT_MIN, FLT_MIN, FLT_MIN);
-
 	BuildMesh(m_radius, m_position, m_uResolution, m_vResolution, m_generateTexels, m_generateNormals, m_generateTangents, m_positions, m_texels, m_normals, m_indexBuffer, m_tangents, m_bitangents);
 	createBuffer();
 }
@@ -194,77 +189,5 @@ void MeshSphere::createBuffer() {
 void MeshSphere::drawRaw() {
 	glBindVertexArray(m_vao);
 	glDrawElements(GL_TRIANGLES, m_drawCount, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-}
-
-void MeshSphere::createInstancesStatic(const std::vector<glm::mat4>& modelMTX) {
-	m_instances.clear();
-	m_instances.shrink_to_fit();
-	m_instances = modelMTX;
-
-	m_instanceCount = m_instances.size();
-
-	glGenBuffers(1, &m_vboInstances);
-
-	glBindVertexArray(m_vao);
-
-	glBindBuffer(GL_ARRAY_BUFFER, m_vboInstances);
-	glBufferData(GL_ARRAY_BUFFER, m_instances.size() * sizeof(float) * 4 * 4, &m_instances[0], GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(5);
-	glEnableVertexAttribArray(6);
-	glEnableVertexAttribArray(7);
-	glEnableVertexAttribArray(8);
-	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4 * 4, (void*)(0));
-	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4 * 4, (void*)(sizeof(float) * 4));
-	glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4 * 4, (void*)(sizeof(float) * 8));
-	glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4 * 4, (void*)(sizeof(float) * 12));
-
-	glVertexAttribDivisor(5, 1);
-	glVertexAttribDivisor(6, 1);
-	glVertexAttribDivisor(7, 1);
-	glVertexAttribDivisor(8, 1);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-	
-}
-
-void MeshSphere::addInstance(const glm::mat4& modelMTX) {
-	m_instances.push_back(modelMTX);
-	m_instanceCount = m_instances.size();
-
-	if (m_vboInstances) {
-		glBindBuffer(GL_ARRAY_BUFFER, m_vboInstances);
-		glBufferData(GL_ARRAY_BUFFER, m_instances.size() * sizeof(float) * 4 * 4, &m_instances[0], GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	} else {
-		glGenBuffers(1, &m_vboInstances);
-		glBindVertexArray(m_vao);
-
-		glBindBuffer(GL_ARRAY_BUFFER, m_vboInstances);
-		glBufferData(GL_ARRAY_BUFFER, m_instances.size() * sizeof(float) * 4 * 4, &m_instances[0], GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(5);
-		glEnableVertexAttribArray(6);
-		glEnableVertexAttribArray(7);
-		glEnableVertexAttribArray(8);
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4 * 4, (void*)(0));
-		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4 * 4, (void*)(sizeof(float) * 4));
-		glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4 * 4, (void*)(sizeof(float) * 8));
-		glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4 * 4, (void*)(sizeof(float) * 12));
-
-		glVertexAttribDivisor(5, 1);
-		glVertexAttribDivisor(6, 1);
-		glVertexAttribDivisor(7, 1);
-		glVertexAttribDivisor(8, 1);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
-		
-	}
-}
-
-void MeshSphere::drawRawInstanced() {
-	glBindVertexArray(m_vao);
-	glDrawElementsInstanced(GL_TRIANGLES, m_drawCount, GL_UNSIGNED_INT, 0, m_instanceCount);
 	glBindVertexArray(0);
 }
