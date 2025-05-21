@@ -19,6 +19,11 @@ ShapeState::ShapeState(StateMachine& machine) : State(machine, States::SHAPE), m
   shaderTangent = new Shader("res/shader/shader.vert", "res/shader/tangent.frag");
   shaderBitangent = new Shader("res/shader/shader.vert", "res/shader/bitangent.frag");
 
+  vertex1 = Shader::LoadShaderProgram(GL_VERTEX_SHADER, "res/shader/gauss.vert");
+  vertex2 = Shader::LoadShaderProgram(GL_VERTEX_SHADER, "res/shader/gauss.vert");
+  recompileShader();
+  object = new Shader("res/shader/object.vert", "res/shader/object.frag");
+
   glClearColor(0.494f, 0.686f, 0.796f, 1.0f);
   glClearDepth(1.0f);
 
@@ -37,11 +42,14 @@ ShapeState::ShapeState(StateMachine& machine) : State(machine, States::SHAPE), m
   m_torusknot.markForDelete();
 
   m_grid.loadFromFile("res/textures/grid512.png", true);
+  m_hdriCross.loadCrossHDRIFromFile("res/textures/grace_new_cross.hdr");
 
   Mouse::instance().attach(Application::Window, false, false, false);
 
   m_trackball.reshape(Application::Width, Application::Height);
   m_currentShader = shaderTexure;
+
+  createBuffers(bufferTokens[currentBuffer], rbTokens[currentBuffer], aaModes[currentMode]);
 }
 
 ShapeState::~ShapeState() {
@@ -216,7 +224,7 @@ void ShapeState::renderUi() {
     }
 
     int currentRenderMode = renderMode;
-	  if (ImGui::Combo("Render Mode", &currentRenderMode, "Texture\0Normal\0Tangent\0Bitangent\0Geometry\0\0")) {
+	  if (ImGui::Combo("Render Mode", &currentRenderMode, "Texture\0Normal\0Tangent\0Bitangent\0Geometry\0Hdr Cross\0Hdr Env\0\0")) {
 		  renderMode = static_cast<RenderMode>(currentRenderMode);
 		  switch (renderMode) {
 		    case RenderMode::TEXTURE:
@@ -241,4 +249,150 @@ void ShapeState::renderUi() {
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void ShapeState::createBuffers(AttachmentTex::AttachmentTex texFormat, AttachmentRB::AttachmentRB rbFormat, aaInfo aaMode){
+  sceneBuffer.cleanup();
+	msaaBuffer.cleanup();
+
+	for (int i = 0; i<DOWNSAMPLE_BUFFERS; i++) {
+		downsampleBuffer[i].cleanup();
+	}
+
+	for (int i = 0; i<BLUR_BUFFERS; i++) {
+		blurBuffer[i].cleanup();
+	}
+
+	sceneBuffer.create(Application::Width, Application::Height);
+	sceneBuffer.attachTexture(texFormat);
+	sceneBuffer.attachRenderbuffer(AttachmentRB::DEPTH24);
+
+	if (aaMode.samples > 0) {
+		// create multisampled fbo
+		msaaBuffer.create(Application::Width, Application::Height);
+		msaaBuffer.attachRenderbuffer(rbFormat, aaMode.samples);
+		msaaBuffer.attachRenderbuffer(AttachmentRB::DEPTH24, aaMode.samples);
+	}
+
+	for (int i = 0; i < BLUR_BUFFERS; i++) {
+		blurBuffer[i].create(Application::Width / 4, Application::Height / 4);
+		blurBuffer[i].attachTexture(texFormat);
+	}
+
+	int w = Application::Width;
+	int h = Application::Height;
+	for (int i = 0; i < DOWNSAMPLE_BUFFERS; i++) {
+		w /= 2;
+		h /= 2;
+		downsampleBuffer[i].create(w, h);
+		downsampleBuffer[i].attachTexture(texFormat);
+	}
+}
+
+void ShapeState::recompileShader() {
+	float *weights;
+	int width;
+	weights = generateGaussianWeights(m_blurWidth, width);
+	generate1DConvolutionFP_filter(blurH, weights, width, false, true, Application::Width / 2, Application::Height / 2);
+	generate1DConvolutionFP_filter(blurV, weights, width, true, true, Application::Width / 2, Application::Height / 2);
+}
+
+// 1d Gaussian distribution, s is standard deviation
+float gaussian(float x, float s) {
+	return expf(-x*x / (2.0f*s*s)) / (s*sqrtf(2.0f * glm::pi<float>()));
+}
+
+// generate array of weights for Gaussian blur
+float* ShapeState::generateGaussianWeights(float s, int &width) {
+	width = (int)floor(3.0f*s) - 1;
+	int size = width * 2 + 1;
+	float *weight = new float[size];
+
+	float sum = 0.0;
+	int x;
+	for (x = 0; x<size; x++) {
+		weight[x] = gaussian((float)x - width, s);
+		sum += weight[x];
+	}
+
+	for (x = 0; x<size; x++) {
+		weight[x] /= sum;
+	}
+	return weight;
+}
+
+float* generateTriangleWeights(int width) {
+	float *weights = new float[width];
+	float sum = 0.0f;
+	for (int i = 0; i<width; i++) {
+		float t = i / (float)(width - 1);
+		weights[i] = 1.0f - abs(t - 0.5f)*2.0f;
+		sum += weights[i];
+	}
+
+	for (int i = 0; i<width; i++) {
+		weights[i] /= sum;
+	}
+	return weights;
+}
+
+void ShapeState::generate1DConvolutionFP_filter(Shader*& shader, float *weights, int width, bool vertical, bool tex2D, int img_width, int img_height) {
+	// calculate new set of weights and offsets
+	int nsamples = 2 * width + 1;
+	int nsamples2 = (int)ceilf(nsamples / 2.0f);
+	float *weights2 = new float[nsamples2];
+	float *offsets = new float[nsamples2];
+
+	for (int i = 0; i<nsamples2; i++) {
+		float a = weights[i * 2];
+		float b;
+		if (i * 2 + 1 > nsamples - 1)
+			b = 0;
+		else
+			b = weights[i * 2 + 1];
+		weights2[i] = a + b;
+		offsets[i] = b / (a + b);
+	}
+
+	std::ostringstream ost;
+	ost << "#version 300 es" << std::endl
+    << "precision mediump float;" << std::endl
+    << "precision mediump int;" << std::endl
+    << "precision mediump sampler2DArray;" << std::endl << std::endl
+		<< "in vec2 vTexCoord;" << std::endl
+		<< "uniform sampler2D TexSampler;" << std::endl
+		<< "out vec4 color;" << std::endl << std::endl
+		<< "void main(){" << std::endl
+		<< "vec3 sum = vec3(0.0,0.0,0.0);" << std::endl
+		<< "\tvec2 texcoord;" << std::endl;
+		for (int i = 0; i < nsamples2; i++) {
+			float x_offset = 0, y_offset = 0;
+			if (vertical) {
+				y_offset = (i * 2) - width + offsets[i];
+			}
+			else {
+				x_offset = (i * 2) - width + offsets[i];
+			}
+			if (tex2D) {
+				x_offset = x_offset / img_width;
+				y_offset = y_offset / img_height;
+			}
+			float weight = weights2[i];
+			ost << "\ttexcoord = vTexCoord + vec2(" << x_offset << ", " << y_offset << ");" << std::endl;
+			ost << "\tsum += texture(TexSampler, texcoord).rgb *" << weight << ";" << std::endl;
+		}
+	ost << "\tcolor = vec4(sum, 1.0);" << std::endl;
+	ost << "}";
+	
+	delete[] weights2;
+	delete[] offsets;
+	
+	if (shader)
+		delete shader;
+
+	shader = new Shader();
+
+	shader->attachShader(vertical ? vertex2 : vertex1);
+	shader->attachShader(Shader::LoadShaderProgram(GL_FRAGMENT_SHADER, ost.str()));
+	shader->linkShaders();
 }

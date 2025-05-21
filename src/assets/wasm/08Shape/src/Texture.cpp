@@ -122,6 +122,121 @@ void Texture::loadFromFileGpu() {
     imageData = nullptr;
 }
 
+void Texture::loadCrossHDRIFromFile(std::string fileName, const bool _flipVertical, unsigned int internalFormat, unsigned int format, int paddingLeft, int paddingRight, int paddingTop, int paddingBottom) {
+	int width, height, numComponents;
+	unsigned char* imageData = reinterpret_cast<unsigned char *>(SOIL_load_image_f(fileName.c_str(), &width, &height, &numComponents, 0));
+	
+	m_internalFormat = GL_RGBA16F;
+	m_format = GL_RGBA;
+	m_type = GL_FLOAT;
+	m_target = GL_TEXTURE_CUBE_MAP;
+
+	if (_flipVertical)
+		flipVertical(imageData, numComponents * sizeof(float) * width, height);
+
+	m_width = width;
+	m_height = height;
+	m_channels = numComponents;
+
+	//pointers to the levels
+	std::vector<unsigned char*> facData;
+
+	//get the source data
+	unsigned char *data = imageData;
+
+	int fWidth = m_width / 3;
+	int fHeight = m_height / 4;
+	int elementSize = 3 * sizeof(float);
+
+	unsigned char *face = new unsigned char[fWidth * fHeight * elementSize];
+	unsigned char *ptr;
+
+	//extract the faces
+
+	// positive X
+	ptr = face;
+	for (int j = 0; j<fHeight; j++) {
+		memcpy(ptr, &data[((m_height - (fHeight + j + 1))*m_width + 2 * fWidth) * elementSize], fWidth * elementSize);
+		ptr += fWidth * elementSize;
+	}
+	facData.push_back(face);
+
+	// negative X
+	face = new unsigned char[fWidth * fHeight * elementSize];
+	ptr = face;
+	for (int j = 0; j<fHeight; j++) {
+		memcpy(ptr, &data[(m_height - (fHeight + j + 1))*m_width * elementSize], fWidth * elementSize);
+		ptr += fWidth * elementSize;
+	}
+	facData.push_back(face);
+
+	// positive Y
+	face = new unsigned char[fWidth * fHeight * elementSize];
+	ptr = face;
+	for (int j = 0; j<fHeight; j++) {
+		memcpy(ptr, &data[((4 * fHeight - j - 1)*m_width + fWidth) * elementSize], fWidth * elementSize);
+		ptr += fWidth * elementSize;
+	}
+	facData.push_back(face);
+
+	// negative Y
+	face = new unsigned char[fWidth * fHeight * elementSize];
+	ptr = face;
+	for (int j = 0; j<fHeight; j++) {
+		memcpy(ptr, &data[((2 * fHeight - j - 1)*m_width + fWidth) * elementSize], fWidth * elementSize);
+		ptr += fWidth * elementSize;
+	}
+	facData.push_back(face);
+
+	// positive Z
+	face = new unsigned char[fWidth * fHeight * elementSize];
+	ptr = face;
+	for (int j = 0; j<fHeight; j++) {
+		memcpy(ptr, &data[((m_height - (fHeight + j + 1))*m_width + fWidth) * elementSize], fWidth * elementSize);
+		ptr += fWidth * elementSize;
+	}
+	facData.push_back(face);
+
+	// negative Z
+	face = new unsigned char[fWidth * fHeight * elementSize];
+	ptr = face;
+	for (int j = 0; j<fHeight; j++) {
+		for (int i = 0; i<fWidth; i++) {
+			memcpy(ptr, &data[(j*m_width + 2 * fWidth - (i + 1)) * elementSize], elementSize);
+			ptr += elementSize;
+		}
+	}
+	facData.push_back(face);
+
+	//set the new # of faces, width and height
+	m_width = fWidth;
+	m_height = fHeight;
+
+	glGenTextures(1, &m_texture);
+	glBindTexture(m_target, m_texture);
+
+	glTexParameteri(m_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(m_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(m_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(m_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	// load face data
+	for (int i = 0; i < 6; i++) {
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_internalFormat, m_width, m_height, 0, m_format, m_type, facData[i]);
+	}
+	glGenerateMipmap(m_target);
+	glBindTexture(m_target, 0);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+	for (int i = 0; i < 6; i++) {
+		free(facData[i]);
+	}
+
+	SOIL_free_image_data(imageData);
+}
+
 void Texture::bind(unsigned int unit, bool forceBind) const {
 	if (ActiveTextures[unit] != m_texture || forceBind) {
 		ActiveTextures[unit] = m_texture;

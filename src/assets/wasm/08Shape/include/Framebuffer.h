@@ -9,7 +9,6 @@
 namespace Target {
 	typedef enum Target {
 		TEXTURE2D,
-		TEXTURE3D,
 		ARRAY,
 		TEXTURE
 	} Target;
@@ -47,7 +46,6 @@ namespace AttachmentTex {
 	} AttachmentTex;
 }
 
-//https://registry.khronos.org/OpenGL-Refpages/es3.0/html/glRenderbufferStorage.xhtml
 namespace AttachmentRB {
 	typedef enum AttachmentRB {
 		RGBA,
@@ -64,6 +62,9 @@ namespace AttachmentRB {
 	}AttachmentRB;
 }
 
+#define DOWNSAMPLE_BUFFERS 2
+#define BLUR_BUFFERS 2
+
 class Framebuffer {
 
 public:
@@ -77,7 +78,7 @@ public:
 	void attachTexture(const unsigned int& texture, Attachment::Attachment attachment = Attachment::Attachment::COLOR, Target::Target target = Target::Target::TEXTURE2D, unsigned short layer = 0);
 
 	void attachLayerdTexture(AttachmentTex::AttachmentTex attachment, unsigned short layer);
-	void attachRenderbuffer(AttachmentRB::AttachmentRB attachment, unsigned int samples = 0u, unsigned int coverageSamples = 0u);
+	void attachRenderbuffer(AttachmentRB::AttachmentRB attachment, unsigned int samples = 0u);
 	void bindVP(unsigned int width, unsigned int height);
 
 	void unbind() const;
@@ -124,10 +125,10 @@ private:
 	unsigned int m_stencilRB = 0;
 	unsigned int m_depthStencilRB = 0;
 
-	//format | sample | coverageSamples
-	std::tuple<unsigned int, unsigned int, unsigned int> depthRB;
-	std::tuple<unsigned int, unsigned int, unsigned int> stencilRB;
-	std::tuple<unsigned int, unsigned int, unsigned int> depthStencilRB;
+	//format | sample
+	std::tuple<unsigned int, unsigned int> depthRB;
+	std::tuple<unsigned int, unsigned int> stencilRB;
+	std::tuple<unsigned int, unsigned int> depthStencilRB;
 
 	unsigned short m_colorAttachments = 0;
 	unsigned short m_colorTextureAttachments = 0;
@@ -144,7 +145,7 @@ private:
 	std::vector<std::tuple<unsigned int, unsigned int, unsigned int>> m_resizeTexture;
 
 	std::vector<unsigned int> m_colorRB;
-	std::vector<std::tuple<unsigned int, unsigned int, unsigned int>> m_resizeRB;
+	std::vector<std::tuple<unsigned int, unsigned int>> m_resizeRB;
 
 	//internalFormat | format | type
 	std::tuple<unsigned int, unsigned int, unsigned int> depth;

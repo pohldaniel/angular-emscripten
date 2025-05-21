@@ -41,14 +41,13 @@ void Framebuffer::attachTexture2D(AttachmentTex::AttachmentTex _attachment) {
 	unsigned int *texture = &m_stencilTexture;
 
 	switch (_attachment) {
-		unsigned int tex;
 		case AttachmentTex::SRGBA:
 			internalFormat = GL_SRGB8_ALPHA8;
 			format = GL_RGBA;
 			m_colorAttachments++;
 			m_colorTextureAttachments++;
 
-			m_colorTextures.push_back(tex);
+			m_colorTextures.resize(m_colorTextures.size() + 1);
 			texture = &m_colorTextures[m_colorTextureAttachments - 1];
 
 			m_attachments.push_back(GL_COLOR_ATTACHMENT0 + (m_colorAttachments - 1));
@@ -65,7 +64,7 @@ void Framebuffer::attachTexture2D(AttachmentTex::AttachmentTex _attachment) {
 			m_colorAttachments++;
 			m_colorTextureAttachments++;
 
-			m_colorTextures.push_back(tex);
+			m_colorTextures.resize(m_colorTextures.size() + 1);
 			texture = &m_colorTextures[m_colorTextureAttachments - 1];
 
 			m_attachments.push_back(GL_COLOR_ATTACHMENT0 + (m_colorAttachments - 1));
@@ -82,7 +81,7 @@ void Framebuffer::attachTexture2D(AttachmentTex::AttachmentTex _attachment) {
 			m_colorAttachments++;
 			m_colorTextureAttachments++;
 
-			m_colorTextures.push_back(tex);
+			m_colorTextures.resize(m_colorTextures.size() + 1);
 			texture = &m_colorTextures[m_colorTextureAttachments - 1];
 
 			m_attachments.push_back(GL_COLOR_ATTACHMENT0 + (m_colorAttachments - 1));
@@ -100,7 +99,7 @@ void Framebuffer::attachTexture2D(AttachmentTex::AttachmentTex _attachment) {
 			m_colorAttachments++;
 			m_colorTextureAttachments++;
 
-			m_colorTextures.push_back(tex);
+			m_colorTextures.resize(m_colorTextures.size() + 1);
 			texture = &m_colorTextures[m_colorTextureAttachments - 1];
 
 			m_attachments.push_back(GL_COLOR_ATTACHMENT0 + (m_colorAttachments - 1));
@@ -118,7 +117,7 @@ void Framebuffer::attachTexture2D(AttachmentTex::AttachmentTex _attachment) {
 			m_colorAttachments++;
 			m_colorTextureAttachments++;
 
-			m_colorTextures.push_back(tex);
+			m_colorTextures.resize(m_colorTextures.size() + 1);
 			texture = &m_colorTextures[m_colorTextureAttachments - 1];
 
 			m_attachments.push_back(GL_COLOR_ATTACHMENT0 + (m_colorAttachments - 1));
@@ -136,7 +135,7 @@ void Framebuffer::attachTexture2D(AttachmentTex::AttachmentTex _attachment) {
 			m_colorAttachments++;
 			m_colorTextureAttachments++;
 
-			m_colorTextures.push_back(tex);
+			m_colorTextures.resize(m_colorTextures.size() + 1);
 			texture = &m_colorTextures[m_colorTextureAttachments - 1];
 
 			m_attachments.push_back(GL_COLOR_ATTACHMENT0 + (m_colorAttachments - 1));
@@ -154,7 +153,7 @@ void Framebuffer::attachTexture2D(AttachmentTex::AttachmentTex _attachment) {
 			m_colorAttachments++;
 			m_colorTextureAttachments++;
 
-			m_colorTextures.push_back(tex);
+			m_colorTextures.resize(m_colorTextures.size() + 1);
 			texture = &m_colorTextures[m_colorTextureAttachments - 1];
 
 			m_attachments.push_back(GL_COLOR_ATTACHMENT0 + (m_colorAttachments - 1));
@@ -172,7 +171,7 @@ void Framebuffer::attachTexture2D(AttachmentTex::AttachmentTex _attachment) {
 			m_colorAttachments++;
 			m_colorTextureAttachments++;
 
-			m_colorTextures.push_back(tex);
+			m_colorTextures.resize(m_colorTextures.size() + 1);
 			texture = &m_colorTextures[m_colorTextureAttachments - 1];
 
 			m_attachments.push_back(GL_COLOR_ATTACHMENT0 + (m_colorAttachments - 1));
@@ -190,7 +189,7 @@ void Framebuffer::attachTexture2D(AttachmentTex::AttachmentTex _attachment) {
 			m_colorAttachments++;
 			m_colorTextureAttachments++;
 
-			m_colorTextures.push_back(tex);
+			m_colorTextures.resize(m_colorTextures.size() + 1);
 			texture = &m_colorTextures[m_colorTextureAttachments - 1];
 
 			m_attachments.push_back(GL_COLOR_ATTACHMENT0 + (m_colorAttachments - 1));
@@ -207,7 +206,7 @@ void Framebuffer::attachTexture2D(AttachmentTex::AttachmentTex _attachment) {
 			m_colorAttachments++;
 			m_colorTextureAttachments++;
 
-			m_colorTextures.push_back(tex);
+			m_colorTextures.resize(m_colorTextures.size() + 1);
 			texture = &m_colorTextures[m_colorTextureAttachments - 1];
 			m_attachments.push_back(GL_COLOR_ATTACHMENT0 + (m_colorAttachments - 1));
 
@@ -224,7 +223,7 @@ void Framebuffer::attachTexture2D(AttachmentTex::AttachmentTex _attachment) {
 			m_colorAttachments++;
 			m_colorTextureAttachments++;
 			
-			m_colorTextures.push_back(tex);
+			m_colorTextures.resize(m_colorTextures.size() + 1);
 			texture = &m_colorTextures[m_colorTextureAttachments - 1];
 			m_attachments.push_back(GL_COLOR_ATTACHMENT0 + (m_colorAttachments - 1));
 
@@ -318,17 +317,17 @@ void Framebuffer::attachTexture2D(AttachmentTex::AttachmentTex _attachment) {
 		glBindFramebuffer(m_colorAttachments == 1 ? GL_FRAMEBUFFER : GL_DRAW_FRAMEBUFFER, m_fbo);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (m_colorAttachments - 1), GL_TEXTURE_2D, *texture, 0);
 		glDrawBuffers(m_colorAttachments, &m_attachments[0]);
-		glDrawBuffer(GL_FRONT);
-		glReadBuffer(GL_FRONT);
+		//glDrawBuffer(GL_FRONT);
+		//glReadBuffer(GL_FRONT);
 		glBindFramebuffer(m_colorAttachments == 1 ? GL_FRAMEBUFFER : GL_DRAW_FRAMEBUFFER, 0);
 
 	}else {
 		glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, *texture, 0);
-		if (m_colorAttachments == 0) {
-			glDrawBuffer(GL_NONE);
-			glReadBuffer(GL_NONE);
-		}
+		//if (m_colorAttachments == 0) {
+			//glDrawBuffer(GL_NONE);
+			//glReadBuffer(GL_NONE);
+		//}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
@@ -358,9 +357,7 @@ void Framebuffer::attachTexture(const unsigned int& texture, Attachment::Attachm
 		int colorAttachments = m_colorAttachments;
 		glBindFramebuffer(colorAttachments == 1 ? GL_FRAMEBUFFER : GL_DRAW_FRAMEBUFFER, m_fbo);
 
-		if (target == Target::TEXTURE3D) {
-			glFramebufferTexture3D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (m_colorAttachments - 1), GL_TEXTURE_3D, texture, 0, layer);
-		}else if (target == Target::TEXTURE2D){
+		if (target == Target::TEXTURE2D){
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (m_colorAttachments - 1), GL_TEXTURE_2D, texture, 0);
 		}else if (target == Target::ARRAY){
 
@@ -373,31 +370,29 @@ void Framebuffer::attachTexture(const unsigned int& texture, Attachment::Attachm
 			}
 
 		}else {
-			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (m_colorAttachments - 1), texture, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (m_colorAttachments - 1), GL_TEXTURE_2D, texture, 0);
 		}
 
 		glDrawBuffers(m_colorAttachments, &m_attachments[0]);
-		glDrawBuffer(GL_FRONT);
-		glReadBuffer(GL_FRONT);
+		//glDrawBuffer(GL_FRONT);
+		//glReadBuffer(GL_FRONT);
 		glBindFramebuffer(colorAttachments == 1 ? GL_FRAMEBUFFER : GL_DRAW_FRAMEBUFFER, 0);
 
 	}else {
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
 
-		if (target == Target::TEXTURE3D) {
-			glFramebufferTexture3D(GL_DRAW_FRAMEBUFFER, attachment, GL_TEXTURE_3D, texture, 0, layer);
-		}else if (target == Target::TEXTURE2D) {
+		if (target == Target::TEXTURE2D) {
 			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture, 0);
 		}else if (target == Target::ARRAY) {
 			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, attachment, texture, 0, layer);			
 		}else {
-			glFramebufferTexture(GL_DRAW_FRAMEBUFFER, attachment, texture, 0);
+			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture, 0);
 		}
 
-		if (m_colorAttachments == 0) {
-			glDrawBuffer(GL_NONE);
-			glReadBuffer(GL_NONE);
-		}
+		//if (m_colorAttachments == 0) {
+		//	glDrawBuffer(GL_NONE);
+		//	glReadBuffer(GL_NONE);
+		//}
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	}
 }
@@ -489,82 +484,75 @@ void Framebuffer::attachTexture(const unsigned int& texture, Attachment::Attachm
 }*/
 
 
-void Framebuffer::attachRenderbuffer(AttachmentRB::AttachmentRB attachments, unsigned int samples, unsigned int coverageSamples) {
+void Framebuffer::attachRenderbuffer(AttachmentRB::AttachmentRB attachments, unsigned int samples) {
 	unsigned int internalFormat = GL_RGBA8;
 	unsigned int attachment;
 	unsigned int *rb;
 	switch (attachments) {
-		unsigned int renderBuffer;
 		case AttachmentRB::RGBA:
 			internalFormat = GL_RGBA8;
 			m_colorAttachments++;
-			m_colorRB.push_back(renderBuffer);
+			m_colorRB.resize(m_colorRB.size() + 1);
 			rb = &m_colorRB[m_colorRB.size() - 1];
 
-			m_resizeRB.push_back(std::tuple<unsigned int, unsigned int, unsigned int>());
+			m_resizeRB.push_back(std::tuple<unsigned int, unsigned int>());
 			std::get<0>(m_resizeRB[m_resizeRB.size() - 1]) = internalFormat;
 			std::get<1>(m_resizeRB[m_resizeRB.size() - 1]) = samples;
-			std::get<2>(m_resizeRB[m_resizeRB.size() - 1]) = coverageSamples;
 
 			break;
 		case AttachmentRB::RGB:
 			internalFormat = GL_RGB8;
 			m_colorAttachments++;
-			m_colorRB.push_back(renderBuffer);
+			m_colorRB.resize(m_colorRB.size() + 1);
 			rb = &m_colorRB[m_colorRB.size() - 1];
 
-			m_resizeRB.push_back(std::tuple<unsigned int, unsigned int, unsigned int>());
+			m_resizeRB.push_back(std::tuple<unsigned int, unsigned int>());
 			std::get<0>(m_resizeRB[m_resizeRB.size() - 1]) = internalFormat;
 			std::get<1>(m_resizeRB[m_resizeRB.size() - 1]) = samples;
-			std::get<2>(m_resizeRB[m_resizeRB.size() - 1]) = coverageSamples;
 
 			break;
 		case AttachmentRB::RED:
 			internalFormat = GL_R8;
 			m_colorAttachments++;
-			m_colorRB.push_back(renderBuffer);
+			m_colorRB.resize(m_colorRB.size() + 1);
 			rb = &m_colorRB[m_colorRB.size() - 1];
 
-			m_resizeRB.push_back(std::tuple<unsigned int, unsigned int, unsigned int>());
+			m_resizeRB.push_back(std::tuple<unsigned int, unsigned int>());
 			std::get<0>(m_resizeRB[m_resizeRB.size() - 1]) = internalFormat;
 			std::get<1>(m_resizeRB[m_resizeRB.size() - 1]) = samples;
-			std::get<2>(m_resizeRB[m_resizeRB.size() - 1]) = coverageSamples;
 
 			break;
 		case AttachmentRB::RGBA32F:
 			internalFormat = GL_RGBA32F;
 			m_colorAttachments++;
-			m_colorRB.push_back(renderBuffer);
+			m_colorRB.resize(m_colorRB.size() + 1);
 			rb = &m_colorRB[m_colorRB.size() - 1];
 
-			m_resizeRB.push_back(std::tuple<unsigned int, unsigned int, unsigned int>());
+			m_resizeRB.push_back(std::tuple<unsigned int, unsigned int>());
 			std::get<0>(m_resizeRB[m_resizeRB.size() - 1]) = internalFormat;
 			std::get<1>(m_resizeRB[m_resizeRB.size() - 1]) = samples;
-			std::get<2>(m_resizeRB[m_resizeRB.size() - 1]) = coverageSamples;
 
 			break;
 		case AttachmentRB::RGBA16F:
 			internalFormat = GL_RGBA16F;
 			m_colorAttachments++;
-			m_colorRB.push_back(renderBuffer);
+			m_colorRB.resize(m_colorRB.size() + 1);
 			rb = &m_colorRB[m_colorRB.size() - 1];
 
-			m_resizeRB.push_back(std::tuple<unsigned int, unsigned int, unsigned int>());
+			m_resizeRB.push_back(std::tuple<unsigned int, unsigned int>());
 			std::get<0>(m_resizeRB[m_resizeRB.size() - 1]) = internalFormat;
 			std::get<1>(m_resizeRB[m_resizeRB.size() - 1]) = samples;
-			std::get<2>(m_resizeRB[m_resizeRB.size() - 1]) = coverageSamples;
 
 			break;
 		case AttachmentRB::R11FG11FB10F:
 			internalFormat = GL_R11F_G11F_B10F;
 			m_colorAttachments++;
-			m_colorRB.push_back(renderBuffer);
+			m_colorRB.resize(m_colorRB.size() + 1);
 			rb = &m_colorRB[m_colorRB.size() - 1];
 
-			m_resizeRB.push_back(std::tuple<unsigned int, unsigned int, unsigned int>());
+			m_resizeRB.push_back(std::tuple<unsigned int, unsigned int>());
 			std::get<0>(m_resizeRB[m_resizeRB.size() - 1]) = internalFormat;
 			std::get<1>(m_resizeRB[m_resizeRB.size() - 1]) = samples;
-			std::get<2>(m_resizeRB[m_resizeRB.size() - 1]) = coverageSamples;
 
 			break;
 		case AttachmentRB::DEPTH16:
@@ -573,7 +561,6 @@ void Framebuffer::attachRenderbuffer(AttachmentRB::AttachmentRB attachments, uns
 			rb = &m_depthRB;
 			std::get<0>(depthRB) = internalFormat;
 			std::get<1>(depthRB) = samples;
-			std::get<2>(depthRB) = coverageSamples;
 			break;
 		case AttachmentRB::DEPTH24:
 			internalFormat = GL_DEPTH_COMPONENT24;
@@ -581,7 +568,6 @@ void Framebuffer::attachRenderbuffer(AttachmentRB::AttachmentRB attachments, uns
 			rb = &m_depthRB;
 			std::get<0>(depthRB) = internalFormat;
 			std::get<1>(depthRB) = samples;
-			std::get<2>(depthRB) = coverageSamples;
 			break;
 		case AttachmentRB::DEPTH32F:
 			internalFormat = GL_DEPTH_COMPONENT32F;
@@ -589,7 +575,6 @@ void Framebuffer::attachRenderbuffer(AttachmentRB::AttachmentRB attachments, uns
 			rb = &m_depthRB;
 			std::get<0>(depthRB) = internalFormat;
 			std::get<1>(depthRB) = samples;
-			std::get<2>(depthRB) = coverageSamples;
 			break;
 		case AttachmentRB::STENCIL:
 			internalFormat = GL_STENCIL_INDEX8;
@@ -597,8 +582,6 @@ void Framebuffer::attachRenderbuffer(AttachmentRB::AttachmentRB attachments, uns
 			rb = &m_stencilRB;
 			std::get<0>(stencilRB) = internalFormat;
 			std::get<1>(stencilRB) = samples;
-			std::get<2>(stencilRB) = coverageSamples;
-
 			break;
 		case AttachmentRB::DEPTH_STENCIL:
 			internalFormat = GL_DEPTH24_STENCIL8;
@@ -606,7 +589,6 @@ void Framebuffer::attachRenderbuffer(AttachmentRB::AttachmentRB attachments, uns
 			rb = &m_depthStencilRB;
 			std::get<0>(depthStencilRB) = internalFormat;
 			std::get<1>(depthStencilRB) = samples;
-			std::get<2>(depthStencilRB) = coverageSamples;
 			break;
 		default:
 			break;
@@ -616,11 +598,7 @@ void Framebuffer::attachRenderbuffer(AttachmentRB::AttachmentRB attachments, uns
 	glBindRenderbuffer(GL_RENDERBUFFER, *rb);
 
 	if (samples > 0) {
-		if ((coverageSamples > 0) && glRenderbufferStorageMultisampleCoverageNV) {
-			glRenderbufferStorageMultisampleCoverageNV(GL_RENDERBUFFER, coverageSamples, samples, internalFormat, m_width, m_height);
-		}else {
-			glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalFormat, m_width, m_height);
-		}
+		glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalFormat, m_width, m_height);
 	}else {
 		glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, m_width, m_height);
 	}
@@ -667,11 +645,7 @@ void Framebuffer::resize(unsigned int width, unsigned int height) {
 	if (m_depthRB) {
 		glBindRenderbuffer(GL_RENDERBUFFER, m_depthRB);
 		if (std::get<1>(depthRB) > 0) {
-			if ((std::get<2>(depthRB) > 0) && glRenderbufferStorageMultisampleCoverageNV) {
-				glRenderbufferStorageMultisampleCoverageNV(GL_RENDERBUFFER, std::get<2>(depthRB), std::get<1>(depthRB), std::get<0>(depthRB), width, height);
-			}else {
-				glRenderbufferStorageMultisample(GL_RENDERBUFFER, std::get<1>(depthRB), std::get<0>(depthRB), width, height);
-			}
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, std::get<1>(depthRB), std::get<0>(depthRB), width, height);
 		}else {
 			glRenderbufferStorage(GL_RENDERBUFFER, std::get<0>(depthRB), width, height);
 		}
@@ -681,11 +655,7 @@ void Framebuffer::resize(unsigned int width, unsigned int height) {
 	if (m_stencilRB) {
 		glBindRenderbuffer(GL_RENDERBUFFER, m_stencilRB);
 		if (std::get<1>(stencilRB) > 0) {
-			if ((std::get<2>(depthRB) > 0) && glRenderbufferStorageMultisampleCoverageNV) {
-				glRenderbufferStorageMultisampleCoverageNV(GL_RENDERBUFFER, std::get<2>(stencilRB), std::get<1>(stencilRB), std::get<0>(stencilRB), width, height);
-			}else {
-				glRenderbufferStorageMultisample(GL_RENDERBUFFER, std::get<1>(stencilRB), std::get<0>(stencilRB), width, height);
-			}
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, std::get<1>(stencilRB), std::get<0>(stencilRB), width, height);
 		}else {
 			glRenderbufferStorage(GL_RENDERBUFFER, std::get<0>(stencilRB), width, height);
 		}
@@ -695,11 +665,7 @@ void Framebuffer::resize(unsigned int width, unsigned int height) {
 	if (m_depthStencilRB) {
 		glBindRenderbuffer(GL_RENDERBUFFER, m_depthStencilRB);
 		if (std::get<1>(depthStencilRB) > 0) {
-			if ((std::get<2>(depthRB) > 0) && glRenderbufferStorageMultisampleCoverageNV) {
-				glRenderbufferStorageMultisampleCoverageNV(GL_RENDERBUFFER, std::get<2>(depthStencilRB), std::get<1>(depthStencilRB), std::get<0>(depthStencilRB), width, height);
-			}else {
-				glRenderbufferStorageMultisample(GL_RENDERBUFFER, std::get<1>(depthStencilRB), std::get<0>(depthStencilRB), width, height);
-			}
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, std::get<1>(depthStencilRB), std::get<0>(depthStencilRB), width, height);
 		}else {
 			glRenderbufferStorage(GL_RENDERBUFFER, std::get<0>(depthStencilRB), width, height);
 		}
@@ -710,11 +676,7 @@ void Framebuffer::resize(unsigned int width, unsigned int height) {
 		glBindRenderbuffer(GL_RENDERBUFFER, m_colorRB[i]);
 
 		if (std::get<1>(m_resizeRB[i]) > 0) {
-			if ((std::get<2>(m_resizeRB[i]) > 0) && glRenderbufferStorageMultisampleCoverageNV) {
-				glRenderbufferStorageMultisampleCoverageNV(GL_RENDERBUFFER, std::get<2>(m_resizeRB[i]), std::get<1>(m_resizeRB[i]), std::get<0>(m_resizeRB[i]), width, height);
-			} else {
-				glRenderbufferStorageMultisample(GL_RENDERBUFFER, std::get<1>(m_resizeRB[i]), std::get<0>(m_resizeRB[i]), width, height);
-			}
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, std::get<1>(m_resizeRB[i]), std::get<0>(m_resizeRB[i]), width, height);
 		} else {
 			glRenderbufferStorage(GL_RENDERBUFFER, std::get<0>(m_resizeRB[i]), width, height);
 		}
