@@ -3,13 +3,20 @@
 
 #include <GLFW/glfw3.h>
 #include <glfw3webgpu.h>
+#include <WebGPU/WgpContext.h>
 #include <GL/glew.h>
 #include <emscripten.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_wgpu.h>
 
 #include <States/Shape.h>
+#include <States/Default.h>
 
 #include "WebGpuUtils.h"
 #include "Application.h"
+#include "Event.h"
+
 constexpr float PI = 3.14159265358979323846f;
 
 GLFWwindow* Application::Window = nullptr;
@@ -21,6 +28,10 @@ WGPUSurface Application::Surface;
 int Application::Width;
 int Application::Height;
 double Application::Time;
+
+void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos);
 
 void Application::MessageLopp(void *arg) {
   Application* application  = reinterpret_cast<Application*>(arg);
@@ -37,7 +48,13 @@ Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
   Application::Height = 480;
   initWindow();
   initWebGPU();
+  initGui();
   initStates();
+
+  glfwSetWindowUserPointer(Window, this);
+  glfwSetKeyCallback(Window, glfwKeyCallback);
+  glfwSetMouseButtonCallback(Window, glfwMouseButtonCallback);
+  glfwSetCursorPosCallback(Window, glfwMouseMoveCallback);
 }
 
 Application::~Application() {
@@ -59,64 +76,15 @@ void Application::initWindow() {
 }
 
 void Application::initWebGPU(){
-  instance = wgpuCreateInstance(nullptr);
-  adapter = requestAdapterSync(instance, nullptr);
+  wgpInit(Window);
+  instance = wgpContext.instance;
+  adapter = wgpContext.adapter;
+  Device = wgpContext.device;
+  Surface = wgpContext.surface;
+  SwapChain = wgpContext.swapChain;
+  Queue = wgpContext.queue;
 
-  /*WGPUSurfaceDescriptorFromCanvasHTMLSelector canvasDesc = {};
-  canvasDesc.chain.next = NULL;
-  canvasDesc.chain.sType = WGPUSType_SurfaceDescriptorFromCanvasHTMLSelector;
-  canvasDesc.selector = "#canvas";
-
-  WGPUSurfaceDescriptor surfaceDesc = {};
-  surfaceDesc.nextInChain = &canvasDesc.chain;
-  surfaceDesc.label = NULL;
-  Surface = wgpuInstanceCreateSurface(instance, &surfaceDesc);*/
-  Surface = glfwGetWGPUSurface(instance, Window);
-
-  WGPUSupportedLimits  supportedLimits = {};
-  supportedLimits.nextInChain = nullptr;
-	wgpuAdapterGetLimits(adapter, &supportedLimits);
-  //wgpuDeviceGetLimits(Device, &supportedLimits);
-
-	std::cout << "Requesting device..." << std::endl;
-	WGPURequiredLimits requiredLimits = GetRequiredLimits(adapter);
-	requiredLimits.limits.maxVertexAttributes = 3;
-	requiredLimits.limits.maxVertexBuffers = 1;
-	// Update max buffer size to allow up to 10000 vertices in the loaded file:
-	requiredLimits.limits.maxBufferSize = 10000 * sizeof(VertexAttributes);
-	requiredLimits.limits.maxVertexBufferArrayStride = sizeof(VertexAttributes);
-	requiredLimits.limits.minStorageBufferOffsetAlignment = supportedLimits.limits.minStorageBufferOffsetAlignment;
-	requiredLimits.limits.minUniformBufferOffsetAlignment = supportedLimits.limits.minUniformBufferOffsetAlignment;
-	requiredLimits.limits.maxInterStageShaderComponents = 6;
-	requiredLimits.limits.maxBindGroups = 1;
-	requiredLimits.limits.maxUniformBuffersPerShaderStage = 1;
-	requiredLimits.limits.maxUniformBufferBindingSize = 16 * 4 * sizeof(float);
-	requiredLimits.limits.maxTextureDimension1D = 2048;
-	requiredLimits.limits.maxTextureDimension2D = 2048;
-	requiredLimits.limits.maxTextureArrayLayers = 1;
-
-  WGPUDeviceDescriptor deviceDesc = {};
-  deviceDesc.nextInChain = nullptr;
-  deviceDesc.label = "My Device";
-  deviceDesc.requiredFeatureCount = 0;
-  deviceDesc.requiredLimits = nullptr;
-  deviceDesc.defaultQueue.nextInChain = nullptr;
-  deviceDesc.defaultQueue.label = "The default queue";
-	
-  Device = requestDeviceSync(adapter, &deviceDesc);
-  Queue = wgpuDeviceGetQueue(Device);
-
-  //WGPUTextureFormat swapChainFormat = WGPUTextureFormat::WGPUTextureFormat_BGRA8Unorm;
-  WGPUSwapChainDescriptor swapChainDesc;
-	swapChainDesc.width = Application::Width;
-	swapChainDesc.height = Application::Height;
-	swapChainDesc.usage = WGPUTextureUsage::WGPUTextureUsage_RenderAttachment;
-	swapChainDesc.format = WGPUTextureFormat::WGPUTextureFormat_BGRA8Unorm;
-	swapChainDesc.presentMode = WGPUPresentMode::WGPUPresentMode_Fifo;
-	//SwapChain swapChain = device.createSwapChain(surface, swapChainDesc);
-  SwapChain= wgpuDeviceCreateSwapChain(Device, Surface, &swapChainDesc);
-	std::cout << "Swapchain: " << SwapChain << std::endl;
-
+  
 	std::cout << "Creating shader module..." << std::endl;
 	WGPUShaderModule shaderModule = loadShaderModule("res/shader/shader.wgsl");
 	std::cout << "Shader module: " << shaderModule << std::endl;
@@ -479,9 +447,76 @@ void Application::messageLopp(){
 #endif
 }
 
+void Application::initGui() {
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+	ImGui_ImplGlfw_InitForOther(Window, true);
+	ImGui_ImplWGPU_Init(Device, 3, wgpContext.colorformat, WGPUTextureFormat::WGPUTextureFormat_Undefined);
+}
+
 void Application::initStates(){
     Machine = new StateMachine(dt, fdt);
-    Machine->addStateAtTop(new Shape(*Machine));
+    //Machine->addStateAtTop(new Shape(*Machine));
+	Machine->addStateAtTop(new Default(*Machine));
+}
+
+void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if(ImGui::GetIO().WantCaptureMouse)
+      ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+    else{
+      Event event;
+      event.data.keyboard.keyCode = static_cast<unsigned int>(scancode);
+
+      if (action == GLFW_PRESS){
+        event.type = Event::KEYDOWN;
+        Application::Machine->getStates().top()->OnKeyDown(event.data.keyboard);
+      }
+
+      if(action == GLFW_RELEASE){
+        event.type = Event::KEYUP;
+        Application::Machine->getStates().top()->OnKeyUp(event.data.keyboard);
+      }
+      ImGui::GetIO().WantCaptureMouse = true;
+    }
+}
+
+void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods) { 
+    if(ImGui::GetIO().WantCaptureMouse)
+        ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+    else{
+      double xpos, ypos;
+      glfwGetCursorPos(window, &xpos, &ypos);
+    
+      Event event; 
+      event.data.mouseButton.x = static_cast<int>(xpos);
+      event.data.mouseButton.y = static_cast<int>(ypos);
+      event.data.mouseButton.button = (button == GLFW_MOUSE_BUTTON_RIGHT) ? Event::MouseButtonEvent::MouseButton::BUTTON_RIGHT : Event::MouseButtonEvent::MouseButton::BUTTON_LEFT;
+
+      if (action == GLFW_PRESS){
+        event.type = Event::MOUSEBUTTONDOWN;
+        Application::Machine->getStates().top()->OnMouseButtonDown(event.data.mouseButton);
+      }
+
+      if(action == GLFW_RELEASE){
+        event.type = Event::MOUSEBUTTONUP;
+        Application::Machine->getStates().top()->OnMouseButtonUp(event.data.mouseButton);
+      }
+      ImGui::GetIO().WantCaptureMouse = true;
+    }
+}
+
+void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos){
+    ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+    
+    Event event;
+    event.type = Event::MOUSEMOTION;
+    event.data.mouseMove.x = static_cast<int>(xpos);
+    event.data.mouseMove.y = static_cast<int>(ypos);
+    //event.data.mouseMove.button = (button == GLFW_MOUSE_BUTTON_RIGHT) ? Event::MouseButtonEvent::MouseButton::BUTTON_RIGHT : Event::MouseButtonEvent::MouseButton::BUTTON_LEFT;
+    
+    Application::Machine->getStates().top()->OnMouseMotion(event.data.mouseMove);   
 }
 
 WGPUTextureView Application::GetNextSurfaceTextureView() {

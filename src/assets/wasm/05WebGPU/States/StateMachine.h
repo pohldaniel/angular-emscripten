@@ -1,9 +1,11 @@
 #pragma once
 
 #include <interfaces/IStateMachine.h>
+#include "Event.h"
 
 enum States {
-	SHAPE
+	SHAPE,
+	DEFAULT
 };
 
 class State;
@@ -23,7 +25,14 @@ public:
 	const float& m_fdt;
 	const float& m_dt;
 
+	static void ToggleWireframe();
+	static bool& GetWireframeEnabled();
+	static bool IsWireframeToggled();
+
 private:
+
+	static bool WireframeToggled;
+	static bool WireframeEnabled;
 
 };
 
@@ -35,6 +44,12 @@ public:
 	virtual ~State();
 
 	States getCurrentState();
+
+	virtual void OnMouseMotion(const Event::MouseMoveEvent& event);
+	virtual void OnMouseButtonDown(const Event::MouseButtonEvent& event);
+	virtual void OnMouseButtonUp(const Event::MouseButtonEvent& event);
+    virtual void OnKeyDown(const Event::KeyboardEvent& event);
+	virtual void OnKeyUp(const Event::KeyboardEvent& event);
 
 protected:
 

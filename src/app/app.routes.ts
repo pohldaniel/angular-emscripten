@@ -52,6 +52,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'shape'
+    redirectTo: 'web-gpu'
   } 
 ];

@@ -1,6 +1,8 @@
-#include <GL/glew.h>
 #include "StateMachine.h"
 #include "Application.h"
+
+bool StateMachine::WireframeEnabled = false;
+bool StateMachine::WireframeToggled = false;
 
 StateMachine::StateMachine(const float& dt, const float& fdt) : m_fdt(fdt),  m_dt(dt) {
 
@@ -27,7 +29,6 @@ void StateMachine::update() {
 }
 
 void StateMachine::render() {
-
 	if (!m_states.empty()) {
 		m_states.top()->render();
 	}
@@ -46,6 +47,22 @@ void StateMachine::resizeState(int deltaW, int deltaH, States state) {
 	}
 }
 
+void StateMachine::ToggleWireframe() {
+	WireframeEnabled = !WireframeEnabled;
+	WireframeToggled = true;
+}
+
+bool& StateMachine::GetWireframeEnabled() {
+	return WireframeEnabled;
+}
+
+bool StateMachine::IsWireframeToggled(){
+	if (WireframeToggled) {
+		WireframeToggled = false;
+		return true;
+	}
+	return false;
+}
 /////////////////////////////////////////////
 State::State(StateMachine& machine, States currentState) : m_machine(machine), m_fdt(machine.m_fdt), m_dt(machine.m_dt) {
 	m_currentState = currentState;
@@ -57,4 +74,24 @@ State::~State() {
 
 States State::getCurrentState() {
 	return m_currentState;
+}
+
+void State::OnMouseMotion(const Event::MouseMoveEvent& event){
+
+}
+
+void State::OnMouseButtonDown(const Event::MouseButtonEvent& event){
+
+}
+
+void State::OnMouseButtonUp(const Event::MouseButtonEvent& event){
+
+}
+
+void State::OnKeyDown(const Event::KeyboardEvent& event){
+
+}
+
+void State::OnKeyUp(const Event::KeyboardEvent& event){
+	
 }

@@ -1,5 +1,5 @@
 #pragma once
-
+#include <iostream>
 #include <filesystem>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -49,11 +49,14 @@ public:
 	glm::mat4x4 R1;
 	glm::mat4x4 R2;
 	glm::mat4x4 T2;
+    static StateMachine* Machine;
+	 static GLFWwindow* Window;
 
 private:
 
 	void initWindow();
 	void initWebGPU();
+	void initGui();
 	void initStates();
 	void messageLopp();
 	WGPURequiredLimits GetRequiredLimits(WGPUAdapter adapter);
@@ -70,9 +73,6 @@ private:
 	float& dt;
 
 	double last;
-
-    static GLFWwindow* Window;
-	static StateMachine* Machine;
 	static WGPUSurface Surface;
 
 	WGPUSwapChain SwapChain;
