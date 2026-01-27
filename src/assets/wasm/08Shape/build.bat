@@ -1,6 +1,6 @@
-rem start /w compile-libsoil.bat
-rem start /w build-libsoil.bat
-rem start /w compile-libimgui.bat
-rem start /w build-libimgui.bat
+start /w compile-libsoil.bat
+start /w build-libsoil.bat
+start /w compile-libimgui.bat
+start /w build-libimgui.bat
 start /w compile-wasm.bat
-rem del *.o
+del *.o

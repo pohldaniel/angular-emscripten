@@ -1,6 +1,6 @@
-rem start /w compile-lib.bat
-rem start /w build-lib.bat
-rem start /w compile-imgui.bat
-rem start /w build-imgui.bat
+start /w compile-lib.bat
+start /w build-lib.bat
+start /w compile-imgui.bat
+start /w build-imgui.bat
 start /w compile-wasm.bat
-rem del *.o
+del *.o
