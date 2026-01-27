@@ -228,7 +228,7 @@ void ObjModel::loadModelCpu(const char* _filename, const glm::vec3& axis, float 
 					float posZ = flipYZ ? tmpy : tmpz;
 
 					glm::mat4 rot = glm::mat4(1.0f);
-                    glm::rotate(rot, glm::radians(degrees), axis);
+                    rot = glm::rotate(rot, glm::radians(degrees), axis);
 
 					glm::vec4 tmp = rot * glm::vec4(tmpx, posY, posZ, 1.0f);
 
@@ -270,7 +270,7 @@ void ObjModel::loadModelCpu(const char* _filename, const glm::vec3& axis, float 
 						float normZ = flipYZ ? tmpy : tmpz;
 
 						glm::mat4 rot = glm::mat4(1.0f);
-                        glm::rotate(rot, glm::radians(degrees), axis);
+                        rot = glm::rotate(rot, glm::radians(degrees), axis);
 
 						glm::vec4 tmp = rot * glm::vec4(tmpx, normY, normZ, 0.0f);
 
@@ -1383,7 +1383,6 @@ void ObjModel::ReadMaterialFromFile(std::string path, std::string mltLib, std::s
 				int tmp;
 				sscanf(lines[i].c_str(), "Ns %i", &tmp);
 				material.setShininess(tmp);
-
 			}else if (lines[i][0] == 'K' && lines[i][1] == 'a') {
 				float tmpx, tmpy, tmpz;
 				sscanf(lines[i].c_str(), "Ka %f %f %f", &tmpx, &tmpy, &tmpz);
@@ -1392,12 +1391,10 @@ void ObjModel::ReadMaterialFromFile(std::string path, std::string mltLib, std::s
 				float tmpx, tmpy, tmpz;
 				sscanf(lines[i].c_str(), "Kd %f %f %f", &tmpx, &tmpy, &tmpz);
 				material.setDiffuse({ tmpx, tmpx, tmpz, 1.0f });
-
 			}else if (lines[i][0] == 'K' && lines[i][1] == 's') {
 				float tmpx, tmpy, tmpz;
 				sscanf(lines[i].c_str(), "Ks %f %f %f", &tmpx, &tmpy, &tmpz);
 				material.setSpecular({ tmpx, tmpx, tmpz, 1.0f });
-
 			}else if (lines[i][0] == 'm') {
 				char identifierBuffer[20], valueBuffer[250];;
 				memset(identifierBuffer, 0, 20);

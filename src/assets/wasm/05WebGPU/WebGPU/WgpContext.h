@@ -77,7 +77,6 @@ struct WgpContext {
 	WGPUAdapter adapter = NULL;
 	WGPUDevice device = NULL;
 	WGPUSurface surface = NULL;
-	WGPUSwapChain swapChain = NULL;
 	WGPUQueue queue = NULL;
 
 	WGPUTextureView depthTextureView = NULL;
@@ -85,7 +84,7 @@ struct WgpContext {
 	WGPUSurfaceConfiguration config = {};
 	WGPUSurfaceCapabilities surfaceCapabilities;
 	WGPUTextureFormat depthformat = WGPUTextureFormat::WGPUTextureFormat_Depth24Plus;
-	WGPUTextureFormat colorformat = WGPUTextureFormat::WGPUTextureFormat_BGRA8UnormSrgb;
+	WGPUTextureFormat colorformat = WGPUTextureFormat::WGPUTextureFormat_BGRA8Unorm;
 
 	std::unordered_map<RenderPipelineSlot, WGPURenderPipeline> renderPipelines;
 	std::function<void(const WGPURenderPassEncoder& commandBuffer)> OnDraw;

@@ -24,15 +24,15 @@ Default::Default(StateMachine& machine) : State(machine, States::DEFAULT) {
 	m_camera.perspective(45.0f, static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 1000.0f);
 	m_camera.orthographic(0.0f, static_cast<float>(Application::Width), 0.0f, static_cast<float>(Application::Height), -1.0f, 1.0f);
 	m_camera.lookAt(glm::vec3(1.0f, 1.0f, 3.0f), glm::vec3(0.2f, 0.2f, 1.5f) + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	m_camera.setRotationSpeed(0.1f);
+	m_camera.setRotationSpeed(0.125f);
 	m_camera.setMovingSpeed(10.0f);
 
 	m_mammoth.loadModel("res/models/mammoth.obj");
 	m_wgpMammoth.create(m_mammoth, m_textureView, m_uniformBuffer);
 
-	//m_dragon.loadModel("res/models/dragon/dragon.obj", glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, glm::vec3(0.0f, -1.0f, 0.0f), 0.1f, false, false, false, false, false, true);
-	//m_dragon.rewind();
-	//m_wgpDragon.create(m_dragon, m_textureView, m_uniformBuffer);
+	m_dragon.loadModel("res/models/dragon/dragon.obj", glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, glm::vec3(0.0f, -1.0f, 0.0f), 0.1f, false, false, false, false, false, true);
+	m_dragon.rewind();
+	m_wgpDragon.create(m_dragon, m_textureView, m_uniformBuffer);
 
 	m_trackball.reshape(Application::Width, Application::Height);
 	m_trackball.setTrackballScale(0.5f);
@@ -93,15 +93,15 @@ void Default::update() {
 	}
 
 
-    if (glfwGetMouseButton(Application::Window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+    if (glfwGetMouseButton(Application::Window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {	
 		dx = mouse.xDelta();
 		dy = mouse.yDelta();
+		std::cout << "Delta: " << dx << "  " << dy << std::endl;
 	}
 
     if (move || dx != 0.0f || dy != 0.0f) {
-		if (dx || dy) {
+		if (dx || dy) {			
 			m_camera.rotate(dx, dy);
-
 		}
 
 		if (move) {
@@ -111,34 +111,47 @@ void Default::update() {
 
     m_trackball.idle();
 	applyTransformation(m_trackball);
+
+	m_uniforms.projectionMatrix = m_camera.getPerspectiveMatrix();
+	m_uniforms.viewMatrix = m_camera.getViewMatrix();
 }
 
 void Default::render() {
 	wgpDraw();
 }
 
-void Default::OnDraw(const WGPURenderPassEncoder& renderPass) {
+void Default::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
 
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getWgpuBuffer(), offsetof(Uniforms, projectionMatrix), &m_uniforms.projectionMatrix, sizeof(Uniforms::projectionMatrix));
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getWgpuBuffer(), offsetof(Uniforms, viewMatrix), &m_uniforms.viewMatrix, sizeof(Uniforms::viewMatrix));
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getWgpuBuffer(), offsetof(Uniforms, modelMatrix), &m_uniforms.modelMatrix, sizeof(Uniforms::modelMatrix));
 	
-	m_model == MAMMOTH ? m_wgpMammoth.draw(renderPass) : m_wgpDragon.draw(renderPass);
+	wgpuRenderPassEncoderSetViewport(renderPassEncoder, 0.0f, 0.0f, static_cast<float>(Application::Width), static_cast<float>(Application::Height), 0.0f, 1.0f);
+	
+	m_model == MAMMOTH ? m_wgpMammoth.draw(renderPassEncoder) : m_wgpDragon.draw(renderPassEncoder);
 
 	if (m_drawUi)
-		renderUi(renderPass);
+		renderUi(renderPassEncoder);
 }
 
 
 void Default::OnMouseButtonDown(const Event::MouseButtonEvent& event) {
-	if (event.button == 1u) {
+	if (event.button == Event::MouseButtonEvent::BUTTON_RIGHT) {
+		Mouse::instance().attach(Application::Window, true, false, false);
+	}
+
+	if (event.button == Event::MouseButtonEvent::BUTTON_LEFT) {
 		m_trackball.mouse(TrackBall::Button::ELeftButton, TrackBall::Modifier::ENoModifier, true, event.x, event.y);
 		applyTransformation(m_trackball);
 	}
 }
 
 void Default::OnMouseButtonUp(const Event::MouseButtonEvent& event) {
-	if (event.button == 1u) {
+	if (event.button == Event::MouseButtonEvent::BUTTON_RIGHT) {
+		Mouse::instance().detach();
+	} 
+
+	if (event.button == Event::MouseButtonEvent::BUTTON_LEFT) {
 		m_trackball.mouse(TrackBall::Button::ELeftButton, TrackBall::Modifier::ENoModifier, false, event.x, event.y);
 		applyTransformation(m_trackball);
 	} 
@@ -150,7 +163,13 @@ void Default::OnMouseMotion(const Event::MouseMoveEvent& event) {
 }
 
 void Default::OnKeyDown(const Event::KeyboardEvent& event){
-
+	//if (event.keyCode == GLFW_KEY_T) {
+	//	if(glfwGetInputMode(Application::Window, GLFW_CURSOR) == GLFW_CURSOR_HIDDEN){
+	//		glfwSetInputMode(Application::Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	//	}else{
+	//		glfwSetInputMode(Application::Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+	//	}
+	//}
 }
 
 void Default::OnKeyUp(const Event::KeyboardEvent& event) {
@@ -162,7 +181,7 @@ void Default::applyTransformation(const TrackBall& arc) {
 }
 
 void Default::renderUi(const WGPURenderPassEncoder& renderPassEncoder) {
-	/*ImGui_ImplWGPU_NewFrame();
+	ImGui_ImplWGPU_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
@@ -189,17 +208,18 @@ void Default::renderUi(const WGPURenderPassEncoder& renderPassEncoder) {
 	if (m_initUi) {
 		m_initUi = false;
 		ImGuiID dock_id_left = ImGui::DockBuilderSplitNode(dockSpaceId, ImGuiDir_Left, 0.2f, nullptr, &dockSpaceId);
-		ImGuiID dock_id_right = ImGui::DockBuilderSplitNode(dockSpaceId, ImGuiDir_Right, 0.2f, nullptr, &dockSpaceId);
-		ImGuiID dock_id_down = ImGui::DockBuilderSplitNode(dockSpaceId, ImGuiDir_Down, 0.2f, nullptr, &dockSpaceId);
-		ImGuiID dock_id_up = ImGui::DockBuilderSplitNode(dockSpaceId, ImGuiDir_Up, 0.2f, nullptr, &dockSpaceId);
+		//ImGuiID dock_id_right = ImGui::DockBuilderSplitNode(dockSpaceId, ImGuiDir_Right, 0.2f, nullptr, &dockSpaceId);
+		//ImGuiID dock_id_down = ImGui::DockBuilderSplitNode(dockSpaceId, ImGuiDir_Down, 0.2f, nullptr, &dockSpaceId);
+		//ImGuiID dock_id_up = ImGui::DockBuilderSplitNode(dockSpaceId, ImGuiDir_Up, 0.2f, nullptr, &dockSpaceId);
 		ImGui::DockBuilderDockWindow("Settings", dock_id_left);
 	}
 
 	// render widgets
 	ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+	ImGui::Text("Application average FPS %.1f", static_cast<double>(ImGui::GetIO().Framerate));
 	if (ImGui::Checkbox("Draw Wirframe", &StateMachine::GetWireframeEnabled())  || StateMachine::IsWireframeToggled()) {
-		//m_wgpMammoth.setRenderPipelineSlot(StateMachine::GetWireframeEnabled() ? RP_WIREFRAME : RP_PTN);
-		//m_wgpDragon.setRenderPipelineSlot(StateMachine::GetWireframeEnabled() ? RP_WIREFRAME : RP_PTN);
+		m_wgpMammoth.setRenderPipelineSlot(StateMachine::GetWireframeEnabled() ? RP_WIREFRAME : RP_PTN);
+		m_wgpDragon.setRenderPipelineSlot(StateMachine::GetWireframeEnabled() ? RP_WIREFRAME : RP_PTN);
 	}
 
 	int currentModel = m_model;
@@ -207,17 +227,6 @@ void Default::renderUi(const WGPURenderPassEncoder& renderPassEncoder) {
 		m_model = static_cast<Model>(currentModel);
 	}
 	ImGui::End();
-
-	ImGui::Render();
-	ImGui_ImplWGPU_RenderDrawData(ImGui::GetDrawData(), renderPassEncoder);*/
-	ImGui_ImplWGPU_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-
-	int currentModel = m_model;
-	if (ImGui::Combo("Model", &currentModel, "Mammoth\0Dragon\0\0")) {
-		m_model = static_cast<Model>(currentModel);
-	}
 
 	ImGui::Render();
 	ImGui_ImplWGPU_RenderDrawData(ImGui::GetDrawData(), renderPassEncoder);

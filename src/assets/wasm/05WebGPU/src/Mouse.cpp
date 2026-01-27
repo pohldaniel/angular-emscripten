@@ -69,7 +69,7 @@ void Mouse::detach() {
       m_attached = false;
 
 	if (!m_cursorVisible) {
-		glfwSetCursorPos(m_window, m_xLastPos, m_yLastPos);
+		//glfwSetCursorPos(m_window, m_xLastPos, m_yLastPos);
 		hideCursor(false);
 	}
 

@@ -194,7 +194,7 @@ void Camera::rotateFirstPerson(float yaw, float pitch){
 
 	// Rotate camera's existing x and z axes about the world y axis.
 	if (yaw != 0.0f){
-		rotMtx = glm::rotate(rotMtx, yaw, WORLD_YAXIS);
+		rotMtx = glm::rotate(rotMtx, glm::radians(yaw), WORLD_YAXIS);
 		m_xAxis = rotMtx * glm::vec4(m_xAxis, 0.0f);
 		m_zAxis = rotMtx * glm::vec4(m_zAxis, 0.0f);
 	}
@@ -203,7 +203,7 @@ void Camera::rotateFirstPerson(float yaw, float pitch){
 	if (pitch != 0.0f){
 		//rotMtx.rotate(m_xAxis, pitch);
 		rotMtx = glm::mat4(1.0f);
-		rotMtx = glm::rotate(rotMtx, pitch, m_xAxis);
+		rotMtx = glm::rotate(rotMtx, glm::radians(pitch), m_xAxis);
 		m_yAxis = rotMtx * glm::vec4(m_yAxis, 0.0f);
 		m_zAxis = rotMtx * glm::vec4(m_zAxis, 0.0f);
 	}

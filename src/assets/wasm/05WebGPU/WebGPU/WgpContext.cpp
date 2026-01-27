@@ -116,8 +116,6 @@ void wgpRequestAdapterSync(WGPUInstance instance, const WGPURequestAdapterOption
 		emscripten_sleep(100);
 	}
 #endif // __EMSCRIPTEN__
-
-	assert(userdata.second);
 }
 
 void wgpRequestDeviceSync(WGPUAdapter instance, const WGPUDeviceDescriptor* deviceDescriptor) {
@@ -129,8 +127,6 @@ void wgpRequestDeviceSync(WGPUAdapter instance, const WGPUDeviceDescriptor* devi
 		emscripten_sleep(100);
 	}
 #endif // __EMSCRIPTEN__
-
-	assert(userdata.second);
 }
 
 void wgpInit(void* window) {
@@ -172,17 +168,16 @@ bool wgpCreateDevice(void* window) {
     WGPUSurfaceDescriptor surfaceDescriptor;
     surfaceDescriptor.nextInChain = &surfaceDescriptorFromCanvasHTMLSelector.chain;
     surfaceDescriptor.label = NULL;
-    wgpContext.surface = wgpuInstanceCreateSurface(wgpContext.instance, &surfaceDescriptor);
-	
-	WGPUSwapChainDescriptor swapChainDescriptor;
-	swapChainDescriptor.width = Application::Width;
-	swapChainDescriptor.height = Application::Height;
-	swapChainDescriptor.usage = WGPUTextureUsage::WGPUTextureUsage_RenderAttachment;
-	swapChainDescriptor.format = WGPUTextureFormat::WGPUTextureFormat_BGRA8Unorm;
-	swapChainDescriptor.presentMode = WGPUPresentMode::WGPUPresentMode_Fifo;
-	wgpContext.swapChain= wgpuDeviceCreateSwapChain(wgpContext.device, wgpContext.surface, &swapChainDescriptor);
-	wgpContext.queue = wgpuDeviceGetQueue(wgpContext.device);
 
+    wgpContext.surface = wgpuInstanceCreateSurface(wgpContext.instance, &surfaceDescriptor);
+	wgpContext.surfaceCapabilities = { 0 };
+	wgpuSurfaceGetCapabilities(wgpContext.surface, wgpContext.adapter, &wgpContext.surfaceCapabilities);
+	wgpContext.colorformat = wgpContext.surfaceCapabilities.formats[0];
+
+	wgpContext.queue = wgpuDeviceGetQueue(wgpContext.device);
+	wgpContext.depthTexture = wgpCreateTexture(static_cast<uint32_t>(Application::Width), static_cast<uint32_t>(Application::Height), WGPUTextureUsage_RenderAttachment, wgpContext.depthformat, wgpContext.depthformat);
+	wgpContext.depthTextureView = wgpCreateTextureView(wgpContext.depthformat, WGPUTextureAspect::WGPUTextureAspect_DepthOnly, wgpContext.depthTexture);
+    wgpConfigureSurface();
 	wgpCreateVertexBufferLayout();
     return true;
 }
@@ -459,6 +454,12 @@ void wgpDraw() {
 
 	WGPUTextureView texureView = wgpuTextureCreateView(surfaceTexture.texture, NULL);
 
+    /*WGPUTextureView texureView = wgpuSwapChainGetCurrentTextureView(wgpContext.swapChain);
+	if (!texureView) {
+		std::cerr << "Cannot acquire next swap chain texture" << std::endl;
+		return;
+	}*/
+
 	WGPURenderPassColorAttachment renderPassColorAttachment = {};
 	renderPassColorAttachment.view = texureView;
 	renderPassColorAttachment.resolveTarget = NULL;
@@ -499,7 +500,9 @@ void wgpDraw() {
 	WGPUCommandBuffer command = wgpuCommandEncoderFinish(encoder, NULL);
 	wgpuQueueSubmit(wgpContext.queue, 1, &command );
 
+#ifndef __EMSCRIPTEN__
 	wgpuSurfacePresent(wgpContext.surface);
+#endif
 #ifdef WEBGPU_DAWN
 	wgpuDeviceTick(wgpContext.device);
 #endif
