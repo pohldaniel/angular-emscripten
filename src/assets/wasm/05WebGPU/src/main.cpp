@@ -12,13 +12,19 @@ extern "C" {
   bool IsInitialized(){
     return Application::IsInitialized();
   }
+
+  EMSCRIPTEN_KEEPALIVE
+  void Cleanup(){
+    emscripten_cancel_main_loop();
+    Application::Cleanup();
+  }
 }
 
 EM_BOOL OnWindowResize(int eventType, const EmscriptenUiEvent* e, void* userdata){
-  Application* application  = reinterpret_cast<Application*>(userdata);
+  //Application* application  = reinterpret_cast<Application*>(userdata);
   int width, height;
   emscripten_get_canvas_element_size("#canvas", &width, &height);
-  application->resize(width, height);
+  Application::Resize(width, height);
 
   return EM_FALSE;
 }

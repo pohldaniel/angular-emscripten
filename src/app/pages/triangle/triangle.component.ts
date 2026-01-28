@@ -14,7 +14,7 @@ export class TriangleComponent extends EmscriptenWasmComponent implements OnInit
     super("TriangleModule",  'assets/wasm/04Triangle/triangle.js', 'assets/wasm/04Triangle/triangle.wasm');
   }
 
-  ngOnInit() {
+  override ngOnInit() {
     
   }
 
@@ -22,7 +22,7 @@ export class TriangleComponent extends EmscriptenWasmComponent implements OnInit
     super.ngAfterViewInit();
   }
   
-  ngOnDestroy() {  
+  override ngOnDestroy() {  
   
   }
 }

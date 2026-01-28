@@ -1,4 +1,4 @@
-import {Component, AfterViewInit,ViewChild,ElementRef, NgZone, Inject} from '@angular/core';
+import {Component, AfterViewInit, OnInit, OnDestroy, ViewChild,ElementRef, NgZone, Inject} from '@angular/core';
 import {EmscriptenWasmComponent} from 'src/app/emscripten-wasm.component';
 import {ResizedDirective} from 'src/app/directives/resized.directive';
 import {ResizedEvent} from 'src/app/directives/resized.directive';
@@ -10,13 +10,16 @@ import {DOCUMENT} from '@angular/common';
   imports: [ResizedDirective],
   standalone: true,
 })
-export class WebGPUComponent extends EmscriptenWasmComponent implements AfterViewInit {
+export class WebGPUComponent extends EmscriptenWasmComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('canvas') canvas!: ElementRef;
   @ViewChild('span') span!: ElementRef;
   error!: string;
 
-  constructor(private ngZone: NgZone, @Inject(DOCUMENT) private document: Document) {
+  constructor(private ngZone: NgZone, @Inject(DOCUMENT) private document: Document) { 
     super('WebGPUModule',  'assets/wasm/05WebGPU/web-gpu.js', 'assets/wasm/05WebGPU/web-gpu.wasm', 'assets/wasm/05WebGPU/web-gpu.data');
+  }
+  
+  override ngOnInit(): void {
     this.moduleDecorator = (mod) => {     
       mod.canvas = <HTMLCanvasElement >this.canvas.nativeElement;
       mod.printErr = (what: string) => {
@@ -49,6 +52,12 @@ export class WebGPUComponent extends EmscriptenWasmComponent implements AfterVie
       this.canvas.nativeElement.width  = event.newRect.width - 5;
       this.canvas.nativeElement.height = event.newRect.height - 5;
       this.module.ccall!('Resize', 'void', ['number', 'number'], [this.canvas.nativeElement.width, this.canvas.nativeElement.height]); 
+    }
+  }
+
+  override ngOnDestroy() {
+    if(this.module){
+      this.module.ccall!('Cleanup', 'void', [], [])
     }
   }
 }

@@ -49,11 +49,7 @@ Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
 }
 
 Application::~Application() {
-  wgpShutDown();
-  ImGui_ImplWGPU_Shutdown();
-  ImGui_ImplGlfw_Shutdown();
-  glfwDestroyWindow(Window);
-  glfwTerminate();
+  Cleanup();
 }
 
 void Application::initWindow() {
@@ -106,10 +102,6 @@ void Application::initStates(){
 	Machine->addStateAtTop(new Default(*Machine));
 }
 
-void Application::resize(uint32_t width, uint32_t height){
-  Application::Resize(width, height);
-}
-
 void Application::Resize(uint32_t width, uint32_t height){
   if(Init){
     Application::Width = static_cast<int>(width);
@@ -122,6 +114,15 @@ void Application::Resize(uint32_t width, uint32_t height){
 
 bool Application::IsInitialized(){
   return Init;
+}
+
+void Application::Cleanup(){
+  delete Machine;
+  wgpShutDown();
+  ImGui_ImplWGPU_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  glfwDestroyWindow(Window);
+  glfwTerminate();
 }
 
 void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {

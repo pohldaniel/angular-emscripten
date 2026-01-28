@@ -1,18 +1,24 @@
-import {AfterViewInit, Directive} from "@angular/core";
+import {OnInit, AfterViewInit, OnDestroy, Directive} from "@angular/core";
 import {loadScript} from "./tools";
 
 type EmscriptenModuleDecorator<M extends EmscriptenModule> = (module: M) => void;
 const noopModuleDecorator = (mod: EmscriptenModule) => mod;
 
 @Directive()
-export abstract class EmscriptenWasmComponent<M extends EmscriptenModule = EmscriptenModule> implements AfterViewInit {
+export abstract class EmscriptenWasmComponent<M extends EmscriptenModule = EmscriptenModule> implements OnInit, AfterViewInit, OnDestroy {
   private resolvedModule!: M;
   protected moduleDecorator!: EmscriptenModuleDecorator<M>;
 
-  protected constructor(private moduleExportName: string, private pathJs: string, private pathWasm: string, private pathData?: string) {}
+  protected constructor(private moduleExportName: string, private pathJs: string, private pathWasm: string, private pathData?: string) {
+
+  }
 
   get module(): M {
     return this.resolvedModule;
+  }
+
+  ngOnInit(): void {
+    
   }
 
   ngAfterViewInit(): void {
@@ -38,5 +44,9 @@ export abstract class EmscriptenWasmComponent<M extends EmscriptenModule = Emscr
       .then((mod) => {
         this.resolvedModule = mod;
       });
+  }
+
+  ngOnDestroy() {
+
   }
 }
