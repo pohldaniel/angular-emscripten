@@ -3,7 +3,7 @@ import {RouterOutlet, Router, ActivatedRoute, NavigationEnd} from '@angular/rout
 import {filter, map, mergeMap} from 'rxjs/operators';
 import {Observable} from "rxjs";
 import {MenuComponent} from './shared/menu/menu.component';
-import {ResizableDirective} from './directives/resizeable.directives';
+import {ResizableDirective} from './directives/resizeable.directive';
 import {CommonModule} from '@angular/common';
 
 @Component({

@@ -13,9 +13,10 @@ public:
     void attach(GLFWwindow* window, bool hideCursor = true, bool reattach = false, bool reset = false);
     void detach();
     void hideCursor(bool hideCursor);
-    float xDelta() const;
-    float yDelta() const;
-
+    const float xDelta() const;
+    const float yDelta() const;
+    const bool isAttached() const;
+    
 private:
 
     Mouse();

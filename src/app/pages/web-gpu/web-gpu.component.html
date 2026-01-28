@@ -1,3 +1,5 @@
-<div content style="background-color: #000000;">
-  <canvas class="emscripten" oncontextmenu="event.preventDefault()" id="canvas" #canvas></canvas>
+<div content>
+  <span (resized)="onResized($event)" #span>
+    <canvas class="emscripten" oncontextmenu="event.preventDefault()" id="canvas" #canvas></canvas>
+  </span>
 </div>

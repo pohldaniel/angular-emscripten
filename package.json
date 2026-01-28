@@ -24,7 +24,8 @@
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3",
-    "roboto-fontface": "^0.10.0"
+    "roboto-fontface": "^0.10.0",
+    "angular-resize-event-package": "^3.8.0"
     
   },
   "devDependencies": {

@@ -16,13 +16,16 @@ public:
 	~Application();
 
 	bool isRunning();
+	void resize(uint32_t width, uint32_t height);
+	
+	static void MessageLopp(void *arg);
+    static void Resize(uint32_t width, uint32_t height);
+	static bool IsInitialized();
 
 	static int Width;
 	static int Height;
-	
-	static void MessageLopp(void *arg);
 	static GLFWwindow* Window;
-
+    
 private:
 
 	void initWindow();
@@ -37,4 +40,5 @@ private:
 	
 	static StateMachine* Machine;
 	static double Time;
+	static bool Init;
 };

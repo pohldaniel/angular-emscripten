@@ -96,7 +96,6 @@ void Default::update() {
     if (glfwGetMouseButton(Application::Window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {	
 		dx = mouse.xDelta();
 		dy = mouse.yDelta();
-		std::cout << "Delta: " << dx << "  " << dy << std::endl;
 	}
 
     if (move || dx != 0.0f || dy != 0.0f) {
@@ -174,6 +173,11 @@ void Default::OnKeyDown(const Event::KeyboardEvent& event){
 
 void Default::OnKeyUp(const Event::KeyboardEvent& event) {
 
+}
+
+void Default::resize(int deltaW, int deltaH) {
+	m_camera.perspective(45.0f, static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 1000.0f);
+	m_camera.orthographic(0.0f, static_cast<float>(Application::Width), 0.0f, static_cast<float>(Application::Height), -1.0f, 1.0f);
 }
 
 void Default::applyTransformation(const TrackBall& arc) {
