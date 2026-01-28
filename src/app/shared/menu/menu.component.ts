@@ -50,8 +50,23 @@ export class MenuComponent implements OnInit{
   }
 
   ngOnInit() {  
-    this.targetedSubmenu = "two";
-    this.storeTargetedSubmenu = "two";       
+    if(this.router.url == '/imgui' || 
+      this.router.url == '/open-gl' || 
+      this.router.url == '/cube' || 
+      this.router.url == '/triangle' || 
+      this.router.url == '/shape')
+    {
+      this.targetedSubmenu = 'two';
+      this.storeTargetedSubmenu = 'two';     
+    }
+
+    if(this.router.url == '/webgpu/wireframe' || 
+       this.router.url == '/webgpu/additional' ||
+       this.router.url == '/webgpu/compute')
+    {
+      this.targetedSubmenu = 'three';
+      this.storeTargetedSubmenu = 'three';     
+    }
   }
 
   ngAfterViewInit(){
@@ -66,10 +81,10 @@ export class MenuComponent implements OnInit{
     .set(Math.pow(2, 1), {target : '/open-gl', description: 'OpenGL', descriptionLineBreak: '', class : 'two-two', index : 1} as MenuItem)
     .set(Math.pow(2, 2), {target : '/cube', description: 'Cube', descriptionLineBreak: '', class : 'two-three', index : 2} as MenuItem)
     .set(Math.pow(2, 3), {target : '/triangle', description: 'Triangle', descriptionLineBreak: '', class : 'two-four', index : 3} as MenuItem)
-    .set(Math.pow(2, 4), {target : '/web-gpu', description: 'WebGPU', descriptionLineBreak: '', class : 'two-five', index : 4} as MenuItem)
-    .set(Math.pow(2, 5), {target : '/web-gpu-2', description: 'WebGPU2', descriptionLineBreak: '', class : 'two-six', index : 5} as MenuItem)
-    .set(Math.pow(2, 6), {target : '/web-gpu-3', description: 'WebGPU3', descriptionLineBreak: '', class : 'two-seven', index : 6} as MenuItem)
-    .set(Math.pow(2, 7), {target : '/shape', description: 'Shape', descriptionLineBreak: '', class : 'two-eight', index : 7} as MenuItem);
+    .set(Math.pow(2, 4), {target : '/shape', description: 'Shape', descriptionLineBreak: '', class : 'two-eight', index : 4} as MenuItem)
+    .set(Math.pow(2, 5), {target : '/webgpu/wireframe', description: 'Wireframe', descriptionLineBreak: '', class : 'three-one', index : 5} as MenuItem)
+    .set(Math.pow(2, 6), {target : '/webgpu/additional', description: 'Additional', descriptionLineBreak: '', class : 'three-two', index : 6} as MenuItem)
+    .set(Math.pow(2, 7), {target : '/webgpu/compute', description: 'Compute', descriptionLineBreak: '', class : 'three-three', index : 7} as MenuItem);
  
     for(let key of map.keys()) {
 

@@ -4,9 +4,9 @@ import {ImguiComponent} from './pages/imgui/imgui.component';
 import {OpenGLComponent} from './pages/open-gl/open-gl.component';
 import {CubeComponent} from './pages/cube/cube.component';
 import {TriangleComponent} from './pages/triangle/triangle.component';
-import {WebGPUComponent} from './pages/web-gpu/web-gpu.component';
-import {WebGPU2Component} from './pages/web-gpu-2/web-gpu-2.component';
-import {WebGPU3Component} from './pages/web-gpu-3/web-gpu-3.component';
+import {WireframeComponent} from './pages/webgpu/wireframe/wireframe.component';
+import {AdditionalComponent} from './pages/webgpu/additional/additional.component';
+import {ComputeComponent} from './pages/webgpu/compute/compute.component';
 import {ShapeComponent} from './pages/shape/shape.component';
 
 export const routes: Routes = [
@@ -30,28 +30,28 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
-  { path: 'web-gpu', 
-    component: WebGPUComponent,
-    canActivate: [authGuard],
-    data : {showSidebar: true}
-  }, 
-  { path: 'web-gpu-2', 
-    component: WebGPU2Component,
-    canActivate: [authGuard],
-    data : {showSidebar: true}
-  },
-  { path: 'web-gpu-3', 
-    component: WebGPU3Component,
-    canActivate: [authGuard],
-    data : {showSidebar: true}
-  },
   { path: 'shape', 
     component: ShapeComponent,
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/wireframe', 
+    component: WireframeComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  }, 
+  { path: 'webgpu/additional', 
+    component: AdditionalComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
+  { path: 'webgpu/compute', 
+    component: ComputeComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'web-gpu'
+    redirectTo: 'webgpu/wireframe'
   } 
 ];
