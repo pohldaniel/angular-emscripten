@@ -194,5 +194,9 @@ export class MenuComponent implements OnInit{
   navigate(route: string){
     this.router.navigateByUrl(route);
   }
+
+  logout(){
+    window.location.href = 'https://github.com/pohldaniel/angular-emscripten';
+  }
 }
   
