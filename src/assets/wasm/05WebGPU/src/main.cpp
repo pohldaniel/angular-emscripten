@@ -17,8 +17,8 @@ extern "C" {
 EM_BOOL OnWindowResize(int eventType, const EmscriptenUiEvent* e, void* userdata){
   Application* application  = reinterpret_cast<Application*>(userdata);
   int width, height;
-  emscripten_get_canvas_element_size("#canvas", &w, &h);
-  application->resize(width, height;
+  emscripten_get_canvas_element_size("#canvas", &width, &height);
+  application->resize(width, height);
 
   return EM_FALSE;
 }
