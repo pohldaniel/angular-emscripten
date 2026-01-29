@@ -4,7 +4,6 @@
 #include "Event.h"
 
 enum States {
-	SHAPE,
 	DEFAULT
 };
 

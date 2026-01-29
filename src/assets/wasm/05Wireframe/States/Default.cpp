@@ -7,6 +7,7 @@
 #include <WebGPU/WgpContext.h>
 #include "Default.h"
 #include "Application.h"
+#include "Mouse.h"
 
 Default::Default(StateMachine& machine) : State(machine, States::DEFAULT) {
 
@@ -41,12 +42,19 @@ Default::Default(StateMachine& machine) : State(machine, States::DEFAULT) {
 	m_uniforms.modelMatrix = glm::mat4(1.0f);
 	m_uniforms.color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getWgpuBuffer(), 0, &m_uniforms, sizeof(Uniforms));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), 0, &m_uniforms, sizeof(Uniforms));
 	wgpContext.OnDraw = std::bind(&Default::OnDraw, this, std::placeholders::_1);
 }
 
 Default::~Default() {
-	
+	m_uniformBuffer.markForDelete();
+
+	wgpuTextureDestroy(m_texture);
+	wgpuTextureRelease(m_texture);
+	m_texture = NULL;
+
+	wgpuTextureViewRelease(m_textureView);
+	m_textureView = NULL;
 }
 
 void Default::fixedUpdate() {
@@ -121,9 +129,9 @@ void Default::render() {
 
 void Default::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
 
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getWgpuBuffer(), offsetof(Uniforms, projectionMatrix), &m_uniforms.projectionMatrix, sizeof(Uniforms::projectionMatrix));
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getWgpuBuffer(), offsetof(Uniforms, viewMatrix), &m_uniforms.viewMatrix, sizeof(Uniforms::viewMatrix));
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getWgpuBuffer(), offsetof(Uniforms, modelMatrix), &m_uniforms.modelMatrix, sizeof(Uniforms::modelMatrix));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projectionMatrix), &m_uniforms.projectionMatrix, sizeof(Uniforms::projectionMatrix));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, viewMatrix), &m_uniforms.viewMatrix, sizeof(Uniforms::viewMatrix));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, modelMatrix), &m_uniforms.modelMatrix, sizeof(Uniforms::modelMatrix));
 	
 	wgpuRenderPassEncoderSetViewport(renderPassEncoder, 0.0f, 0.0f, static_cast<float>(Application::Width), static_cast<float>(Application::Height), 0.0f, 1.0f);
 	
@@ -239,12 +247,11 @@ void Default::renderUi(const WGPURenderPassEncoder& renderPassEncoder) {
 WGPUBindGroupLayout Default::OnBindGroupLayoutPTN() {
 	std::vector<WGPUBindGroupLayoutEntry> bindingLayoutEntries(3);
 
-	bindingLayoutEntries.resize(3);
-	WGPUBindGroupLayoutEntry& bindingLayout = bindingLayoutEntries[0];
-	bindingLayout.binding = 0;
-	bindingLayout.visibility = WGPUShaderStage_Vertex | WGPUShaderStage_Fragment;
-	bindingLayout.buffer.type = WGPUBufferBindingType_Uniform;
-	bindingLayout.buffer.minBindingSize = sizeof(Uniforms);
+	WGPUBindGroupLayoutEntry& uniformLayout = bindingLayoutEntries[0];
+	uniformLayout.binding = 0;
+	uniformLayout.visibility = WGPUShaderStage_Vertex | WGPUShaderStage_Fragment;
+	uniformLayout.buffer.type = WGPUBufferBindingType_Uniform;
+	uniformLayout.buffer.minBindingSize = sizeof(Uniforms);
 
 	WGPUBindGroupLayoutEntry& textureBindingLayout = bindingLayoutEntries[1];
 	textureBindingLayout.binding = 1;
@@ -266,11 +273,11 @@ WGPUBindGroupLayout Default::OnBindGroupLayoutPTN() {
 WGPUBindGroupLayout Default::OnBindGroupLayoutWireframe() {
 	std::vector<WGPUBindGroupLayoutEntry> bindingLayoutEntries(4);
 
-	WGPUBindGroupLayoutEntry& bindingLayout = bindingLayoutEntries[0];
-	bindingLayout.binding = 0;
-	bindingLayout.visibility = WGPUShaderStage_Vertex | WGPUShaderStage_Fragment;
-	bindingLayout.buffer.type = WGPUBufferBindingType_Uniform;
-	bindingLayout.buffer.minBindingSize = sizeof(Uniforms);
+	WGPUBindGroupLayoutEntry& uniformLayout = bindingLayoutEntries[0];
+	uniformLayout.binding = 0;
+	uniformLayout.visibility = WGPUShaderStage_Vertex | WGPUShaderStage_Fragment;
+	uniformLayout.buffer.type = WGPUBufferBindingType_Uniform;
+	uniformLayout.buffer.minBindingSize = sizeof(Uniforms);
 
 	WGPUBindGroupLayoutEntry& indiceBindingLayout = bindingLayoutEntries[1];
 	indiceBindingLayout.binding = 1;

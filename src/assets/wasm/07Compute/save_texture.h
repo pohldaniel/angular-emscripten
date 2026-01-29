@@ -1,83 +1,83 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
-
-#include <webgpu.hpp>
-
 #include <filesystem>
 #include <string>
 
-bool saveTexture(const std::filesystem::path path, wgpu::Device device, wgpu::Texture texture, int mipLevel) {
-	using namespace wgpu;
-	
-	if (texture.getDimension() != TextureDimension::_2D) {
-		throw std::runtime_error("Only 2D textures are supported by save_texture.h!");
-	}
+#include <webgpu/webgpu.h>
+#include <WebGPU/WgpTexture.h>
+
+struct UData {
+	bool& done;
+	bool& success;
+	WGPUBufferDescriptor pixelBufferDesc;
+	WGPUBuffer pixelBuffer;
+	std::filesystem::path path;
+	uint32_t width;
+	uint32_t height;
+	uint32_t channels;
+	uint32_t paddedBytesPerRow;
+};
+
+bool saveTexture(const std::filesystem::path path, const WGPUDevice& device, const WgpTexture& texture, int mipLevel) {	
 	uint32_t width = texture.getWidth() / (1 << mipLevel);
 	uint32_t height = texture.getHeight() / (1 << mipLevel);
 	uint32_t channels = 4; // TODO: infer from format
 	uint32_t componentByteSize = 1; // TODO: infer from format
-
 	uint32_t bytesPerRow = componentByteSize * channels * width;
-	// Special case: WebGPU spec forbids texture-to-buffer copy with a
-	// bytesPerRow lower than 256 so we first copy to a temporary texture.
 	uint32_t paddedBytesPerRow = std::max(256u, bytesPerRow);
 
-	// Create a buffer to get pixels
-	BufferDescriptor pixelBufferDesc = Default;
+	WGPUBufferDescriptor pixelBufferDesc = {};
 	pixelBufferDesc.mappedAtCreation = false;
-	pixelBufferDesc.usage = BufferUsage::MapRead | BufferUsage::CopyDst;
+	pixelBufferDesc.usage = WGPUBufferUsage_MapRead | WGPUBufferUsage_CopyDst;
 	pixelBufferDesc.size = paddedBytesPerRow * height;
-	Buffer pixelBuffer = device.createBuffer(pixelBufferDesc);
+	WGPUBuffer pixelBuffer = wgpuDeviceCreateBuffer(device, &pixelBufferDesc);
 
-	// Start encoding the commands
-	Queue queue = device.getQueue();
-	CommandEncoder encoder = device.createCommandEncoder(Default);
+	WGPUQueue queue = wgpContext.queue;
+	WGPUCommandEncoderDescriptor commandEncoderDesc = {};
+	commandEncoderDesc.label = "command_encoder";
+	WGPUCommandEncoder encoder = wgpuDeviceCreateCommandEncoder(wgpContext.device, &commandEncoderDesc);
 
-	// Get pixels from texture to buffer
-	ImageCopyTexture source = Default;
-	source.texture = texture;
+	WGPUImageCopyTexture source = {};
+	source.texture = texture.getTexture();
 	source.mipLevel = mipLevel;
-	ImageCopyBuffer destination = Default;
+	WGPUImageCopyBuffer destination = {};
 	destination.buffer = pixelBuffer;
 	destination.layout.bytesPerRow = paddedBytesPerRow;
 	destination.layout.offset = 0;
 	destination.layout.rowsPerImage = height;
-	encoder.copyTextureToBuffer(source, destination, { width, height, 1 });
+	WGPUExtent3D size = { width, height, 1 };
+	wgpuCommandEncoderCopyTextureToBuffer(encoder, &source, &destination, &size);
 
-	// Issue commands
-	CommandBuffer command = encoder.finish(Default);
-	queue.submit(command);
+	WGPUCommandBuffer command = wgpuCommandEncoderFinish(encoder, NULL);
+	wgpuQueueSubmit(queue, 1, &command);
 
-	// Map buffer
 	bool done = false;
 	bool success = false;
-	auto callbackHandle = pixelBuffer.mapAsync(MapMode::Read, 0, pixelBufferDesc.size, [&](BufferMapAsyncStatus status) {
-		if (status != BufferMapAsyncStatus::Success) {
-			success = false;
+    UData userdata = {done, success, pixelBufferDesc, pixelBuffer, path, width, height, channels, paddedBytesPerRow};
+	auto callbackHandle = [](WGPUBufferMapAsyncStatus status, void* userdata) {
+       UData* userData = reinterpret_cast<UData*>(userdata);
+	   if (status != WGPUBufferMapAsyncStatus::WGPUBufferMapAsyncStatus_Success) {
+			userData->success = false;
+		}else {
+			const unsigned char* pixelData = (const unsigned char*)wgpuBufferGetConstMappedRange(userData->pixelBuffer, 0, userData->pixelBufferDesc.size);
+			int writeSuccess = stbi_write_png(userData->path.string().c_str(), (int)userData->width, (int)userData->height, (int)userData->channels, pixelData, userData->paddedBytesPerRow);
+
+			wgpuBufferUnmap(userData->pixelBuffer);
+
+			userData->success = writeSuccess != 0;
 		}
-		else {
-			const unsigned char* pixelData = (const unsigned char*)pixelBuffer.getConstMappedRange(0, pixelBufferDesc.size);
-			int writeSuccess = stbi_write_png(path.string().c_str(), (int)width, (int)height, (int)channels, pixelData, paddedBytesPerRow);
+		userData->done = true;
+	};
+	wgpuBufferMapAsync(pixelBuffer, WGPUMapMode::WGPUMapMode_Read, 0, pixelBufferDesc.size, callbackHandle, (void*)&userdata);
 
-			pixelBuffer.unmap();
-
-			success = writeSuccess != 0;
-		}
-		done = true;
-	});
-
-	// Wait for mapping
-	while (!done) {
+	while (!userdata.done) {
 #ifdef WEBGPU_BACKEND_WGPU
 		wgpuQueueSubmit(queue, 0, nullptr);
 #else
 		//device.tick();
 #endif
 	}
-
-	// Clean-up
-
-	pixelBuffer.destroy();
+	wgpuBufferDestroy(pixelBuffer);
 
 #ifdef WEBGPU_BACKEND_WGPU
 	wgpuBufferDrop(pixelBuffer);
@@ -88,5 +88,5 @@ bool saveTexture(const std::filesystem::path path, wgpu::Device device, wgpu::Te
 	wgpuQueueRelease(queue);
 #endif
 
-	return success;
+	return true;
 }

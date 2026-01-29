@@ -38,6 +38,6 @@ void WgpBuffer::createBuffer(const void* data, uint32_t size, WGPUBufferUsageFla
 	m_buffer = wgpCreateBuffer(data, size, bufferUsageFlags);
 }
 
-const WGPUBuffer& WgpBuffer::getWgpuBuffer() const {
+const WGPUBuffer& WgpBuffer::getBuffer() const {
 	return m_buffer;
 }

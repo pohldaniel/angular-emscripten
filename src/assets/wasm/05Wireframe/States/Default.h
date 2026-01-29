@@ -5,7 +5,6 @@
 #include <WebGPU/WgpMesh.h>
 #include <WebGPU/WgpData.h>
 #include <WebGPU/WgpModel.h>
-#include "Mouse.h"
 #include "Camera.h"
 #include "TrackBall.h"
 #include "ObjModel.h"

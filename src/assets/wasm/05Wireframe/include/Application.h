@@ -12,6 +12,7 @@ class Application {
 	friend void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos);
 
 public:
+
 	Application(float& dt, float& fdt);
 	~Application();
 

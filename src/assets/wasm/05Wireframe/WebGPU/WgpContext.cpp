@@ -302,19 +302,15 @@ WGPUShaderModule wgpCreateShader(std::string path) {
 	file.seekg(0);
 	file.read(shaderSource.data(), size);
 
-	WGPUShaderModuleWGSLDescriptor shaderModuleWGSLDescriptor;
+	WGPUShaderModuleWGSLDescriptor shaderModuleWGSLDescriptor = {};
 	shaderModuleWGSLDescriptor.chain.next = NULL;
 	shaderModuleWGSLDescriptor.chain.sType = WGPUSType_ShaderModuleWGSLDescriptor;
 	shaderModuleWGSLDescriptor.code = shaderSource.c_str();
 
-	WGPUShaderModuleDescriptor shaderModuleDescriptor;
-	//shaderModuleDescriptor.nextInChain =  reinterpret_cast<WGPUChainedStruct*>(&shaderModuleWGSLDescriptor.chain);
+	WGPUShaderModuleDescriptor shaderModuleDescriptor = {};
 	shaderModuleDescriptor.nextInChain = &shaderModuleWGSLDescriptor.chain;
-#ifdef WEBGPU_BACKEND_WGPU
-	shaderDesc.hintCount = 0;
-	shaderDesc.hints = NULL;
-#endif
-  return wgpuDeviceCreateShaderModule(wgpContext.device, &shaderModuleDescriptor);
+
+    return wgpuDeviceCreateShaderModule(wgpContext.device, &shaderModuleDescriptor);
 }
 
 void wgpCreateVertexBufferLayout(VertexLayoutSlot slot) {
@@ -350,6 +346,15 @@ void wgpPipelineLayoutsRelease() {
 
 	wgpContext.pipelineLayouts.clear();
 	wgpContext.pipelineLayouts.rehash(0u);
+
+	for (auto& it : wgpContext.computePipelines) {
+		WGPUBindGroupLayout bindGroupLayout = wgpuComputePipelineGetBindGroupLayout(it.second, 0);
+		wgpuBindGroupLayoutRelease(bindGroupLayout);
+		wgpuComputePipelineRelease(it.second);
+	}
+
+	wgpContext.computePipelines.clear();
+	wgpContext.computePipelines.rehash(0u);
 }
 
 void wgpPipelinesRelease() {
@@ -495,19 +500,10 @@ void wgpDraw() {
 	wgpuRenderPassEncoderRelease(renderPass);
 	wgpuTextureViewRelease(texureView);
 
-	WGPUCommandBufferDescriptor cmdBufferDescriptor = {};
-	cmdBufferDescriptor.label = "Command buffer";
-	WGPUCommandBuffer command = wgpuCommandEncoderFinish(encoder, NULL);
+	WGPUCommandBufferDescriptor commandBufferDescriptor = {};
+	commandBufferDescriptor.label = "command_buffer";
+	WGPUCommandBuffer command = wgpuCommandEncoderFinish(encoder, &commandBufferDescriptor);
 	wgpuQueueSubmit(wgpContext.queue, 1, &command );
-
-#ifndef __EMSCRIPTEN__
-	wgpuSurfacePresent(wgpContext.surface);
-#endif
-#ifdef WEBGPU_DAWN
-	wgpuDeviceTick(wgpContext.device);
-#endif
-	wgpuInstanceProcessEvents(wgpContext.instance);
-
 
 	wgpuCommandBufferRelease(command);
 	wgpuCommandEncoderRelease(encoder);
@@ -542,7 +538,7 @@ void WgpContext::createRenderPipelinePTN(std::string shaderModuleName, std::func
 	WGPUPipelineLayoutDescriptor pipelineLayoutDescriptor = {};
 	pipelineLayoutDescriptor.bindGroupLayoutCount = 1;
 	pipelineLayoutDescriptor.bindGroupLayouts = &bindGroupLayout;
-	pipelineLayouts[RP_PTN] = wgpuDeviceCreatePipelineLayout(wgpContext.device, &pipelineLayoutDescriptor);
+	pipelineLayouts["RP_PTN"] = wgpuDeviceCreatePipelineLayout(wgpContext.device, &pipelineLayoutDescriptor);
 
 	WGPUVertexState vertexState = {};
 	vertexState.module = shaderModules.at(shaderModuleName);
@@ -582,7 +578,7 @@ void WgpContext::createRenderPipelinePTN(std::string shaderModuleName, std::func
 	depthStencilState.stencilWriteMask = 0;
 
 	WGPURenderPipelineDescriptor renderPipelineDescriptor = {};
-	renderPipelineDescriptor.layout = pipelineLayouts.at(RP_PTN);
+	renderPipelineDescriptor.layout = pipelineLayouts.at("RP_PTN");
 	renderPipelineDescriptor.multisample.count = 1;
 	renderPipelineDescriptor.multisample.mask = ~0u;
 	renderPipelineDescriptor.multisample.alphaToCoverageEnabled = false;
@@ -605,7 +601,7 @@ void WgpContext::createRenderPipelineWireframe(std::string shaderModuleName, std
 	WGPUPipelineLayoutDescriptor pipelineLayoutDescriptor = {};
 	pipelineLayoutDescriptor.bindGroupLayoutCount = 1;
 	pipelineLayoutDescriptor.bindGroupLayouts = &bindGroupLayout;
-	pipelineLayouts[RP_WIREFRAME] = wgpuDeviceCreatePipelineLayout(wgpContext.device, &pipelineLayoutDescriptor);
+	pipelineLayouts["RP_WIREFRAME"] = wgpuDeviceCreatePipelineLayout(wgpContext.device, &pipelineLayoutDescriptor);
 
 	WGPUVertexState vertexState = {};
 	vertexState.module = shaderModules.at(shaderModuleName);
@@ -643,7 +639,7 @@ void WgpContext::createRenderPipelineWireframe(std::string shaderModuleName, std
 	depthStencilState.stencilWriteMask = 0;
 
 	WGPURenderPipelineDescriptor renderPipelineDescriptor = {};
-	renderPipelineDescriptor.layout = pipelineLayouts.at(RP_WIREFRAME);
+	renderPipelineDescriptor.layout = pipelineLayouts.at("RP_WIREFRAME");
 	renderPipelineDescriptor.multisample.count = 1;
 	renderPipelineDescriptor.multisample.mask = ~0u;
 	renderPipelineDescriptor.multisample.alphaToCoverageEnabled = false;
@@ -658,4 +654,23 @@ void WgpContext::createRenderPipelineWireframe(std::string shaderModuleName, std
 	renderPipelineDescriptor.primitive.cullMode = WGPUCullMode::WGPUCullMode_None;
 
 	wgpContext.renderPipelines[RP_WIREFRAME] = wgpuDeviceCreateRenderPipeline(wgpContext.device, &renderPipelineDescriptor);
+}
+
+void WgpContext::createComputePipeline(std::string shaderModuleName, std::string pipelineLayoutName, std::function <WGPUBindGroupLayout()> onBindGroupLayout) {
+	WGPUBindGroupLayout bindGroupLayout = onBindGroupLayout();
+
+	WGPUPipelineLayoutDescriptor pipelineLayoutDescriptor = {};
+	pipelineLayoutDescriptor.bindGroupLayoutCount = 1;
+	pipelineLayoutDescriptor.bindGroupLayouts = &bindGroupLayout;
+	pipelineLayouts[pipelineLayoutName] = wgpuDeviceCreatePipelineLayout(wgpContext.device, &pipelineLayoutDescriptor);
+
+	WGPUComputePipelineDescriptor computePipelineDesc = {};
+	computePipelineDesc.layout = pipelineLayouts.at(pipelineLayoutName);
+	computePipelineDesc.compute.module = shaderModules.at(shaderModuleName);
+	//computePipelineDesc.compute.entryPoint = WGPU_STR("computeFilter");
+	computePipelineDesc.compute.entryPoint = "computeSobelX";
+	computePipelineDesc.compute.constantCount = 0;
+	computePipelineDesc.compute.constants = NULL;
+	
+	wgpContext.computePipelines[pipelineLayoutName] = wgpuDeviceCreateComputePipeline(wgpContext.device, &computePipelineDesc);
 }

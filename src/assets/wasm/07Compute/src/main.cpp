@@ -1,6 +1,24 @@
 #include <emscripten.h>
 #include "Application.h"
 
+extern "C" {
+  EMSCRIPTEN_KEEPALIVE
+  void Resize(int width, int height){
+    Application::Resize(width, height);
+  }
+
+  EMSCRIPTEN_KEEPALIVE
+  bool IsInitialized(){
+    return Application::IsInitialized();
+  }
+
+  EMSCRIPTEN_KEEPALIVE
+  void Cleanup(){
+    emscripten_cancel_main_loop();
+    Application::Cleanup();
+  }
+}
+
 int main(int argc, const char* argv[]) {
   float deltaTime = 0.0f;
 	float fixedDeltaTime = 0.0f;

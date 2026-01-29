@@ -9,6 +9,7 @@
 
 #include "Application.h"
 #include "Event.h"
+#include "Mouse.h"
 
 GLFWwindow* Application::Window = nullptr;
 StateMachine* Application::Machine = nullptr;
@@ -68,18 +69,6 @@ void Application::initWebGPU(){
   wgpInit(Window);
 }
 
-bool Application::isRunning(){
-  messageLopp();
-  return glfwWindowShouldClose(Window);
-}
-
-void Application::messageLopp(){
-    glfwPollEvents();
-    Mouse::instance().update();
-    Machine->update();
-    Machine->render();
-}
-
 void Application::initImGUI() {
 	ImGui::CreateContext();
 	
@@ -100,6 +89,18 @@ void Application::initImGUI() {
 void Application::initStates(){
   Machine = new StateMachine(dt, fdt);
 	Machine->addStateAtTop(new Default(*Machine));
+}
+
+bool Application::isRunning(){
+  messageLopp();
+  return glfwWindowShouldClose(Window);
+}
+
+void Application::messageLopp(){
+    glfwPollEvents();
+    Mouse::instance().update();
+    Machine->update();
+    Machine->render();
 }
 
 void Application::Resize(uint32_t width, uint32_t height){

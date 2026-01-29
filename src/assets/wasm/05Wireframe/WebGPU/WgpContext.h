@@ -4,7 +4,6 @@
 #include <fstream>
 #include <utility>
 #include <webgpu/webgpu.h>
-#include <WebGpuUtils.h>
 #ifdef __EMSCRIPTEN__
 #  include <emscripten.h>
 #endif // __EMSCRIPTEN__
@@ -66,6 +65,7 @@ struct WgpContext {
 
     void createRenderPipelinePTN(std::string shaderModuleName, std::function <WGPUBindGroupLayout()> onBindGroupLayout);
     void createRenderPipelineWireframe(std::string shaderModuleName, std::function <WGPUBindGroupLayout()> onBindGroupLayout);
+	void createComputePipeline(std::string shaderModuleName, std::string pipelineLayoutName, std::function <WGPUBindGroupLayout()> onBindGroupLayout);
 
     void createVertexBufferLayout(VertexLayoutSlot slot = VL_PTN);
     void addSampler(const WGPUSampler& sampler, SamplerSlot samplerSlot = SS_LINEAR);
@@ -87,10 +87,11 @@ struct WgpContext {
 	WGPUTextureFormat colorformat = WGPUTextureFormat::WGPUTextureFormat_BGRA8Unorm;
 
 	std::unordered_map<RenderPipelineSlot, WGPURenderPipeline> renderPipelines;
+	std::unordered_map<std::string, WGPUComputePipeline> computePipelines;
 	std::function<void(const WGPURenderPassEncoder& commandBuffer)> OnDraw;
 
 private:
-	std::unordered_map<RenderPipelineSlot, WGPUPipelineLayout> pipelineLayouts;
+	std::unordered_map<std::string, WGPUPipelineLayout> pipelineLayouts;
 	std::unordered_map<SamplerSlot, WGPUSampler> samplers;
 	std::unordered_map<std::string, WGPUShaderModule> shaderModules;
 };

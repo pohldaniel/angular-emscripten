@@ -1,13 +1,22 @@
-emcc src/Shader.cpp^
+emcc src/Mouse.cpp^
+ src/Material.cpp^
+ src/Transform.cpp^
+ src/ObjModel.cpp^
+ src/Camera.cpp^
  src/Application.cpp^
  src/main.cpp^
- states/Shape.cpp^
+ WebGPU/WgpContext.cpp^
+ WebGPU/WgpTexture.cpp^
+ WebGPU/WgpBuffer.cpp^
+ WebGPU/WgpMesh.cpp^
+ WebGPU/WgpModel.cpp^
+ states/compute.cpp^
  states/StateMachine.cpp^
- src/ResourceManager.cpp^
- src/WebGpuUtils.cpp^
- glfw3webgpu.a^
  libimgui.a^
- -I "./" -I "./include" -I "./glm" -I "./libimgui" -I "./glfw3webgpu"^
+ libfreeimage.a^
+ -I "./" -I "./include" -I "./glm" -I "./libimgui" -I "./glfw3webgpu" -I  "./FreeImage"^
  -Wall^
+ -DFREEIMAGE_LIB -DWEBGPU_BACKEND=WGPU^
  -o webgpu.js -std=c++17 -Wno-missing-braces -Wunused-result -Os  --use-port=contrib.glfw3 -s USE_WEBGPU=1 --preload-file res/shader --preload-file res/models --preload-file res/textures -s ASYNCIFY -s ASSERTIONS -s TOTAL_MEMORY=67108864 -s ALLOW_MEMORY_GROWTH=1 -s "EXPORTED_FUNCTIONS=['_main']" -s "EXPORTED_RUNTIME_METHODS=['ccall']" -s MODULARIZE=1^
  -s EXPORT_NAME='ComputeModule'^
+ && exit

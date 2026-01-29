@@ -17,7 +17,7 @@ public:
 	void createBuffer(uint32_t size, WGPUBufferUsageFlags bufferUsageFlags);
 	void cleanup();
 	void markForDelete();
-	const WGPUBuffer& getWgpuBuffer() const;
+	const WGPUBuffer& getBuffer() const;
 
 private:
 
