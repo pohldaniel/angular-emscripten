@@ -15,7 +15,14 @@
 #include "Material.h"
 #include "Transform.h"
 
-class ObjModel;
+enum ModelColor {
+	MC_WHITE,
+	MC_RED,
+	MC_GREEN,
+	MC_BLUE,
+	MC_BLACK,
+	MC_POSITION
+};
 
 struct IndexBufferCreator {
 
@@ -73,8 +80,9 @@ public:
 	const std::vector<unsigned int>& getIndexBuffer() const;
 	unsigned int getNumberOfTriangles();
 	
-	void generateTangents();
 	void generateNormals();
+	void generateTangents();
+	void generateColors(ModelColor modelColor = MC_WHITE);
 	void packBuffer();
 	void cleanup();
 	void rewind();
@@ -100,6 +108,7 @@ private:
 
 	void static GenerateNormals(std::vector<float>& vertexBuffer, std::vector<unsigned int>& indexBuffer, ObjModel& model, bool& hasNormals, unsigned int& stride, unsigned int startIndex, unsigned int endIndex);
 	void static GenerateTangents(std::vector<float>& vertexBuffer, std::vector<unsigned int>& indexBuffer, ObjModel& model, bool& hasNormals, bool& hasTangents, unsigned int& stride, unsigned int startIndex, unsigned int endIndex);
+	void static GenerateColors(std::vector<float>& vertexBuffer, std::vector<unsigned int>& indexBuffer, ObjModel& model, unsigned int& stride, unsigned int startIndex, unsigned int endIndex, ModelColor modelColor);
 	void static PackBuffer(std::vector<float>& vertexBuffer, unsigned int stride);
 	void static Rewind(const std::vector<float>& vertexBuffer, std::vector<unsigned int>& indexBuffer, unsigned int stride);
 

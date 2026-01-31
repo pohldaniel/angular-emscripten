@@ -5,7 +5,7 @@ import {OpenGLComponent} from './pages/open-gl/open-gl.component';
 import {CubeComponent} from './pages/cube/cube.component';
 import {TriangleComponent} from './pages/triangle/triangle.component';
 import {WireframeComponent} from './pages/webgpu/wireframe/wireframe.component';
-import {AdditionalComponent} from './pages/webgpu/additional/additional.component';
+import {SpecularityComponent} from './pages/webgpu/specularity/specularity.component';
 import {ComputeComponent} from './pages/webgpu/compute/compute.component';
 import {ShapeComponent} from './pages/shape/shape.component';
 
@@ -40,8 +40,8 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   }, 
-  { path: 'webgpu/additional', 
-    component: AdditionalComponent,
+  { path: 'webgpu/specularity', 
+    component: SpecularityComponent,
     canActivate: [authGuard],
     data : {showSidebar: true}
   },

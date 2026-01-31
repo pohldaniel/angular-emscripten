@@ -18,6 +18,16 @@ extern "C" {
     emscripten_cancel_main_loop();
     Application::Cleanup();
   }
+
+  EMSCRIPTEN_KEEPALIVE
+  int GetWidth(){
+    return Application::Width;
+  }
+
+  EMSCRIPTEN_KEEPALIVE
+  int GetHeight(){
+    return Application::Height;
+  }
 }
 
 EM_BOOL OnWindowResize(int eventType, const EmscriptenUiEvent* e, void* userdata){

@@ -1,4 +1,4 @@
-import {Component, OnInit, AfterViewInit,ViewChild,ElementRef, OnDestroy, NgZone} from '@angular/core';
+import {Component, OnInit, AfterViewInit,ViewChild,ElementRef, OnDestroy, NgZone, Renderer2} from '@angular/core';
 import {NgStyle} from '@angular/common';
 import {EmscriptenWasmComponent} from "src/app/emscripten-wasm.component";
 import {ResizedDirective} from 'src/app/directives/resized.directive';
@@ -17,8 +17,9 @@ export class ComputeComponent extends EmscriptenWasmComponent implements OnInit,
   @ViewChild('span') span!: ElementRef;
   error!: string;
   moduleLoaded: boolean = false;
+  useNativeSize: boolean = false;
 
-  constructor(private ngZone: NgZone) {
+  constructor(private ngZone: NgZone, private renderer: Renderer2) {
     super("ComputeModule",  'assets/wasm/07Compute/webgpu.js', 'assets/wasm/07Compute/webgpu.wasm', 'assets/wasm/07Compute/webgpu.data');
   }
 
@@ -35,18 +36,28 @@ export class ComputeComponent extends EmscriptenWasmComponent implements OnInit,
   
   override ngAfterViewInit() {
     super.ngAfterViewInit();
-    this.loadModule();
+    let width = getComputedStyle(this.span.nativeElement).getPropertyValue('width');
+    let height = getComputedStyle(this.span.nativeElement).getPropertyValue('height');
+    let widthN = parseInt(width.substring(0, width.length - 2));
+    let heightN = parseInt(height.substring(0, height.length - 2));
+    this.loadModule(widthN , heightN);
   }
   
-  loadModule(){
+  loadModule(width: number, height: number){
     setTimeout(() => {  
-      if(this.module && this.module.ccall!('IsInitialized', 'Boolean', [], [])){ 
-        this.canvas.nativeElement.width  = this.span.nativeElement.clientWidth - 5;
-        this.canvas.nativeElement.height = this.span.nativeElement.clientHeight - 5;
-        this.module.ccall!('Resize', 'void', ['number', 'number'], [this.canvas.nativeElement.width, this.canvas.nativeElement.height]);
-        this.moduleLoaded = true; 
+      if(this.module && this.module.ccall!('IsInitialized', 'boolean', [], [])){ 
+        this.canvas.nativeElement.width  = this.useNativeSize ? this.module.ccall!('GetWidth', 'number', [], []) as number : width - 5;
+        this.canvas.nativeElement.height = this.useNativeSize ? this.module.ccall!('GetHeight', 'number', [], []) as number : height - 5;
+        
+        if(this.useNativeSize){
+          this.renderer.setStyle(this.span.nativeElement, 'width', this.canvas.nativeElement.width + 5 + 'px');
+          this.renderer.setStyle(this.span.nativeElement, 'height', this.canvas.nativeElement.height + 5 + 'px');
+        }
+
+        this.module.ccall!('Resize', 'void', ['number', 'number'], [this.canvas.nativeElement.width, this.canvas.nativeElement.height]); 
+        this.moduleLoaded = true;
       }else{
-        this.loadModule();
+        this.loadModule(width, height);
       }
     }, 100);
   }

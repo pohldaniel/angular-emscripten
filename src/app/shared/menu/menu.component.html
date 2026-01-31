@@ -53,7 +53,7 @@
             </button>  
           </li>
           <li id="three-two" class="list-item-button">
-            <button [attr.tabindex]="router.url=='/webgpu/additional' ? -1 : (storeTargetedSubmenu=='three' ? 0 : -1)" (click)="navigate('/webgpu/additional')" [class.active]="router.url == '/webgpu/additional'">Additional
+            <button [attr.tabindex]="router.url=='/webgpu/specularity' ? -1 : (storeTargetedSubmenu=='three' ? 0 : -1)" (click)="navigate('/webgpu/specularity')" [class.active]="router.url == '/webgpu/specularity'">Specularity
               <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1" (click)="updateFavorites($event, 6, checked[6]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
                 <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[6] ? 'star' : 'star_outline'}}</mat-icon>                 
               </span>                       

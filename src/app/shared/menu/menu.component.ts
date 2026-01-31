@@ -61,7 +61,7 @@ export class MenuComponent implements OnInit{
     }
 
     if(this.router.url == '/webgpu/wireframe' || 
-       this.router.url == '/webgpu/additional' ||
+       this.router.url == '/webgpu/specularity' ||
        this.router.url == '/webgpu/compute')
     {
       this.targetedSubmenu = 'three';
@@ -83,7 +83,7 @@ export class MenuComponent implements OnInit{
     .set(Math.pow(2, 3), {target : '/triangle', description: 'Triangle', descriptionLineBreak: '', class : 'two-four', index : 3} as MenuItem)
     .set(Math.pow(2, 4), {target : '/shape', description: 'Shape', descriptionLineBreak: '', class : 'two-eight', index : 4} as MenuItem)
     .set(Math.pow(2, 5), {target : '/webgpu/wireframe', description: 'Wireframe', descriptionLineBreak: '', class : 'three-one', index : 5} as MenuItem)
-    .set(Math.pow(2, 6), {target : '/webgpu/additional', description: 'Additional', descriptionLineBreak: '', class : 'three-two', index : 6} as MenuItem)
+    .set(Math.pow(2, 6), {target : '/webgpu/specularity', description: 'Apecularity', descriptionLineBreak: '', class : 'three-two', index : 6} as MenuItem)
     .set(Math.pow(2, 7), {target : '/webgpu/compute', description: 'Compute', descriptionLineBreak: '', class : 'three-three', index : 7} as MenuItem);
  
     for(let key of map.keys()) {
