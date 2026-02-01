@@ -150,7 +150,7 @@ void Compute::renderUi(const WGPURenderPassEncoder& renderPassEncoder, bool forc
 		offset += width;
 	}
 
-	bool changed = false;
+	/*bool changed = false;
 	ImGui::Begin("Parameters");
 	float minimum = m_parameters.normalize  ? 0.0f : -2.0f;
 	float maximum = m_parameters.normalize ? 4.0f : 2.0f;
@@ -168,7 +168,7 @@ void Compute::renderUi(const WGPURenderPassEncoder& renderPassEncoder, bool forc
 			: m_parameters.kernel;
 		m_uniforms.filterType = (uint32_t)m_parameters.filterType;
 	}
-	m_shouldCompute = changed || force;
+	m_shouldCompute = changed || force;*/
 
 	ImGui::Begin("Settings");
 	ImGui::SliderFloat("Scale", &m_scale, 0.0f, 2.0f);
