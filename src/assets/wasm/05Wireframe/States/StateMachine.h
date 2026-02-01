@@ -4,7 +4,7 @@
 #include "Event.h"
 
 enum States {
-	DEFAULT
+	WIREFRAME
 };
 
 class State;

@@ -707,7 +707,7 @@ void WgpContext::createComputePipeline(std::string shaderModuleName, std::string
 	WGPUComputePipelineDescriptor computePipelineDesc = {};
 	computePipelineDesc.layout = pipelineLayouts.at(pipelineLayoutName);
 	computePipelineDesc.compute.module = shaderModules.at(shaderModuleName);
-	//computePipelineDesc.compute.entryPoint = WGPU_STR("computeFilter");
+	//computePipelineDesc.compute.entryPoint = "computeFilter";
 	computePipelineDesc.compute.entryPoint = "computeSobelX";
 	computePipelineDesc.compute.constantCount = 0;
 	computePipelineDesc.compute.constants = NULL;

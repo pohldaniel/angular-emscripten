@@ -104,8 +104,8 @@ void WgpMesh::setRenderPipelineSlot(RenderPipelineSlot renderPipelineSlot) {
 
 }
 
-void WgpMesh::createBindGroup(const std::string& pipelineName){
-	std::vector<WGPUBindGroupEntry> bindings(3);
+void WgpMesh::createBindGroup(const std::string& pipelineName, const WgpBuffer& buffer) {
+	std::vector<WGPUBindGroupEntry> bindings(4);
 
 	bindings[0].binding = 0;
 	bindings[0].buffer = uniformBuffer;
@@ -117,6 +117,11 @@ void WgpMesh::createBindGroup(const std::string& pipelineName){
 
 	bindings[2].binding = 2;
 	bindings[2].sampler = wgpContext.getSampler(SS_LINEAR);
+
+	bindings[3].binding = 3;
+	bindings[3].buffer = buffer.getBuffer();
+	bindings[3].offset = 0;
+	bindings[3].size = sizeof(LightingUniforms);
 
 	WGPUBindGroupDescriptor bindGroupDesc = {};
 	bindGroupDesc.layout = wgpuRenderPipelineGetBindGroupLayout(wgpContext.renderPipelinesC.at(pipelineName), 0);

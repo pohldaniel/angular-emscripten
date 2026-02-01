@@ -10,7 +10,7 @@
 
 Compute::Compute(StateMachine& machine) : State(machine, States::COMPUTE) {
 
-	m_uniformBuffer.createBuffer(sizeof(Uniforms_Compute), WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform);
+	m_uniformBuffer.createBuffer(sizeof(ComputeUniforms), WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform);
 	wgpContext.addSampler(wgpCreateSampler());
 
 	wgpContext.addSahderModule("COMPUTE", "res/shader/compute.wgsl");
@@ -61,7 +61,7 @@ void Compute::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
 
 void Compute::compute() {
 	if (m_shouldCompute) {
-		wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), 0, &m_uniforms, sizeof(Uniforms_Compute));
+		wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), 0, &m_uniforms, sizeof(ComputeUniforms));
 
 		WGPUCommandEncoderDescriptor commandEncoderDesc = {};
 		commandEncoderDesc.label = "command_encoder";
@@ -197,7 +197,7 @@ WGPUBindGroupLayout Compute::OnBindGroupLayout() {
 	WGPUBindGroupLayoutEntry& uniformLayout = bindingLayoutEntries[2];
 	uniformLayout.binding = 2;
 	uniformLayout.buffer.type = WGPUBufferBindingType::WGPUBufferBindingType_Uniform;
-	uniformLayout.buffer.minBindingSize = sizeof(Uniforms_Compute);
+	uniformLayout.buffer.minBindingSize = sizeof(ComputeUniforms);
 	uniformLayout.visibility = WGPUShaderStage_Compute;
 
 	WGPUBindGroupLayoutDescriptor bindGroupLayoutDescriptor = {};
@@ -218,7 +218,7 @@ WGPUBindGroup Compute::createBindGroup(const WGPUTextureView& inputTextureView, 
 	entries[2].binding = 2;
 	entries[2].buffer = uniformBuffer;
 	entries[2].offset = 0;
-	entries[2].size = sizeof(Uniforms_Compute);
+	entries[2].size = sizeof(ComputeUniforms);
 
 	WGPUBindGroupDescriptor bindGroupDesc = {};
 	bindGroupDesc.layout = wgpuComputePipelineGetBindGroupLayout(wgpContext.computePipelines.at("CP_COMPUTE"), 0);

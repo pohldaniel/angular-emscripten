@@ -10,7 +10,7 @@ emcc src/Mouse.cpp^
  WebGPU/WgpBuffer.cpp^
  WebGPU/WgpMesh.cpp^
  WebGPU/WgpModel.cpp^
- states/Default.cpp^
+ states/Wireframe.cpp^
  states/StateMachine.cpp^
  libimgui.a^
  libfreeimage.a^

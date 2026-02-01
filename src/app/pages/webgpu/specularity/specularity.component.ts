@@ -17,7 +17,7 @@ export class SpecularityComponent extends EmscriptenWasmComponent implements OnI
   @ViewChild('span') span!: ElementRef;
   error!: string;
   moduleLoaded: boolean = false;
-  useNativeSize: boolean = true;
+  useNativeSize: boolean = false;
 
   constructor(private ngZone: NgZone, private renderer: Renderer2) {
     super("SpecularityModule",  'assets/wasm/06Specularity/webgpu.js', 'assets/wasm/06Specularity/webgpu.wasm', 'assets/wasm/06Specularity/webgpu.data');

@@ -5,7 +5,7 @@
 
 #include <WebGPU/WgpContext.h>
 
-#include <States/Default.h>
+#include <States/Wireframe.h>
 
 #include "Application.h"
 #include "Event.h"
@@ -88,7 +88,7 @@ void Application::initImGUI() {
 
 void Application::initStates(){
   Machine = new StateMachine(dt, fdt);
-	Machine->addStateAtTop(new Default(*Machine));
+	Machine->addStateAtTop(new Wireframe(*Machine));
 }
 
 bool Application::isRunning(){

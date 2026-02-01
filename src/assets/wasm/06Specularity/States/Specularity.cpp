@@ -5,6 +5,10 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_internal.h>
 
+#include <glm/ext.hpp>
+#include <glm/gtc/type_ptr.hpp> 
+#include <glm/gtx/polar_coordinates.hpp>
+
 #include <WebGPU/WgpContext.h>
 #include "Specularity.h"
 #include "Application.h"
@@ -13,17 +17,18 @@
 Specularity::Specularity(StateMachine& machine) : State(machine, States::SPECULARITY) {
 
     m_uniformBuffer.createBuffer(sizeof(Uniforms), WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform);
+	m_lightUniformBuffer.createBuffer(sizeof(LightingUniforms), WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform);
 	wgpContext.addSampler(wgpCreateSampler());
 	m_texture = wgpCreateTexture(512, 512, WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst, WGPUTextureFormat::WGPUTextureFormat_RGBA8Unorm);
 	m_textureView = wgpCreateTextureView(WGPUTextureFormat::WGPUTextureFormat_RGBA8Unorm, WGPUTextureAspect::WGPUTextureAspect_All, m_texture);
  
-    wgpContext.addSahderModule("BOAT", "res/shader/shader_new.wgsl");
+    wgpContext.addSahderModule("BOAT", "res/shader/specularity.wgsl");
 	wgpContext.createRenderPipeline("BOAT", "RP_PTNC", VL_PTNC, std::bind(&Specularity::OnBindGroupLayout, this));
 
     m_boat.loadModel("res/models/fourareen.obj", false, false, false, false, false, true);
 	m_boat.generateColors();
 	m_wgpBoat.create(m_boat, m_textureView, m_uniformBuffer);
-	m_wgpBoat.createBindGroup("RP_PTNC");
+	m_wgpBoat.createBindGroup("RP_PTNC", m_lightUniformBuffer);
 
     wgpContext.OnDraw = std::bind(&Specularity::OnDraw, this, std::placeholders::_1);
 	
@@ -38,6 +43,12 @@ Specularity::Specularity(StateMachine& machine) : State(machine, States::SPECULA
 	m_uniforms.projectionMatrix = glm::perspective(glm::radians(45.0f), static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.01f, 100.0f);
 	m_uniforms.color = { 0.0f, 1.0f, 0.4f, 1.0f };
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), 0, &m_uniforms, sizeof(Uniforms));
+
+	m_lightingUniforms.directions[0] = { 0.5f, -0.9f, 0.1f, 0.0f };
+	m_lightingUniforms.directions[1] = { 0.2f, 0.4f, 0.3f, 0.0f };
+	m_lightingUniforms.colors[0] = { 1.0f, 0.9f, 0.6f, 1.0f };
+	m_lightingUniforms.colors[1] = { 0.6f, 0.9f, 1.0f, 1.0f };
+	updateLightingUniforms();
 }
 
 Specularity::~Specularity() {
@@ -57,6 +68,7 @@ void Specularity::fixedUpdate() {
 
 void Specularity::update() {
 	updateDragInertia();
+	updateLightingUniforms();
 }
 
 void Specularity::render() {
@@ -73,8 +85,8 @@ void Specularity::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
 
 	m_wgpBoat.drawRaw(renderPassEncoder);
 
-	//if (m_drawUi)
-		//renderUi(renderPassEncoder);
+	if (m_drawUi)
+		renderUi(renderPassEncoder);
 }
 
 void Specularity::OnMouseButtonDown(const Event::MouseButtonEvent& event) {
@@ -127,36 +139,62 @@ void Specularity::resize(int deltaW, int deltaH) {
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projectionMatrix), &m_uniforms.projectionMatrix, sizeof(Uniforms::projectionMatrix));
 }
 
+namespace ImGui {
+	bool DragDirection(const char* label, glm::vec4& direction) {
+		glm::vec2 angles = glm::degrees(glm::polar(glm::vec3(direction)));
+		bool changed = ImGui::DragFloat2(label, glm::value_ptr(angles));
+		direction = glm::vec4(glm::euclidean(glm::radians(angles)), direction.w);
+		return changed;
+	}
+}
+
 void Specularity::renderUi(const WGPURenderPassEncoder& renderPassEncoder) {
-// Start the Dear ImGui frame
 	ImGui_ImplWGPU_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	{ // Build our UI
-		static float f = 0.0f;
-		static int counter = 0;
-		static bool show_demo_window = true;
-		static bool show_another_window = false;
-		static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
+		ImGuiWindowFlags_NoBackground;
 
-		ImGui::Begin("Hello, world!");                                // Create a window called "Hello, world!" and append into it.
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+	ImGui::SetNextWindowViewport(viewport->ID);
 
-		ImGui::Text("This is some useful text.");                     // Display some text (you can use a format strings too)
-		ImGui::Checkbox("Demo Window", &show_demo_window);            // Edit bools storing our window open/close state
-		ImGui::Checkbox("Another Window", &show_another_window);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	ImGui::Begin("InvisibleWindow", nullptr, windowFlags);
+	ImGui::PopStyleVar(3);
 
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);                  // Edit 1 float using a slider from 0.0f to 1.0f
-		ImGui::ColorEdit3("clear color", (float*)&clear_color);       // Edit 3 floats representing a color
+	ImGuiID dockSpaceId = ImGui::GetID("MainDockSpace");
+	ImGui::DockSpace(dockSpaceId, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+	ImGui::End();
 
-		if (ImGui::Button("Button"))                                  // Buttons return true when clicked (most widgets return true when edited/activated)
-			counter++;
-		ImGui::SameLine();
-		ImGui::Text("counter = %d", counter);
+	if (m_initUi) {
+		m_initUi = false;
+		ImGuiID dock_id_left = ImGui::DockBuilderSplitNode(dockSpaceId, ImGuiDir_Left, 0.2f, nullptr, &dockSpaceId);
+		//ImGuiID dock_id_right = ImGui::DockBuilderSplitNode(dockSpaceId, ImGuiDir_Right, 0.2f, nullptr, &dockSpaceId);
+		//ImGuiID dock_id_down = ImGui::DockBuilderSplitNode(dockSpaceId, ImGuiDir_Down, 0.2f, nullptr, &dockSpaceId);
+		//ImGuiID dock_id_up = ImGui::DockBuilderSplitNode(dockSpaceId, ImGuiDir_Up, 0.2f, nullptr, &dockSpaceId);
+		ImGui::DockBuilderDockWindow("Lighting", dock_id_left);
+	}
 
-		ImGuiIO& io = ImGui::GetIO();
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+	// Build our UI
+	{
+		bool changed = false;
+		ImGui::Begin("Lighting");
+		changed = ImGui::ColorEdit3("Color #0", glm::value_ptr(m_lightingUniforms.colors[0])) || changed;
+		changed = ImGui::DragDirection("Direction #0", m_lightingUniforms.directions[0]) || changed;
+		changed = ImGui::ColorEdit3("Color #1", glm::value_ptr(m_lightingUniforms.colors[1])) || changed;
+		changed = ImGui::DragDirection("Direction #1", m_lightingUniforms.directions[1]) || changed;
+		changed = ImGui::SliderFloat("Hardness", &m_lightingUniforms.hardness, 1.0f, 100.0f) || changed;
+		changed = ImGui::SliderFloat("K Diffuse", &m_lightingUniforms.kd, 0.0f, 1.0f) || changed;
+		changed = ImGui::SliderFloat("K Specular", &m_lightingUniforms.ks, 0.0f, 1.0f) || changed;
 		ImGui::End();
+		m_updateLight = changed;
 	}
 
 	// Draw the UI
@@ -168,7 +206,7 @@ void Specularity::renderUi(const WGPURenderPassEncoder& renderPassEncoder) {
 }
 
 WGPUBindGroupLayout Specularity::OnBindGroupLayout() {
-	std::vector<WGPUBindGroupLayoutEntry> bindingLayoutEntries(3);
+	std::vector<WGPUBindGroupLayoutEntry> bindingLayoutEntries(4);
 
 	WGPUBindGroupLayoutEntry& uniformLayout = bindingLayoutEntries[0];
 	uniformLayout.binding = 0;
@@ -187,6 +225,12 @@ WGPUBindGroupLayout Specularity::OnBindGroupLayout() {
 	samplerBindingLayout.visibility = WGPUShaderStage::WGPUShaderStage_Fragment;
 	samplerBindingLayout.sampler.type = WGPUSamplerBindingType::WGPUSamplerBindingType_Filtering;
 
+	WGPUBindGroupLayoutEntry& lightUniformLayout = bindingLayoutEntries[3];
+	lightUniformLayout.binding = 3;
+	lightUniformLayout.visibility = WGPUShaderStage::WGPUShaderStage_Fragment;
+	lightUniformLayout.buffer.type = WGPUBufferBindingType::WGPUBufferBindingType_Uniform;
+	lightUniformLayout.buffer.minBindingSize = sizeof(LightingUniforms);
+
 	WGPUBindGroupLayoutDescriptor bindGroupLayoutDescriptor = {};
 	bindGroupLayoutDescriptor.entryCount = (uint32_t)bindingLayoutEntries.size();
 	bindGroupLayoutDescriptor.entries = bindingLayoutEntries.data();
@@ -202,6 +246,16 @@ void Specularity::updateViewMatrix() {
 	glm::vec3 position = glm::vec3(cx * cy, sx * cy, sy) * std::exp(-m_cameraState.zoom);
 	m_uniforms.viewMatrix = glm::lookAt(position, glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, viewMatrix), &m_uniforms.viewMatrix, sizeof(Uniforms::viewMatrix));
+
+	m_uniforms.camPosition = position;
+    wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, camPosition), &m_uniforms.camPosition, sizeof(Uniforms::camPosition));
+}
+
+void Specularity::updateLightingUniforms() {
+	if (m_updateLight) {
+		wgpuQueueWriteBuffer(wgpContext.queue, m_lightUniformBuffer.getBuffer(), 0u, &m_lightingUniforms, sizeof(LightingUniforms));
+		m_updateLight = false;
+	}
 }
 
 void Specularity::updateDragInertia() {

@@ -75,8 +75,10 @@ void Application::initWebGPU(){
 
 void Application::initImGUI(){
 	ImGui::CreateContext();
-  ImGuiIO& io = ImGui::GetIO();
+	
+	ImGuiIO& io = ImGui::GetIO();
   io.IniFilename = NULL;
+  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
   io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
 	ImGui_ImplWGPU_InitInfo initInfo = {};
@@ -156,14 +158,15 @@ void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mod
   }
 }
 
-void glfwMouseMoveCallback(GLFWwindow* m_window, double xpos, double ypos) {
+void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos) {
+  ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
 	Event event;
-    event.type = Event::MOUSEMOTION;
-    event.data.mouseMove.x = static_cast<int>(xpos);
-    event.data.mouseMove.y = static_cast<int>(ypos);
-    //event.data.mouseMove.button = (button == GLFW_MOUSE_BUTTON_RIGHT) ? Event::MouseButtonEvent::MouseButton::BUTTON_RIGHT : Event::MouseButtonEvent::MouseButton::BUTTON_LEFT;
+  event.type = Event::MOUSEMOTION;
+  event.data.mouseMove.x = static_cast<int>(xpos);
+  event.data.mouseMove.y = static_cast<int>(ypos);
+  //event.data.mouseMove.button = (button == GLFW_MOUSE_BUTTON_RIGHT) ? Event::MouseButtonEvent::MouseButton::BUTTON_RIGHT : Event::MouseButtonEvent::MouseButton::BUTTON_LEFT;
     
-    Application::Machine->getStates().top()->OnMouseMotion(event.data.mouseMove);   
+  Application::Machine->getStates().top()->OnMouseMotion(event.data.mouseMove);   
 }
 
 void glfwWindowScroll(GLFWwindow* m_window, double xoffset, double yoffset) {

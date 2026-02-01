@@ -52,7 +52,7 @@ private:
 	bool m_shouldCompute = true;
 	bool m_force = true;
 	
-	Uniforms_Compute m_uniforms;
+	ComputeUniforms m_uniforms;
 	Parameters m_parameters;
 	float m_scale = 0.5f;
 	WgpBuffer m_uniformBuffer;
