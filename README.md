@@ -7,3 +7,8 @@ Try it out: https://pohldaniel.github.io/angular-emscripten/
 For the GitHub deployment use the command:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;npm run build-prod
+
+For the local Setup use the commands:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;npm isntall
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ng serve
