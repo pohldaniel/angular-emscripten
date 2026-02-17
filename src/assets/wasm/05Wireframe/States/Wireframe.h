@@ -36,7 +36,7 @@ public:
 private:
 
 	WGPUBindGroupLayout OnBindGroupLayoutPTN();
-	WGPUBindGroupLayout OnBindGroupLayoutWireframe();
+	WGPUBindGroupLayout OnBindGroupLayoutWF();
 	void renderUi(const WGPURenderPassEncoder& renderPassEncoder);
 	void applyTransformation(const TrackBall& arc);
 
