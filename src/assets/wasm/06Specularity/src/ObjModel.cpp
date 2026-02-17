@@ -966,11 +966,12 @@ void ObjModel::GenerateColors(std::vector<float>& vertexBuffer, std::vector<unsi
 	std::vector<float> tmpVertex;
 	for (int i = 0; i < vertexBuffer.size(); i++) {
 		tmpVertex.push_back(vertexBuffer[i]);
+
 		if ((i + 1) % stride == 0) {
 			if (modelColor == ModelColor::MC_POSITION) {
-				tmpVertex.push_back(vertexBuffer[i - stride]);
 				tmpVertex.push_back(vertexBuffer[i - stride + 1]);
 				tmpVertex.push_back(vertexBuffer[i - stride + 2]);
+				tmpVertex.push_back(vertexBuffer[i - stride + 3]);
 				tmpVertex.push_back(1.0f);
 			}else if(modelColor == ModelColor::MC_WHITE){
 				tmpVertex.push_back(1.0f);
