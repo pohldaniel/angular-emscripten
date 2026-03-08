@@ -20,7 +20,7 @@ export class ComputeComponent extends EmscriptenWasmComponent implements OnInit,
   useNativeSize: boolean = false;
 
   constructor(private ngZone: NgZone, private renderer: Renderer2) {
-    super("ComputeModule",  'assets/wasm/07Compute/webgpu.js', 'assets/wasm/07Compute/webgpu.wasm', 'assets/wasm/07Compute/webgpu.data');
+    super("ComputeModule",  'assets/wasm/08Compute/webgpu.js', 'assets/wasm/08Compute/webgpu.wasm', 'assets/wasm/08Compute/webgpu.data');
   }
 
   override ngOnInit(): void {

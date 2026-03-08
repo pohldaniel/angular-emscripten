@@ -20,7 +20,7 @@ export class WireframeComponent extends EmscriptenWasmComponent implements OnIni
   useNativeSize: boolean = false;
 
   constructor(private ngZone: NgZone, private renderer: Renderer2) { 
-    super('WireframeModule',  'assets/wasm/05Wireframe/webgpu.js', 'assets/wasm/05Wireframe/webgpu.wasm', 'assets/wasm/05Wireframe/webgpu.data');
+    super('WireframeModule',  'assets/wasm/06Wireframe/webgpu.js', 'assets/wasm/06Wireframe/webgpu.wasm', 'assets/wasm/06Wireframe/webgpu.data');
   }
   
   override ngOnInit(): void {

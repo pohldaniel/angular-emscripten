@@ -20,7 +20,7 @@ export class SpecularityComponent extends EmscriptenWasmComponent implements OnI
   useNativeSize: boolean = false;
 
   constructor(private ngZone: NgZone, private renderer: Renderer2) {
-    super("SpecularityModule",  'assets/wasm/06Specularity/webgpu.js', 'assets/wasm/06Specularity/webgpu.wasm', 'assets/wasm/06Specularity/webgpu.data');
+    super("SpecularityModule",  'assets/wasm/07Specularity/webgpu.js', 'assets/wasm/07Specularity/webgpu.wasm', 'assets/wasm/07Specularity/webgpu.data');
   }
 
   override ngOnInit(): void {
