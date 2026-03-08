@@ -41,9 +41,9 @@ private:
 	std::vector<WGPUBindGroup> OnBindGroups();
 	std::vector<WGPUBindGroup> OnBindGroupsWF();
 
-	void renderUi(const WGPURenderPassEncoder& renderPassEncoder);
 	void applyTransformation(const TrackBall& arc);
-
+	void renderUi(const WGPURenderPassEncoder& renderPassEncoder);
+	
 	bool m_initUi = true;
 	bool m_drawUi = true;
 	Model m_model = Model::DRAGON;

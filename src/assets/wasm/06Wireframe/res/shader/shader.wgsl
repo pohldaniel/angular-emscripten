@@ -50,6 +50,5 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4f {
 	let shading = shading1 * lightColor1 + shading2 * lightColor2;
 	let color = in.color.xyz * shading;
 
-	// Gamma-correction
 	return vec4f(color, in.color.a) * diffuse_color;	
 }

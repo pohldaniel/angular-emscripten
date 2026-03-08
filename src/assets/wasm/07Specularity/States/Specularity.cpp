@@ -169,7 +169,7 @@ void Specularity::renderUi(const WGPURenderPassEncoder& renderPassEncoder) {
 
 	if (m_initUi) {
 		m_initUi = false;
-		ImGuiID dock_id_left = ImGui::DockBuilderSplitNode(dockSpaceId, ImGuiDir_Left, 0.2f, nullptr, &dockSpaceId);
+		ImGuiID dock_id_left = ImGui::DockBuilderSplitNode(dockSpaceId, ImGuiDir_Left, 0.4f, nullptr, &dockSpaceId);
 		ImGui::DockBuilderDockWindow("Lighting", dock_id_left);
 	}
 

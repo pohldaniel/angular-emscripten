@@ -4,10 +4,11 @@ import {ImguiComponent} from './pages/imgui/imgui.component';
 import {OpenGLComponent} from './pages/open-gl/open-gl.component';
 import {CubeComponent} from './pages/cube/cube.component';
 import {TriangleComponent} from './pages/triangle/triangle.component';
+import {ShapeComponent} from './pages/shape/shape.component';
 import {WireframeComponent} from './pages/webgpu/wireframe/wireframe.component';
 import {SpecularityComponent} from './pages/webgpu/specularity/specularity.component';
 import {ComputeComponent} from './pages/webgpu/compute/compute.component';
-import {ShapeComponent} from './pages/shape/shape.component';
+import {NormalMapComponent} from './pages/webgpu/normal-map/normal-map.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -50,8 +51,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/normal-map', 
+    component: NormalMapComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/wireframe'
+    redirectTo: 'webgpu/normal-map'
   } 
 ];
