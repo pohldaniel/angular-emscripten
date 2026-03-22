@@ -13,3 +13,9 @@ For the local Setup use the commands:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;npm isntall  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ng serve
 
+For building Freetype download the make binaries from https://gnuwin32.sourceforge.net/packages/make.htm and set the Environmentvariable to the bin folder
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mkdir build
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cd build
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;emcmake cmake .. -G "Unix Makefiles"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;emmake make
