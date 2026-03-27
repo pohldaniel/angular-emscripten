@@ -3,6 +3,7 @@ emcc src/Mouse.cpp^
  src/Transform.cpp^
  src/ObjModel.cpp^
  src/Camera.cpp^
+ src/CharacterSet.cpp^
  src/Application.cpp^
  src/main.cpp^
  shape/Cube.cpp^
@@ -17,11 +18,12 @@ emcc src/Mouse.cpp^
  WebGPU/WgpMesh.cpp^
  WebGPU/WgpModel.cpp^
  WebGPU/WgpBatchRenderer.cpp^
+ WebGPU/WgpFontRenderer.cpp^
  states/Wireframe.cpp^
  states/StateMachine.cpp^
  libimgui.a^
  libfreeimage.a^
- -I "./" -I "./include" -I "./shape" -I "./glm" -I "./libimgui" -I  "./FreeImage"^
+ -I "./" -I "./include" -I "./shape" -I "./glm" -I "./libimgui" -I "./FreeImage" -I "./rapidjson/include"^
  -Wno-missing-braces -Wunused-result -Wnontrivial-memcall -Wall^
  -DFREEIMAGE_LIB -DWEBGPU_BACKEND=WGPU^
  -o webgpu.js -std=c++17 -Os --use-port=contrib.glfw3 -s USE_WEBGPU=1 --preload-file res/shader --preload-file res/textures --preload-file res/models -s ASYNCIFY -s TOTAL_MEMORY=67108864 -s ALLOW_MEMORY_GROWTH=1 -s "EXPORTED_FUNCTIONS=['_main']" -s "EXPORTED_RUNTIME_METHODS=['ccall']" -s MODULARIZE=1^

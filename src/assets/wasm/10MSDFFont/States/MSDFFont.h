@@ -9,7 +9,7 @@
 #include <WebGPU/WgpModel.h>
 #include "Camera.h"
 #include "TrackBall.h"
-#include "Shape.h"
+#include "CharacterSet.h"
 
 class MSDFFont : public State {
 
@@ -46,8 +46,9 @@ private:
 	Camera m_camera;
 	TrackBall m_trackball;
     Uniforms m_uniforms;
+	CharacterSet m_characterSet;
     WgpBuffer m_uniformBuffer;
-
+	float m_fontSize = 0.6f;
 
 	static glm::mat4 GetNormalMatrix(const glm::mat4& m);
 };
