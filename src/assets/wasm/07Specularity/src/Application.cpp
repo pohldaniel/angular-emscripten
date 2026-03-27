@@ -164,7 +164,6 @@ void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos) {
   event.type = Event::MOUSEMOTION;
   event.data.mouseMove.x = static_cast<int>(xpos);
   event.data.mouseMove.y = static_cast<int>(ypos);
-  //event.data.mouseMove.button = (button == GLFW_MOUSE_BUTTON_RIGHT) ? Event::MouseButtonEvent::MouseButton::BUTTON_RIGHT : Event::MouseButtonEvent::MouseButton::BUTTON_LEFT;
     
   Application::Machine->getStates().top()->OnMouseMotion(event.data.mouseMove);   
 }

@@ -9,6 +9,7 @@ import {WireframeComponent} from './pages/webgpu/wireframe/wireframe.component';
 import {SpecularityComponent} from './pages/webgpu/specularity/specularity.component';
 import {ComputeComponent} from './pages/webgpu/compute/compute.component';
 import {NormalMapComponent} from './pages/webgpu/normal-map/normal-map.component';
+import {MSDFFontComponent} from './pages/webgpu/msdf-font/msdf-font.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -56,8 +57,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/msdf-font', 
+    component: MSDFFontComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/normal-map'
+    redirectTo: 'webgpu/msdf-font'
   } 
 ];

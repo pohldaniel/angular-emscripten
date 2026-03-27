@@ -73,6 +73,13 @@
               </span>                       
             </button>  
           </li>
+          <li id="three-five" class="list-item-button">
+            <button [attr.tabindex]="router.url=='/webgpu/msdf-font' ? -1 : (storeTargetedSubmenu=='three' ? 0 : -1)" (click)="navigate('/webgpu/msdf-font')" [class.active]="router.url == '/webgpu/msdf-font'">MSDF Font
+              <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1" (click)="updateFavorites($event, 9, checked[9]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
+                <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[9] ? 'star' : 'star_outline'}}</mat-icon>                 
+              </span>                       
+            </button>  
+          </li>
         </ul>
        </li>
     </ul>
