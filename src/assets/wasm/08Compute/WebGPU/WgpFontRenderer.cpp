@@ -170,7 +170,5 @@ void FormatedText::create(const std::string& text) {
 		}
 	}
 
-	if(splittedText.empty()){
-		splittedText.push_back(text);
-	}
+	splittedText.push_back(text.substr(offset, text.length() - offset));
 }
