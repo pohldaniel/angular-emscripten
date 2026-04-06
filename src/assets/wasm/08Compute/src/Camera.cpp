@@ -55,7 +55,7 @@ Camera::~Camera() {}
 void Camera::perspective(float fovx, float aspect, float znear, float zfar){
     m_persMatrix = glm::perspective(fovx, aspect, znear, zfar);
 
-    float e = tanf(PI_ON_180 * fovx * 0.5f);
+    float e = tanf(fovx * 0.5f);
 	m_invPersMatrix[0][0] = e * aspect;
 	m_invPersMatrix[0][1] = 0.0f;
 	m_invPersMatrix[0][2] = 0.0f;

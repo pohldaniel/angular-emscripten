@@ -7,6 +7,7 @@
 #include <WebGPU/WgpMesh.h>
 #include <WebGPU/WgpData.h>
 #include <WebGPU/WgpModel.h>
+#include <WebGPU/WgpFontRenderer.h>
 #include "Camera.h"
 #include "TrackBall.h"
 #include "CharacterSet.h"
@@ -38,17 +39,19 @@ private:
 	std::vector<WGPUBindGroup> OnBindGroups();
 
 	void renderUi(const WGPURenderPassEncoder& renderPassEncoder);
-	void applyTransformation(const TrackBall& arc);
 
 	bool m_initUi = true;
-	bool m_drawUi = true;
+	bool m_drawUi = false;
 
 	Camera m_camera;
-	TrackBall m_trackball;
     Uniforms m_uniforms;
+	WgpBuffer m_uniformBuffer;
 	CharacterSet m_characterSet;
-    WgpBuffer m_uniformBuffer;
 	float m_fontSize = 0.6f;
 
-	static glm::mat4 GetNormalMatrix(const glm::mat4& m);
+	float largeScale = 0.0078125f;
+	float smallScale = 0.00390625f;
+	glm::mat4 m_model;
+
+	FormatedText m_formatedText;
 };

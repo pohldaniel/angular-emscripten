@@ -10,6 +10,18 @@ const Char& CharacterSet::getCharacter(const char c) const {
 	return characters.at(c);
 }
 
+const std::vector<Kerning>& CharacterSet::getKernings(const char c) const {
+	return kernings.at(c);
+}
+
+const bool CharacterSet::hasKernings() const {
+	return !kernings.empty();
+}
+
+const bool CharacterSet::kerningsHasChar(const char c) const {
+	return kernings.count(c);
+}
+
 void CharacterSet::loadMsdfFromFile(const std::string& pathJson, const std::string& pathTexture) {
 	std::ifstream file(pathJson, std::ios::in);
 	if (!file.is_open()) {
@@ -47,7 +59,7 @@ void CharacterSet::loadMsdfFromFile(const std::string& pathJson, const std::stri
 			  (aleft + 0.5f) / width, (abottom + 0.5f) / height,
 			  ((aright - aleft) - 1.0f) / width, ((atop - abottom) - 1.0f) / height,
 			  pleft * size, pbottom * size + distanceRange,
-			  advance * size + advance * distanceRange * 0.75f
+			  advance
 			}));
 	}
 	m_texture.loadFromFile(pathTexture);
@@ -72,32 +84,54 @@ void CharacterSet::loadMsdfBmFromFile(const std::string& pathJson, const std::st
 	float heightMax = -FLT_MAX;
 
 	for (rapidjson::Value::ConstValueIterator glyph = doc["chars"].GetArray().Begin(); glyph != doc["chars"].GetArray().End(); ++glyph) {
-		char code = glyph->HasMember("id") ? (*glyph)["id"].GetUint() : 0;
-
+		char code = (*glyph)["char"].GetString()[0];
 		float advance = glyph->HasMember("xadvance") ? (*glyph)["xadvance"].GetFloat() : 0.0f;
-
-
 		float posX = glyph->HasMember("x") ? (*glyph)["x"].GetFloat() : 0.0f;
 		float posY = glyph->HasMember("y") ? (*glyph)["y"].GetFloat() : 0.0f;
 		float width = glyph->HasMember("width") ? (*glyph)["width"].GetFloat() : 0.0f;
 		float height = glyph->HasMember("height") ? (*glyph)["height"].GetFloat() : 0.0f;
-
 		float offsetX = glyph->HasMember("xoffset") ? (*glyph)["xoffset"].GetFloat() : 0.0f;
 		float offsetY = glyph->HasMember("yoffset") ? (*glyph)["yoffset"].GetFloat() : 0.0f;
 
 		heightMax = (std::max)(height, heightMax);
-
 		characters.insert(std::pair<char, Char>(code,
 			{ width, height,
-			  (posX + 0.5f) / widthT, (heightT - posY - height + 0.5f) / heightT,
-			  (width - 1.0f) / widthT, (height - 1.0f) / heightT,
+			  (posX - 0.5f) / widthT, (heightT - posY - height - 0.5f) / heightT,
+			  (width + 1.0f) / widthT, (height + 1.0f) / heightT,
 			  offsetX, -offsetY,
-			  advance + distanceRange * 0.5f
+			  advance
 			}));
 	}
 
 	for (auto& pair : characters) {
 		pair.second.offset[1] += (heightMax - pair.second.size[1]);
 	}
+
+	for (rapidjson::Value::ConstValueIterator kerning = doc["kernings"].GetArray().Begin(); kerning != doc["kernings"].GetArray().End(); ++kerning) {
+		char first = kerning->HasMember("first") ? (*kerning)["first"].GetUint() : 0;
+		char second = kerning->HasMember("second") ? (*kerning)["second"].GetUint() : 0;
+		float advance = kerning->HasMember("amount") ? (*kerning)["amount"].GetFloat() : 0.0f;
+		kernings[first].push_back({ second , advance });
+	}
+
 	m_texture.loadFromFile(pathTexture);
+}
+
+const float CharacterSet::getWidth(const std::string& text) const {
+	float sizeX = 0.0f;
+	std::string::const_iterator c;
+	for (c = text.begin(); c != text.end(); c++) {
+		float kerningAmount = 0.0f;
+		if (hasKernings() && kerningsHasChar(*c) && (c + 1) != text.end()) {
+			const std::vector<Kerning>& kernings = getKernings(*c);
+			for (const Kerning& kerning : kernings) {
+				if (kerning.nextChar == *(c + 1)) {
+					kerningAmount = kerning.amount;
+				}
+			}
+		}
+		const Char ch = getCharacter(*c);
+		sizeX = sizeX + ch.advance + kerningAmount;
+	}
+	return  sizeX;
 }

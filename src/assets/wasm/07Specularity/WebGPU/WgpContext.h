@@ -48,6 +48,7 @@ extern "C" {
 	void wgpResize(uint32_t width, uint32_t height);
 	void wgpToggleVerticalSync();
 	void wgpConfigureSurface();
+	void wgpSetSurfaceColorFormat(WGPUTextureFormat textureFormat);
 }
 
 enum SamplerSlot {
@@ -71,19 +72,21 @@ struct WgpContext {
     const WGPUSampler& getSampler(SamplerSlot samplerSlot);
     void addSahderModule(const std::string& shaderModuleName, const std::string& shaderModulePath);
     const WGPUShaderModule& getShaderModule(std::string shaderModuleName);
-
+	void setClearColor(const WGPUColor& clearColor);
+	
 	WGPUInstance instance = NULL;
 	WGPUAdapter adapter = NULL;
 	WGPUDevice device = NULL;
 	WGPUSurface surface = NULL;
 	WGPUQueue queue = NULL;
+	WGPUColor clearColor = { 0.2f, 0.2f, 0.2f, 1.0f };
 
 	WGPUTextureView depthTextureView = NULL;
 	WGPUTexture depthTexture = NULL;
 	WGPUSurfaceConfiguration config = {};
 	WGPUSurfaceCapabilities surfaceCapabilities;
 	WGPUTextureFormat depthformat = WGPUTextureFormat::WGPUTextureFormat_Depth24Plus;
-	WGPUTextureFormat colorformat = WGPUTextureFormat::WGPUTextureFormat_BGRA8UnormSrgb;
+	WGPUTextureFormat colorformat = WGPUTextureFormat::WGPUTextureFormat_BGRA8Unorm;
 
 	std::unordered_map<std::string, WGPUComputePipeline> computePipelines;
 	std::unordered_map<std::string, WGPURenderPipeline> renderPipelines;

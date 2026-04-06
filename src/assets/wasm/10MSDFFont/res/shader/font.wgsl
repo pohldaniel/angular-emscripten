@@ -1,7 +1,8 @@
 struct VertexInput {
-	@location(0) posTex: vec4f,
-	@location(1) color: vec4f,
-	@location(2) layer: u32
+	@location(0) pos: vec3f,
+	@location(1) tex: vec2f,
+	@location(2) color: vec4f,
+	@location(3) layer: u32
 };
 
 struct VertexOutput {
@@ -28,8 +29,8 @@ struct Uniforms {
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
 	var out: VertexOutput;
-	out.position = uniforms.projectionMatrix * vec4<f32>(in.posTex.xy, 0.0, 1.0);
-	out.uv = in.posTex.zw;
+	out.position = uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix * vec4<f32>(in.pos, 1.0);
+	out.uv = in.tex;
 	out.color = in.color;
 	out.layer = in.layer;
 	return out;
@@ -42,10 +43,6 @@ fn sampleMsdf(texcoord: vec2f) -> f32 {
 
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4f {
-
-	//let sample = textureSample(fontTexture, fontSampler, in.uv);
-	//return sample;
-	
 	let pxRange = 4.0;
 	let sz = vec2f(textureDimensions(fontTexture, 0));
 	let dx = sz.x*length(vec2f(dpdx(in.uv.x), dpdy(in.uv.x)));

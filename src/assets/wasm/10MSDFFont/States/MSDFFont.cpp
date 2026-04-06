@@ -10,41 +10,69 @@
 #include <glm/gtx/polar_coordinates.hpp>
 
 #include <WebGPU/WgpContext.h>
-#include <WebGPU/WgpFontRenderer.h>
 #include "MSDFFont.h"
 #include "Application.h"
 #include "Mouse.h"
 
 MSDFFont::MSDFFont(StateMachine& machine) : State(machine, States::MSDF_FONT) {
-    WgpFontRenderer::Get().init();
+    WgpFontRenderer::Get().init(2400u);
 
-	m_camera.perspective(45.0f, static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 1000.0f);
+	m_camera.perspective(glm::radians(72.0f), static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 1000.0f);
 	m_camera.orthographic(0.0f, static_cast<float>(Application::Width), 0.0f, static_cast<float>(Application::Height), -1.0f, 1.0f);
-	m_camera.lookAt(glm::vec3(0.0f, 1.6f, 2.8f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	m_camera.lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	m_camera.setRotationSpeed(0.125f);
 	m_camera.setMovingSpeed(10.0f);
 
 	m_characterSet.loadMsdfBmFromFile("res/fonts/YaHei_msdf_bm.json", "res/fonts/YaHei_msdf_bm.png");
 	m_uniformBuffer.createBuffer(sizeof(Uniforms), WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform);
-	wgpContext.addSampler(wgpCreateSampler());
 
+	wgpContext.addSampler(wgpCreateSampler());
+	wgpContext.setClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 	wgpContext.addSahderModule("FONT", "res/shader/font.wgsl");
 	wgpContext.createRenderPipeline("FONT", "RP_FONT", VL_BATCH, std::bind(&MSDFFont::OnBindGroupLayouts, this));
-	
-	m_trackball.reshape(Application::Width, Application::Height);
-	m_trackball.setTrackballScale(0.5f);
+	wgpContext.OnDraw = std::bind(&MSDFFont::OnDraw, this, std::placeholders::_1);
 
-	m_uniforms.projectionMatrix = m_camera.getOrthographicMatrix();
-	m_uniforms.viewMatrix = glm::mat4(1.0f);
+	m_uniforms.projectionMatrix = m_camera.getPerspectiveMatrix();
+	m_uniforms.viewMatrix = m_camera.getViewMatrix();
 	m_uniforms.modelMatrix = glm::mat4(1.0f);
 	m_uniforms.normalMatrix = glm::mat4(1.0f);
 	m_uniforms.color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	m_uniforms.camPosition = glm::vec3(0.0f);
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), 0, &m_uniforms, sizeof(Uniforms));
-
-	wgpContext.OnDraw = std::bind(&MSDFFont::OnDraw, this, std::placeholders::_1);
-
+	
     WgpFontRenderer::Get().setBindGroups(std::bind(&MSDFFont::OnBindGroups, this));
+	static const char* text
+		= "\n"
+		"WebGPU exposes an API for performing operations, such as rendering\n"
+		"and computation, on a Graphics Processing Unit.\n"
+		"\n"
+		"Graphics Processing Units, or GPUs for short, have been essential\n"
+		"in enabling rich rendering and computational applications in personal\n"
+		"computing. WebGPU is an API that exposes the capabilities of GPU\n"
+		"hardware for the Web. The API is designed from the ground up to\n"
+		"efficiently map to (post-2014) native GPU APIs. WebGPU is not related\n"
+		"to WebGL and does not explicitly target OpenGL ES.\n"
+		"\n"
+		"WebGPU sees physical GPU hardware as GPUAdapters. It provides a\n"
+		"connection to an adapter via GPUDevice, which manages resources, and\n"
+		"the device's GPUQueues, which execute commands. GPUDevice may have\n"
+		"its own memory with high-speed access to the processing units.\n"
+		"GPUBuffer and GPUTexture are the physical resources backed by GPU\n"
+		"memory. GPUCommandBuffer and GPURenderBundle are containers for\n"
+		"user-recorded commands. GPUShaderModule contains shader code. The\n"
+		"other resources, such as GPUSampler or GPUBindGroup, configure the\n"
+		"way physical resources are used by the GPU.\n"
+		"\n"
+		"GPUs execute commands encoded in GPUCommandBuffers by feeding data\n"
+		"through a pipeline, which is a mix of fixed-function and programmable\n"
+		"stages. Programmable stages execute shaders, which are special\n"
+		"programs designed to run on GPU hardware. Most of the state of a\n"
+		"pipeline is defined by a GPURenderPipeline or a GPUComputePipeline\n"
+		"object. The state not included in these pipeline objects is set\n"
+		"during encoding with commands, such as beginRenderPass() or\n"
+		"setBlendConstant().";
+
+	m_formatedText.create(text);
 }
 
 MSDFFont::~MSDFFont() {
@@ -94,7 +122,6 @@ void MSDFFont::update() {
 		move |= true;
 	}
 
-
     if (glfwGetMouseButton(Application::Window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {	
 		dx = mouse.xDelta();
 		dy = mouse.yDelta();
@@ -110,12 +137,15 @@ void MSDFFont::update() {
 		}
 	}
 
-    m_trackball.idle();
-	applyTransformation(m_trackball);
-	
-	m_uniforms.projectionMatrix = m_camera.getOrthographicMatrix();
+	double sec = glfwGetTime();
+	float crawl = fmodf((float)sec / 2.5f, 14.0f);
+
+	m_uniforms.projectionMatrix = m_camera.getPerspectiveMatrix();
 	m_uniforms.viewMatrix = m_camera.getViewMatrix();
-    m_uniforms.normalMatrix = GetNormalMatrix(m_camera.getViewMatrix() * m_uniforms.modelMatrix);
+
+	m_model = glm::mat4(1.0f);
+	m_model = glm::rotate(m_model, glm::radians(-22.5f), glm::vec3(1.0f, 0.0f, 0.0f));
+	m_model = glm::translate(m_model, glm::vec3(0.0f, crawl - 3.0f, 0.0f));
 }
 
 void MSDFFont::render() {
@@ -123,13 +153,24 @@ void MSDFFont::render() {
 }
 
 void MSDFFont::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
-	WgpFontRenderer::Get().addText(m_characterSet, static_cast<float>(Application::Width) * 0.5f, static_cast<float>(Application::Height) * 0.5f, "WHQH", {1.0f, 1.0f, 1.0f, 1.0f}, m_fontSize);
-
+	WgpFontRenderer::Get().reset();
 
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projectionMatrix), &m_uniforms.projectionMatrix, sizeof(Uniforms::projectionMatrix));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, viewMatrix), &m_uniforms.viewMatrix, sizeof(Uniforms::viewMatrix));
+	//wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, modelMatrix), &m_uniforms.modelMatrix, sizeof(Uniforms::modelMatrix));
+
 	wgpuRenderPassEncoderSetViewport(renderPassEncoder, 0.0f, 0.0f, static_cast<float>(Application::Width), static_cast<float>(Application::Height), 0.0f, 1.0f);
 	wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_FONT"));
 
+	glm::mat4 transOrigin = glm::mat4(1.0f);
+	
+	transOrigin = glm::translate(transOrigin, glm::vec3(-m_characterSet.getWidth("WebGPU") * 0.5f * largeScale, -m_characterSet.lineHeight * 0.5f * largeScale, 0.0f));
+	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "WebGPU", glm::value_ptr((m_model * transOrigin)[0]), {1.0f, 1.0f, 1.0f, 1.0f}, largeScale);
+	WgpFontRenderer::Get().draw(renderPassEncoder);
+
+	transOrigin = glm::mat4(1.0f);
+	transOrigin = glm::translate(transOrigin, glm::vec3(-3.0f, -0.1f - (m_characterSet.lineHeight * 0.5f * largeScale), 0.0f));
+	WgpFontRenderer::Get().addTextTransformed(m_characterSet, m_formatedText, glm::value_ptr((m_model * transOrigin)[0]), { 1.0f, 1.0f, 1.0f, 1.0f }, smallScale);
 	WgpFontRenderer::Get().draw(renderPassEncoder);
 
 	if (m_drawUi)
@@ -140,27 +181,16 @@ void MSDFFont::OnMouseButtonDown(const Event::MouseButtonEvent& event) {
 	if (event.button == Event::MouseButtonEvent::BUTTON_RIGHT) {
 		Mouse::instance().attach(Application::Window, true, false, false);
 	}
-
-	if (event.button == Event::MouseButtonEvent::BUTTON_LEFT) {
-		m_trackball.mouse(TrackBall::Button::ELeftButton, TrackBall::Modifier::ENoModifier, true, event.x, event.y);
-		applyTransformation(m_trackball);
-	}
 }
 
 void MSDFFont::OnMouseButtonUp(const Event::MouseButtonEvent& event) {
 	if (event.button == Event::MouseButtonEvent::BUTTON_RIGHT) {
 		Mouse::instance().detach();
 	} 
-
-	if (event.button == Event::MouseButtonEvent::BUTTON_LEFT) {
-		m_trackball.mouse(TrackBall::Button::ELeftButton, TrackBall::Modifier::ENoModifier, false, event.x, event.y);
-		applyTransformation(m_trackball);
-	} 
 }
 
 void MSDFFont::OnMouseMotion(const Event::MouseMoveEvent& event) {
-	m_trackball.motion(event.x, event.y);
-	applyTransformation(m_trackball);
+
 }
 
 void MSDFFont::OnScroll(double xoffset, double yoffset) {
@@ -184,12 +214,8 @@ void MSDFFont::OnKeyUp(const Event::KeyboardEvent& event) {
 }
 
 void MSDFFont::resize(int deltaW, int deltaH) {
-	m_camera.perspective(45.0f, static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 1000.0f);
+	m_camera.perspective(glm::radians(72.0f), static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 1000.0f);
 	m_camera.orthographic(0.0f, static_cast<float>(Application::Width), 0.0f, static_cast<float>(Application::Height), -1.0f, 1.0f);
-}
-
-void MSDFFont::applyTransformation(const TrackBall& arc) {
-  m_uniforms.modelMatrix = arc.getTransform();
 }
 
 void MSDFFont::renderUi(const WGPURenderPassEncoder& renderPassEncoder) {
@@ -297,39 +323,4 @@ std::vector<WGPUBindGroup> MSDFFont::OnBindGroups() {
 	bindGroups[1] = wgpuDeviceCreateBindGroup(wgpContext.device, &bindGroupDesc1);
 
 	return bindGroups;
-}
-
-glm::mat4 MSDFFont::GetNormalMatrix(const glm::mat4& m) {
-
-	glm::mat4 normalMatrix;
-	float det;
-	float invDet;
-
-	det = m[0][0] * (m[1][1] * m[2][2] - m[2][1] * m[1][2]) +
-		  m[0][1] * (m[1][2] * m[2][0] - m[2][2] * m[1][0]) +
-		  m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
-
-	invDet = 1.0f / det;
-
-	normalMatrix[0][0] = (m[1][1] * m[2][2] - m[2][1] * m[1][2]) * invDet;
-	normalMatrix[1][0] = (m[2][1] * m[0][2] - m[2][2] * m[0][1]) * invDet;
-	normalMatrix[2][0] = (m[0][1] * m[1][2] - m[1][1] * m[0][2]) * invDet;
-	normalMatrix[3][0] = 0.0f;
-
-	normalMatrix[0][1] = (m[2][0] * m[1][2] - m[1][0] * m[2][2]) * invDet;
-	normalMatrix[1][1] = (m[0][0] * m[2][2] - m[2][0] * m[0][2]) * invDet;
-	normalMatrix[2][1] = (m[1][0] * m[0][2] - m[1][2] * m[0][0]) * invDet;
-	normalMatrix[3][1] = 0.0f;
-
-	normalMatrix[0][2] = (m[1][0] * m[2][1] - m[1][1] * m[2][0]) * invDet;
-	normalMatrix[1][2] = (m[2][0] * m[0][1] - m[0][0] * m[2][1]) * invDet;
-	normalMatrix[2][2] = (m[0][0] * m[1][1] - m[0][1] * m[1][0]) * invDet;
-	normalMatrix[3][2] = 0.0f;
-
-	normalMatrix[0][3] = 0.0f;
-	normalMatrix[1][3] = 0.0f;
-	normalMatrix[2][3] = 0.0f;
-	normalMatrix[3][3] = 1.0f;
-
-	return normalMatrix;
 }
