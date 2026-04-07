@@ -80,6 +80,13 @@
               </span>                       
             </button>  
           </li>
+           <li id="three-six" class="list-item-button">
+            <button [attr.tabindex]="router.url=='/webgpu/instanced-cube' ? -1 : (storeTargetedSubmenu=='three' ? 0 : -1)" (click)="navigate('/webgpu/instanced-cube')" [class.active]="router.url == '/webgpu/instanced-cube'">Instanced Cube
+              <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1" (click)="updateFavorites($event, 10, checked[10]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
+                <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[10] ? 'star' : 'star_outline'}}</mat-icon>                 
+              </span>                       
+            </button>  
+          </li>
         </ul>
        </li>
     </ul>

@@ -64,7 +64,8 @@ export class MenuComponent implements OnInit{
        this.router.url == '/webgpu/specularity' ||
        this.router.url == '/webgpu/compute' ||
        this.router.url == '/webgpu/normal-map' ||
-       this.router.url == '/webgpu/msdf-font')
+       this.router.url == '/webgpu/msdf-font' ||
+       this.router.url == '/webgpu/instanced-cube')
     {
       this.targetedSubmenu = 'three';
       this.storeTargetedSubmenu = 'three';     
@@ -88,7 +89,8 @@ export class MenuComponent implements OnInit{
     .set(Math.pow(2, 6), {target : '/webgpu/specularity', description: 'Specularity', descriptionLineBreak: '', class : 'three-two', index : 6} as MenuItem)
     .set(Math.pow(2, 7), {target : '/webgpu/compute', description: 'Compute', descriptionLineBreak: '', class : 'three-three', index : 7} as MenuItem)
     .set(Math.pow(2, 8), {target : '/webgpu/normal-map', description: 'Normal Mapping', descriptionLineBreak: '', class : 'three-four', index : 8} as MenuItem)
-    .set(Math.pow(2, 9), {target : '/webgpu/msdf-font', description: 'MSDF Font', descriptionLineBreak: '', class : 'three-five', index : 9} as MenuItem);
+    .set(Math.pow(2, 9), {target : '/webgpu/msdf-font', description: 'MSDF Font', descriptionLineBreak: '', class : 'three-five', index : 9} as MenuItem)
+    .set(Math.pow(2, 10), {target : '/webgpu/instanced-cube', description: 'Instanced Cube', descriptionLineBreak: '', class : 'three-six', index : 10} as MenuItem);
 
     for(let key of map.keys()) {
       if((this.settings.favorites | key) == this.settings.favorites){

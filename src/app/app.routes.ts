@@ -10,6 +10,7 @@ import {SpecularityComponent} from './pages/webgpu/specularity/specularity.compo
 import {ComputeComponent} from './pages/webgpu/compute/compute.component';
 import {NormalMapComponent} from './pages/webgpu/normal-map/normal-map.component';
 import {MSDFFontComponent} from './pages/webgpu/msdf-font/msdf-font.component';
+import {InstancedCubeComponent} from './pages/webgpu/instanced-cube/instanced-cube.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -62,8 +63,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/instanced-cube', 
+    component: InstancedCubeComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/msdf-font'
+    redirectTo: 'webgpu/instanced-cube'
   } 
 ];
