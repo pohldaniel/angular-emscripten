@@ -73,6 +73,15 @@ MSDFFont::MSDFFont(StateMachine& machine) : State(machine, States::MSDF_FONT) {
 		"setBlendConstant().";
 
 	m_formatedText.create(text);
+
+	wgpContext.addSahderModule("CUBE", "res/shader/cube.wgsl");
+	wgpContext.createRenderPipeline("CUBE", "RP_CUBE", VL_PTN, std::bind(&MSDFFont::OnBindGroupLayoutsCube, this));
+
+	m_cube.buildCube({ -1.0f, -1.0f, -1.0f }, { 2.0f, 2.0f, 2.0f }, 1u, 1u, true, true, false);
+	m_wgpCube.create(m_cube);
+	m_wgpCube.setBindGroups("BG", std::bind(&MSDFFont::OnBindGroupsCube, this));
+
+	initTextTransforms();
 }
 
 MSDFFont::~MSDFFont() {
@@ -138,11 +147,15 @@ void MSDFFont::update() {
 	}
 
 	double sec = glfwGetTime();
-	float crawl = fmodf((float)sec / 2.5f, 14.0f);
+	float now = (float)sec / 5.0f;
+	m_uniforms.modelMatrix = glm::mat4(1.0f);
+	m_uniforms.modelMatrix = glm::translate(m_uniforms.modelMatrix, glm::vec3(0.0f, 2.0f, -3.0f));
+	m_uniforms.modelMatrix = glm::rotate(m_uniforms.modelMatrix, 1.0f, glm::vec3(sinf(now), cosf(now), 0.0f));
 
 	m_uniforms.projectionMatrix = m_camera.getPerspectiveMatrix();
 	m_uniforms.viewMatrix = m_camera.getViewMatrix();
 
+	float crawl = fmodf((float)sec / 2.5f, 14.0f);
 	m_model = glm::mat4(1.0f);
 	m_model = glm::rotate(m_model, glm::radians(-22.5f), glm::vec3(1.0f, 0.0f, 0.0f));
 	m_model = glm::translate(m_model, glm::vec3(0.0f, crawl - 3.0f, 0.0f));
@@ -157,13 +170,42 @@ void MSDFFont::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
 
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projectionMatrix), &m_uniforms.projectionMatrix, sizeof(Uniforms::projectionMatrix));
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, viewMatrix), &m_uniforms.viewMatrix, sizeof(Uniforms::viewMatrix));
-	//wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, modelMatrix), &m_uniforms.modelMatrix, sizeof(Uniforms::modelMatrix));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, modelMatrix), &m_uniforms.modelMatrix, sizeof(Uniforms::modelMatrix));
 
 	wgpuRenderPassEncoderSetViewport(renderPassEncoder, 0.0f, 0.0f, static_cast<float>(Application::Width), static_cast<float>(Application::Height), 0.0f, 1.0f);
+	
+	wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_CUBE"));
+	m_wgpCube.draw(renderPassEncoder);
+	
 	wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_FONT"));
 
 	glm::mat4 transOrigin = glm::mat4(1.0f);
+	transOrigin = glm::translate(transOrigin, glm::vec3(-m_characterSet.getWidth("Front") * 0.5f * largeScale, -m_characterSet.lineHeight * 0.5f * largeScale, 0.0f));
+	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Front", glm::value_ptr((m_uniforms.modelMatrix * m_textTransforms[0] * transOrigin)[0]), { 1.0f, 0.0f, 0.0f, 1.0f }, largeScale);
 	
+	transOrigin = glm::mat4(1.0f);
+	transOrigin = glm::translate(transOrigin, glm::vec3(-m_characterSet.getWidth("Back") * 0.5f * largeScale, -m_characterSet.lineHeight * 0.5f * largeScale, 0.0f));
+	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Back", glm::value_ptr((m_uniforms.modelMatrix * m_textTransforms[1] * transOrigin)[0]), { 0.0f, 1.0f, 1.0f, 1.0f }, largeScale);
+	
+	transOrigin = glm::mat4(1.0f);
+	transOrigin = glm::translate(transOrigin, glm::vec3(-m_characterSet.getWidth("Right") * 0.5f * largeScale, -m_characterSet.lineHeight * 0.5f * largeScale, 0.0f));
+	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Right", glm::value_ptr((m_uniforms.modelMatrix * m_textTransforms[2] * transOrigin)[0]), { 0.0f, 1.0f, 0.0f, 1.0f }, largeScale);
+
+	transOrigin = glm::mat4(1.0f);
+	transOrigin = glm::translate(transOrigin, glm::vec3(-m_characterSet.getWidth("Left") * 0.5f * largeScale, -m_characterSet.lineHeight * 0.5f * largeScale, 0.0f));
+	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Left", glm::value_ptr((m_uniforms.modelMatrix * m_textTransforms[3] * transOrigin)[0]), { 1.0f, 0.0f, 1.0f, 1.0f }, largeScale);
+
+	transOrigin = glm::mat4(1.0f);
+	transOrigin = glm::translate(transOrigin, glm::vec3(-m_characterSet.getWidth("Top") * 0.5f * largeScale, -m_characterSet.lineHeight * 0.5f * largeScale, 0.0f));
+	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Top", glm::value_ptr((m_uniforms.modelMatrix * m_textTransforms[4] * transOrigin)[0]), { 0.0f, 0.0f, 1.0f, 1.0f }, largeScale);
+
+	transOrigin = glm::mat4(1.0f);
+	transOrigin = glm::translate(transOrigin, glm::vec3(-m_characterSet.getWidth("Bottom") * 0.5f * largeScale, -m_characterSet.lineHeight * 0.5f * largeScale, 0.0f));
+	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Bottom", glm::value_ptr((m_uniforms.modelMatrix * m_textTransforms[5] * transOrigin)[0]), { 1.0f, 1.0f, 0.0f, 1.0f }, largeScale);
+
+	WgpFontRenderer::Get().draw(renderPassEncoder);
+
+	transOrigin = glm::mat4(1.0f);
 	transOrigin = glm::translate(transOrigin, glm::vec3(-m_characterSet.getWidth("WebGPU") * 0.5f * largeScale, -m_characterSet.lineHeight * 0.5f * largeScale, 0.0f));
 	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "WebGPU", glm::value_ptr((m_model * transOrigin)[0]), {1.0f, 1.0f, 1.0f, 1.0f}, largeScale);
 	WgpFontRenderer::Get().draw(renderPassEncoder);
@@ -194,15 +236,7 @@ void MSDFFont::OnMouseMotion(const Event::MouseMoveEvent& event) {
 }
 
 void MSDFFont::OnScroll(double xoffset, double yoffset) {
-	if(yoffset < 0){
-		m_fontSize = m_fontSize - 0.05f;
-		m_fontSize = glm::clamp(m_fontSize, 0.0f, 5.0f);
-	}
-
-	if (yoffset > 0) {
-		m_fontSize = m_fontSize + 0.05f;
-		m_fontSize = glm::clamp(m_fontSize, 0.0f, 5.0f);
-	}
+	
 }
 
 void MSDFFont::OnKeyDown(const Event::KeyboardEvent& event ){
@@ -323,4 +357,67 @@ std::vector<WGPUBindGroup> MSDFFont::OnBindGroups() {
 	bindGroups[1] = wgpuDeviceCreateBindGroup(wgpContext.device, &bindGroupDesc1);
 
 	return bindGroups;
+}
+
+std::vector<WGPUBindGroupLayout> MSDFFont::OnBindGroupLayoutsCube() {
+	std::vector<WGPUBindGroupLayout> bindingLayouts(1);
+
+	std::vector<WGPUBindGroupLayoutEntry> bindingLayoutEntries(1);
+	WGPUBindGroupLayoutEntry& uniformLayout = bindingLayoutEntries[0];
+	uniformLayout.binding = 0u;
+	uniformLayout.visibility = WGPUShaderStage_Vertex;
+	uniformLayout.buffer.type = WGPUBufferBindingType::WGPUBufferBindingType_Uniform;
+	uniformLayout.buffer.minBindingSize = sizeof(Uniforms);
+
+	WGPUBindGroupLayoutDescriptor bindGroupLayoutDescriptor = {};
+	bindGroupLayoutDescriptor.entryCount = (uint32_t)bindingLayoutEntries.size();
+	bindGroupLayoutDescriptor.entries = bindingLayoutEntries.data();
+
+	bindingLayouts[0] = wgpuDeviceCreateBindGroupLayout(wgpContext.device, &bindGroupLayoutDescriptor);
+
+	return bindingLayouts;
+}
+
+std::vector<WGPUBindGroup> MSDFFont::OnBindGroupsCube() {
+	std::vector<WGPUBindGroup> bindGroups(1);
+
+	std::vector<WGPUBindGroupEntry> bindGroupEntries(1);
+	bindGroupEntries[0].binding = 0u;
+	bindGroupEntries[0].buffer = m_uniformBuffer.getBuffer();
+	bindGroupEntries[0].offset = 0u;
+	bindGroupEntries[0].size = sizeof(Uniforms);
+
+	WGPUBindGroupDescriptor bindGroupDesc = {};
+	bindGroupDesc.layout = wgpuRenderPipelineGetBindGroupLayout(wgpContext.renderPipelines.at("RP_CUBE"), 0u);
+	bindGroupDesc.entryCount = (uint32_t)bindGroupEntries.size();
+	bindGroupDesc.entries = bindGroupEntries.data();
+
+	bindGroups[0] = wgpuDeviceCreateBindGroup(wgpContext.device, &bindGroupDesc);
+
+	return bindGroups;
+}
+
+void MSDFFont::initTextTransforms(){
+	m_textTransforms[0] = glm::mat4(1.0f);
+	m_textTransforms[0] = glm::translate(m_textTransforms[0], glm::vec3(0.0f, 0.0f, 1.1f));
+
+	m_textTransforms[1] = glm::mat4(1.0f);
+	m_textTransforms[1] = glm::translate(m_textTransforms[1], glm::vec3(0.0f, 0.0f, -1.1f));
+	m_textTransforms[1] = glm::rotate(m_textTransforms[1], glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	m_textTransforms[2] = glm::mat4(1.0f);
+	m_textTransforms[2] = glm::translate(m_textTransforms[2], glm::vec3(1.1f, 0.0f, 0.0f));
+	m_textTransforms[2] = glm::rotate(m_textTransforms[2], glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	m_textTransforms[3] = glm::mat4(1.0f);
+	m_textTransforms[3] = glm::translate(m_textTransforms[3], glm::vec3(-1.1f, 0.0f, 0.0f));
+	m_textTransforms[3] = glm::rotate(m_textTransforms[3], glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	m_textTransforms[4] = glm::mat4(1.0f);
+	m_textTransforms[4] = glm::translate(m_textTransforms[4], glm::vec3(0.0f, 1.1f, 0.0f));
+	m_textTransforms[4] = glm::rotate(m_textTransforms[4], glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+	m_textTransforms[5] = glm::mat4(1.0f);
+	m_textTransforms[5] = glm::translate(m_textTransforms[5], glm::vec3(0.0f, -1.1f, 0.0f));
+	m_textTransforms[5] = glm::rotate(m_textTransforms[5], glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 }

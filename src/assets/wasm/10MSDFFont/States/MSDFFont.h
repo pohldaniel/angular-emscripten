@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "TrackBall.h"
 #include "CharacterSet.h"
+#include "Shape.h"
 
 class MSDFFont : public State {
 
@@ -38,7 +39,11 @@ private:
 	std::vector<WGPUBindGroupLayout> OnBindGroupLayouts();
 	std::vector<WGPUBindGroup> OnBindGroups();
 
+	std::vector<WGPUBindGroupLayout> OnBindGroupLayoutsCube();
+	std::vector<WGPUBindGroup> OnBindGroupsCube();
+
 	void renderUi(const WGPURenderPassEncoder& renderPassEncoder);
+	void initTextTransforms();
 
 	bool m_initUi = true;
 	bool m_drawUi = false;
@@ -47,11 +52,14 @@ private:
     Uniforms m_uniforms;
 	WgpBuffer m_uniformBuffer;
 	CharacterSet m_characterSet;
-	float m_fontSize = 0.6f;
 
 	float largeScale = 0.0078125f;
 	float smallScale = 0.00390625f;
 	glm::mat4 m_model;
+	glm::mat4 m_textTransforms[6];
 
 	FormatedText m_formatedText;
+
+	Shape m_cube;
+	WgpModel m_wgpCube;
 };
