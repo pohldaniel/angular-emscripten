@@ -31,6 +31,8 @@ ImageBasedLighting::ImageBasedLighting(StateMachine& machine) : State(machine, S
 	wgpContext.OnDraw = std::bind(&ImageBasedLighting::OnDraw, this, std::placeholders::_1);
 
 	m_helmet.loadModel("res/models/helmet.obj");
+	//m_helmet.loadModel("res/models/helmet.gltf");
+	//m_helmet.loadModel("res/models/helmet.glb");
 	m_wgpHelmet.create(m_helmet);
 
 	m_wgpHelmet.setBindGroups("BG", std::bind(&ImageBasedLighting::OnBindGroups, this));
