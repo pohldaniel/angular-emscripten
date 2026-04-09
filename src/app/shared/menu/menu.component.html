@@ -87,6 +87,13 @@
               </span>                       
             </button>  
           </li>
+          <li id="three-seven" class="list-item-button">
+            <button [attr.tabindex]="router.url=='/webgpu/ibl' ? -1 : (storeTargetedSubmenu=='three' ? 0 : -1)" (click)="navigate('/webgpu/ibl')" [class.active]="router.url == '/webgpu/ibl'">Image Based Lighting
+              <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1" (click)="updateFavorites($event, 11, checked[11]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
+                <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[11] ? 'star' : 'star_outline'}}</mat-icon>                 
+              </span>                       
+            </button>  
+          </li>
         </ul>
        </li>
     </ul>

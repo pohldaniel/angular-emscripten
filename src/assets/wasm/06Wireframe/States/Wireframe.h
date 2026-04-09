@@ -9,7 +9,7 @@
 #include "TrackBall.h"
 #include "ObjModel.h"
 
-enum Model {
+enum SelectedModel {
 	MAMMOTH,
 	DRAGON
 };
@@ -46,7 +46,7 @@ private:
 	
 	bool m_initUi = true;
 	bool m_drawUi = true;
-	Model m_model = Model::DRAGON;
+	SelectedModel m_model = SelectedModel::DRAGON;
 	Camera m_camera;
 	ObjModel m_mammoth, m_dragon;
 	TrackBall m_trackball;

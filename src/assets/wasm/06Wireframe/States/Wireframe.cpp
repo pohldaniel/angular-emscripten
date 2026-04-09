@@ -22,7 +22,7 @@ Wireframe::Wireframe(StateMachine& machine) : State(machine, States::WIREFRAME) 
 
 	m_camera.perspective(glm::radians(45.0f), static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 1000.0f);
 	m_camera.orthographic(0.0f, static_cast<float>(Application::Width), 0.0f, static_cast<float>(Application::Height), -1.0f, 1.0f);
-	m_camera.lookAt(glm::vec3(1.0f, 1.0f, 3.0f), glm::vec3(0.2f, 0.2f, 1.5f) + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	m_camera.lookAt(glm::vec3(1.0f, 2.0f, 4.0f), glm::vec3(0.2f, 0.2f, 1.5f) + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	m_camera.setRotationSpeed(0.125f);
 	m_camera.setMovingSpeed(10.0f);
 
@@ -251,7 +251,7 @@ void Wireframe::renderUi(const WGPURenderPassEncoder& renderPassEncoder) {
 
 	int currentModel = m_model;
 	if (ImGui::Combo("Model", &currentModel, "Mammoth\0Dragon\0\0")) {
-		m_model = static_cast<Model>(currentModel);
+		m_model = static_cast<SelectedModel>(currentModel);
 	}
 	ImGui::End();
 

@@ -169,6 +169,6 @@ void FormatedText::create(const std::string& text) {
 			break;
 		}
 	}
-
+	
 	splittedText.push_back(text.substr(offset, text.length() - offset));
 }

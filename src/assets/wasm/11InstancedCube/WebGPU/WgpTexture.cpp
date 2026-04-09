@@ -1,6 +1,6 @@
-#include <vector>
 #include <FreeImage.h>
 #include <Utilities.h>
+
 #include "WgpContext.h"
 #include "WgpTexture.h"
 
@@ -97,7 +97,67 @@ void WgpTexture::loadFromFile(std::string fileName, const bool flipVertical, sho
         bpp = 4; 
     }
 
-     m_width = width;
+    m_width = width;
+    m_height = height;
+    m_channels = bpp;
+    m_format = WGPUTextureFormat::WGPUTextureFormat_RGBA8Unorm;
+    m_texture = wgpCreateTexture(m_width, m_height, WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst, WGPUTextureFormat::WGPUTextureFormat_RGBA8Unorm);
+
+    WGPUImageCopyTexture destination = {};
+    destination.texture = m_texture;
+    destination.mipLevel = 0u;
+    destination.origin = { 0u, 0u, 0u };
+    destination.aspect = WGPUTextureAspect_All;
+
+    WGPUTextureDataLayout source = {};
+    source.offset = 0u;
+    source.bytesPerRow = m_channels * m_width;
+    source.rowsPerImage = m_height;
+
+    WGPUExtent3D extent3D = { m_width, m_height, 1u };
+    wgpuQueueWriteTexture(wgpContext.queue, &destination, imageData, width * height * bpp, &source, &extent3D);
+
+    FreeImage_Unload(sourceBitmap);
+    if (bytesNew)
+        free(bytesNew);
+
+    FreeImage_DeInitialise();
+
+    m_textureView = wgpCreateTextureView(WGPUTextureFormat::WGPUTextureFormat_RGBA8Unorm, WGPUTextureAspect::WGPUTextureAspect_All, m_texture);
+}
+
+void WgpTexture::loadFromMemory(unsigned char* data, uint32_t size, const bool flipVertical, const short alphaChannel) {
+    FreeImage_Initialise();
+    FIMEMORY* hmem = FreeImage_OpenMemory(data, size);
+
+    FREE_IMAGE_FORMAT fif = FreeImage_GetFileTypeFromMemory(hmem);
+    FIBITMAP* sourceBitmap = FreeImage_LoadFromMemory(fif, hmem);
+
+    SwapRedBlue32(sourceBitmap);
+
+    if (flipVertical)
+        FreeImage_FlipVertical(sourceBitmap);
+
+    unsigned int bpp = FreeImage_GetBPP(sourceBitmap) / 8;
+    unsigned int width = FreeImage_GetWidth(sourceBitmap);
+    unsigned int height = FreeImage_GetHeight(sourceBitmap);
+    unsigned char* imageData = FreeImage_GetBits(sourceBitmap);
+    unsigned char* bytesNew = nullptr;
+
+    if (bpp == 3) {
+        bytesNew = (unsigned char*)malloc(width * height * 4);
+
+        for (unsigned int i = 0, k = 0; i < static_cast<unsigned int>(width * height * 4); i = i + 4, k = k + 3) {
+            bytesNew[i] = imageData[k];
+            bytesNew[i + 1] = imageData[k + 1];
+            bytesNew[i + 2] = imageData[k + 2];
+            bytesNew[i + 3] = alphaChannel == -1 ? 255 : alphaChannel;
+        }
+        imageData = bytesNew;
+        bpp = 4;
+    }
+
+    m_width = width;
     m_height = height;
     m_channels = bpp;
     m_format = WGPUTextureFormat::WGPUTextureFormat_RGBA8Unorm;
@@ -134,18 +194,6 @@ void WgpTexture::createEmpty(uint32_t width, uint32_t height, WGPUTextureUsageFl
     m_texture = wgpCreateTexture(m_width, m_height, textureUsageFlags, textureFormat);
 }
 
-void WgpTexture::FlipVertical(unsigned char* data, unsigned int padWidth, unsigned int height) {
-    std::vector<unsigned char> srcPixels(padWidth * height);
-    memcpy(&srcPixels[0], data, padWidth * height);
-    unsigned char* pSrcRow = 0;
-    unsigned char* pDestRow = 0;
-    for (unsigned int i = 0; i < height; ++i) {
-        pSrcRow = &srcPixels[(height - 1 - i) * padWidth];
-        pDestRow = &data[i * padWidth];
-        memcpy(pDestRow, pSrcRow, padWidth);
-    }
-}
-
 unsigned char* WgpTexture::LoadFromFile(std::string fileName, const bool flipVertical, short alphaChannel) {
     std::filesystem::path filePath = fileName;
 
@@ -179,9 +227,10 @@ unsigned char* WgpTexture::LoadFromFile(std::string fileName, const bool flipVer
 
     if (bytesNew) {
         FreeImage_Unload(sourceBitmap);
+        FreeImage_DeInitialise();
         return bytesNew;
     }
-
+    FreeImage_DeInitialise();
     return imageData;
 }
 
@@ -218,8 +267,70 @@ unsigned char* WgpTexture::LoadFromFile(std::string fileName, uint32_t& width, u
 
     if (bytesNew) {
         FreeImage_Unload(sourceBitmap);
+        FreeImage_DeInitialise();
         return bytesNew;
     }
-
+    FreeImage_DeInitialise();
     return imageData;
+}
+
+unsigned char* WgpTexture::LoadFromMemory(unsigned char* data, uint32_t size, uint32_t& width, uint32_t& height, const bool flipVertical, const short alphaChannel) {
+    FreeImage_Initialise();
+    FIMEMORY* hmem = FreeImage_OpenMemory(data, size);
+
+    FREE_IMAGE_FORMAT fif = FreeImage_GetFileTypeFromMemory(hmem);
+    FIBITMAP* sourceBitmap = FreeImage_LoadFromMemory(fif, hmem);
+
+    SwapRedBlue32(sourceBitmap);
+
+    if (flipVertical)
+        FreeImage_FlipVertical(sourceBitmap);
+
+    unsigned int bpp = FreeImage_GetBPP(sourceBitmap) / 8;
+    width = FreeImage_GetWidth(sourceBitmap);
+    height = FreeImage_GetHeight(sourceBitmap);
+    unsigned char* imageData = FreeImage_GetBits(sourceBitmap);
+    unsigned char* bytesNew = nullptr;
+
+    if (bpp == 3) {
+        bytesNew = (unsigned char*)malloc(width * height * 4);
+
+        for (unsigned int i = 0, k = 0; i < static_cast<unsigned int>(width * height * 4); i = i + 4, k = k + 3) {
+            bytesNew[i] = imageData[k];
+            bytesNew[i + 1] = imageData[k + 1];
+            bytesNew[i + 2] = imageData[k + 2];
+            bytesNew[i + 3] = alphaChannel == -1 ? 255 : alphaChannel;
+        }
+        imageData = bytesNew;
+        bpp = 4;
+    }
+
+    if (bytesNew) {
+        FreeImage_Unload(sourceBitmap);
+        FreeImage_CloseMemory(hmem);
+        FreeImage_DeInitialise();
+        return bytesNew;
+    }
+    FreeImage_CloseMemory(hmem);
+    FreeImage_DeInitialise();
+    return imageData;
+}
+
+void WgpTexture::Safe(std::string fileOut, unsigned char* bytes, uint32_t width, uint32_t height, uint32_t channels) {
+    FreeImage_Initialise();    
+    FIBITMAP* sourceBitmap = FreeImage_Allocate(width, height, channels * 8u, 0u, 0u, 0u);
+    memcpy(FreeImage_GetBits(sourceBitmap), bytes, width * height * channels);
+    FreeImage_Save(FIF_PNG, sourceBitmap, fileOut.c_str(), PNG_DEFAULT);
+    FreeImage_Unload(sourceBitmap);
+    FreeImage_DeInitialise();
+}
+
+void WgpTexture::Safe(const std::string& fileOut, unsigned char* bytes, uint32_t size) {
+    FreeImage_Initialise();
+    FIMEMORY* hmem = FreeImage_OpenMemory(bytes, size);
+    FREE_IMAGE_FORMAT fif = FreeImage_GetFileTypeFromMemory(hmem);
+    FIBITMAP* sourceBitmap = FreeImage_LoadFromMemory(fif, hmem);
+    FreeImage_Save(FIF_PNG, sourceBitmap, fileOut.c_str(), PNG_DEFAULT);
+    FreeImage_Unload(sourceBitmap);
+    FreeImage_DeInitialise();
 }

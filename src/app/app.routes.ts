@@ -11,6 +11,7 @@ import {ComputeComponent} from './pages/webgpu/compute/compute.component';
 import {NormalMapComponent} from './pages/webgpu/normal-map/normal-map.component';
 import {MSDFFontComponent} from './pages/webgpu/msdf-font/msdf-font.component';
 import {InstancedCubeComponent} from './pages/webgpu/instanced-cube/instanced-cube.component';
+import {ImageBasedLightingComponent} from './pages/webgpu/image-based-lighting/image-based-lighting.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -68,8 +69,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/ibl', 
+    component: ImageBasedLightingComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/instanced-cube'
+    redirectTo: 'webgpu/ibl'
   } 
 ];
