@@ -19,3 +19,12 @@ For building Freetype download the make binaries from https://gnuwin32.sourcefor
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cd build  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;emcmake cmake .. -G "Unix Makefiles"  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;emmake make
+
+For building assimp 6.0.4 I have used the following commands. Unfortunately the "wasm" version can't load compressed .glb/.gltf files so I had to export "DamagedHelmet.glb" as ".obj"
+an go with this.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mkdir build  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cd build  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; emcmake cmake ..  -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DASSIMP_BUILD_ZLIB=OFF -DASSIMP_BUILD_TESTS=OFF -DASSIMP_WARNINGS_AS_ERRORS=OFF -DASSIMP_BUILD_USE_CCACHE=OFF -DASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT=OFF -DASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT=OFF -DASSIMP_BUILD_GLTF_IMPORTER=ON -DASSIMP_BUILD_OBJ_IMPORTER=ON -DASSIMP_BUILD_COLLADA_IMPORTER=ON -DASSIMP_BUILD_FBX_IMPORTER=ON  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;emmake make  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;emmake make install
