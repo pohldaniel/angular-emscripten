@@ -1,5 +1,4 @@
 struct VertexInput {
-	@builtin(instance_index) instanceIndex : u32,
 	@location(0) position: vec3f,
 	@location(1) texcoord: vec2f,
 	@location(2) normal: vec3f
@@ -19,9 +18,9 @@ struct Uniforms {
 @binding(0) @group(0) var<uniform> uniforms : Uniforms;
 
 @vertex
-fn vs_main(in: VertexInput) -> VertexOutput {
+fn vs_main(@builtin(instance_index) instanceIndex: u32, in: VertexInput) -> VertexOutput {
 	var out: VertexOutput;
-	out.position = uniforms.mvp[in.instanceIndex] * vec4f(in.position, 1.0);
+	out.position = uniforms.mvp[instanceIndex] * vec4f(in.position, 1.0);
 	out.normal = in.normal;
 	out.texcoord = in.texcoord;
 	out.color = 0.5 * (vec4f(in.position, 1.0) + vec4(1.0));
