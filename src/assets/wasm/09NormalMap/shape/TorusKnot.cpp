@@ -1,6 +1,5 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include <cmath>
 #include "TorusKnot.h"
 
 TorusKnot::TorusKnot(unsigned int uResolution, unsigned int vResolution) : TorusKnot({ 0.0f, 0.0f, 0.0f }, 1.0f, 0.4f, 2u, 3u, true, true, false, uResolution, vResolution) {}
