@@ -123,7 +123,7 @@ void WgpTexture::loadFromFile(std::string fileName, const bool flipVertical, sho
 
     FreeImage_DeInitialise();
 
-    m_textureView = wgpCreateTextureView(WGPUTextureFormat::WGPUTextureFormat_RGBA8Unorm, WGPUTextureAspect::WGPUTextureAspect_All, m_texture);
+    m_textureView = wgpCreateTextureView(WGPUTextureFormat::WGPUTextureFormat_RGBA8Unorm, WGPUTextureAspect::WGPUTextureAspect_All, 1u, m_texture);
 }
 
 void WgpTexture::loadFromMemory(unsigned char* data, uint32_t size, const bool flipVertical, const short alphaChannel) {
@@ -183,7 +183,7 @@ void WgpTexture::loadFromMemory(unsigned char* data, uint32_t size, const bool f
 
     FreeImage_DeInitialise();
 
-    m_textureView = wgpCreateTextureView(WGPUTextureFormat::WGPUTextureFormat_RGBA8Unorm, WGPUTextureAspect::WGPUTextureAspect_All, m_texture);
+    m_textureView = wgpCreateTextureView(WGPUTextureFormat::WGPUTextureFormat_RGBA8Unorm, WGPUTextureAspect::WGPUTextureAspect_All, 1u, m_texture);
 }
 
 void WgpTexture::createEmpty(uint32_t width, uint32_t height, WGPUTextureUsageFlags textureUsageFlags, WGPUTextureFormat textureFormat) {

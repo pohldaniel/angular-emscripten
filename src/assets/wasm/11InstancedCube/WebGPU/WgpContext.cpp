@@ -175,8 +175,8 @@ bool wgpCreateDevice(void* window) {
 	//wgpContext.colorformat = wgpContext.surfaceCapabilities.formats[0];
 
 	wgpContext.queue = wgpuDeviceGetQueue(wgpContext.device);
-	wgpContext.depthTexture = wgpCreateTexture(static_cast<uint32_t>(Application::Width), static_cast<uint32_t>(Application::Height), WGPUTextureUsage_RenderAttachment, wgpContext.depthformat, wgpContext.depthformat);
-	wgpContext.depthTextureView = wgpCreateTextureView(wgpContext.depthformat, WGPUTextureAspect::WGPUTextureAspect_DepthOnly, wgpContext.depthTexture);
+	wgpContext.depthTexture = wgpCreateTexture(static_cast<uint32_t>(Application::Width), static_cast<uint32_t>(Application::Height), WGPUTextureUsage_RenderAttachment, wgpContext.depthformat, 1u, wgpContext.depthformat);
+	wgpContext.depthTextureView = wgpCreateTextureView(wgpContext.depthformat, WGPUTextureAspect::WGPUTextureAspect_DepthOnly, 1u, wgpContext.depthTexture);
     wgpConfigureSurface();
 
 	wgpCreateVertexBufferLayout(VL_P);
@@ -247,32 +247,32 @@ WGPUBuffer wgpCreateEmptyBuffer(uint32_t size, WGPUBufferUsageFlags bufferUsageF
 	return wgpuDeviceCreateBuffer(device, &bufferDesc);
 }
 
-WGPUTexture wgpCreateTexture(uint32_t width, uint32_t height, WGPUTextureUsageFlags textureUsageFlags, WGPUTextureFormat textureFormat, WGPUTextureFormat viewFormat) {
+WGPUTexture wgpCreateTexture(uint32_t width, uint32_t height, WGPUTextureUsageFlags textureUsageFlags, WGPUTextureFormat textureFormat, uint32_t mipLevelCount, WGPUTextureFormat viewFormat) {
 	const WGPUDevice& device = wgpContext.device;
 	WGPUTextureDescriptor textureDescriptor = {};
 	textureDescriptor.label = "texture";
 	textureDescriptor.dimension = WGPUTextureDimension::WGPUTextureDimension_2D;
-	textureDescriptor.size = { width, height, 1 };
+	textureDescriptor.size = { width, height, 1u };
 	textureDescriptor.format = textureFormat;
 	textureDescriptor.usage = textureUsageFlags;
-	textureDescriptor.mipLevelCount = 1;
-	textureDescriptor.sampleCount = 1;	
+	textureDescriptor.mipLevelCount = mipLevelCount;
+	textureDescriptor.sampleCount = 1u;	
 	textureDescriptor.nextInChain = NULL;
 	if (viewFormat != WGPUTextureFormat_Undefined) {
-		textureDescriptor.viewFormatCount = 1;
+		textureDescriptor.viewFormatCount = 1u;
 		textureDescriptor.viewFormats = &viewFormat;
 	}
 	return wgpuDeviceCreateTexture(device, &textureDescriptor);
 }
 
-WGPUTextureView wgpCreateTextureView(WGPUTextureFormat textureFormat, WGPUTextureAspect aspect, const WGPUTexture& texture) {
+WGPUTextureView wgpCreateTextureView(WGPUTextureFormat textureFormat, WGPUTextureAspect aspect,uint32_t mipLevelCount, const WGPUTexture& texture) {
 	WGPUTextureViewDescriptor textureViewDescriptor = {};
 	textureViewDescriptor.label = "texture_view";
 	textureViewDescriptor.aspect = aspect;
-	textureViewDescriptor.baseArrayLayer = 0;
-	textureViewDescriptor.arrayLayerCount = 1;
-	textureViewDescriptor.baseMipLevel = 0;
-	textureViewDescriptor.mipLevelCount = 1;
+	textureViewDescriptor.baseArrayLayer = 0u;
+	textureViewDescriptor.arrayLayerCount = 1u;
+	textureViewDescriptor.baseMipLevel = 0u;
+	textureViewDescriptor.mipLevelCount = mipLevelCount;
 	textureViewDescriptor.dimension = WGPUTextureViewDimension::WGPUTextureViewDimension_2D;
 	textureViewDescriptor.format = textureFormat;
 	textureViewDescriptor.nextInChain = NULL;
@@ -527,8 +527,8 @@ void wgpResize(uint32_t width, uint32_t height) {
 		wgpuTextureDestroy(wgpContext.depthTexture);
 		wgpuTextureRelease(wgpContext.depthTexture);
 
-		wgpContext.depthTexture = wgpCreateTexture(width, height, WGPUTextureUsage_RenderAttachment, WGPUTextureFormat::WGPUTextureFormat_Depth24Plus, WGPUTextureFormat::WGPUTextureFormat_Depth24Plus);
-		wgpContext.depthTextureView = wgpCreateTextureView(WGPUTextureFormat_Depth24Plus, WGPUTextureAspect::WGPUTextureAspect_DepthOnly, wgpContext.depthTexture);
+		wgpContext.depthTexture = wgpCreateTexture(width, height, WGPUTextureUsage_RenderAttachment, wgpContext.depthformat, 1u, wgpContext.depthformat);
+		wgpContext.depthTextureView = wgpCreateTextureView(WGPUTextureFormat_Depth24Plus, WGPUTextureAspect::WGPUTextureAspect_DepthOnly, 1u, wgpContext.depthTexture);
 
 		wgpContext.config.width = width;
 		wgpContext.config.height = height;

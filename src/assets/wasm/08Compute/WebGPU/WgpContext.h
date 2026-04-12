@@ -32,8 +32,8 @@ extern "C" {
 
 	WGPUBuffer wgpCreateEmptyBuffer(uint32_t size, WGPUBufferUsageFlags bufferUsageFlags);
 	WGPUBuffer wgpCreateBuffer(const void* data, uint32_t size, WGPUBufferUsageFlags bufferUsageFlags);
-	WGPUTexture wgpCreateTexture(uint32_t width, uint32_t height, WGPUTextureUsageFlags textureUsageFlags, WGPUTextureFormat textureFormat, WGPUTextureFormat viewFormat = WGPUTextureFormat_Undefined);
-	WGPUTextureView wgpCreateTextureView(WGPUTextureFormat textureFormat, WGPUTextureAspect aspect, const WGPUTexture& texture);
+	WGPUTexture wgpCreateTexture(uint32_t width, uint32_t height, WGPUTextureUsageFlags textureUsageFlags, WGPUTextureFormat textureFormat, uint32_t mipLevelCount = 1u, WGPUTextureFormat viewFormat = WGPUTextureFormat_Undefined);
+	WGPUTextureView wgpCreateTextureView(WGPUTextureFormat textureFormat, WGPUTextureAspect aspect, uint32_t mipLevelCount, const WGPUTexture& texture);
 	WGPUSampler wgpCreateSampler(WGPUFilterMode filterMode = WGPUFilterMode_Linear, WGPUAddressMode addressMode = WGPUAddressMode_ClampToEdge, uint16_t maxAnisotropy = 1u);
 	WGPUShaderModule wgpCreateShader(std::string path);
 
@@ -52,8 +52,10 @@ extern "C" {
 }
 
 enum SamplerSlot {
-	SS_LINEAR,
-	SS_NEAREST
+	SS_LINEAR_CLAMP,
+	SS_LINEAR_REPEAT,
+	SS_NEAREST_CLAMP,
+	SS_NEAREST_REPEAT
 };
 
 struct WgpContext {
@@ -68,7 +70,7 @@ struct WgpContext {
 
 	
     void createVertexBufferLayout(VertexLayoutSlot slot = VL_PTN);
-    void addSampler(const WGPUSampler& sampler, SamplerSlot samplerSlot = SS_LINEAR);
+    void addSampler(const WGPUSampler& sampler, SamplerSlot samplerSlot = SS_LINEAR_CLAMP);
     const WGPUSampler& getSampler(SamplerSlot samplerSlot);
     void addSahderModule(const std::string& shaderModuleName, const std::string& shaderModulePath);
     const WGPUShaderModule& getShaderModule(std::string shaderModuleName);

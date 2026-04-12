@@ -277,7 +277,7 @@ std::vector<WGPUBindGroup> ImageBasedLighting::OnBindGroups() {
 	bindGroupEntries0[0].size = wgpuBufferGetSize(m_uniformBuffer.getBuffer());
 
 	bindGroupEntries0[1].binding = 1u;
-	bindGroupEntries0[1].sampler = wgpContext.getSampler(SS_LINEAR);
+	bindGroupEntries0[1].sampler = wgpContext.getSampler(SS_LINEAR_CLAMP);
 
 	WGPUBindGroupDescriptor bindGroupDesc0 = {};
 	bindGroupDesc0.layout = wgpuRenderPipelineGetBindGroupLayout(wgpContext.renderPipelines.at("RP_PTN"), 0u);
