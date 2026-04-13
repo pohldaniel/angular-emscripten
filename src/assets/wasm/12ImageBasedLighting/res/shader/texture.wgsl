@@ -15,6 +15,7 @@ struct VertexOutput {
 struct Uniforms {
     projection: mat4x4<f32>,
 	view: mat4x4<f32>,
+	env: mat4x4<f32>,
     model: mat4x4<f32>,    
 	normal: mat4x4<f32>,
 	color: vec4<f32>,
@@ -22,7 +23,7 @@ struct Uniforms {
 };
 
 @group(0) @binding(0) var<uniform> uniforms: Uniforms;
-@group(0) @binding(1) var textureSampler: sampler;
+@group(0) @binding(1) var smplr: sampler;
 @group(1) @binding(0) var texture: texture_2d<f32>;
 
 @vertex
@@ -38,7 +39,5 @@ fn vs_main(in: VertexInput) -> VertexOutput {
 
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
-	let diffuse_color = textureSample(texture, textureSampler, in.texcoord);
-	return diffuse_color;
-	//return vec4(in.normal, 1.0);
+	return textureSample(texture, smplr, in.texcoord);
 }

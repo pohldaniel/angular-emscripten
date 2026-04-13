@@ -5,6 +5,7 @@
 struct Uniforms {
   glm::mat4 projectionMatrix;
   glm::mat4 viewMatrix;
+  glm::mat4 envMatrix;
   glm::mat4 modelMatrix;
   glm::mat4 normalMatrix;
   std::array<float, 4> color;

@@ -65,6 +65,5 @@ private:
 	std::vector <WGPUBindGroup> m_bindgroups;
 	TexturePack m_texturePack = TexturePack::SPIRAL;
 
-	static glm::mat4 GetNormalMatrix(const glm::mat4& m);
 	static glm::vec3 glm_vec3_transform_mat4(const glm::mat4& m, const glm::vec3& v);
 };

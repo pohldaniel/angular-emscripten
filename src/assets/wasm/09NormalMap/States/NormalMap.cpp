@@ -220,7 +220,7 @@ void NormalMap::update() {
 
 	m_uniforms.projectionMatrix = m_camera.getPerspectiveMatrix();
 	m_uniforms.viewMatrix = m_camera.getViewMatrix();
-    m_uniforms.normalMatrix = GetNormalMatrix(m_camera.getViewMatrix() * m_uniforms.modelMatrix);
+    m_uniforms.normalMatrix = Camera::GetNormalMatrix(m_camera.getViewMatrix() * m_uniforms.modelMatrix);
 
     glm::vec3 lightPos = glm_vec3_transform_mat4(m_camera.getViewMatrix(), glm::vec3(-1.7f, 0.7f, 1.9f));
     m_normalUniforms.light_pos_vs = { lightPos[0], lightPos[1], lightPos[2] };
@@ -448,39 +448,4 @@ glm::vec3 NormalMap::glm_vec3_transform_mat4(const glm::mat4& m, const glm::vec3
   return glm::vec3((m[0][0] * x + m[1][0] * y + m[2][0] * z + m[3][0]) / w,
                    (m[0][1] * x + m[1][1] * y + m[2][1] * z + m[3][1]) / w,
                    (m[0][2] * x + m[1][2] * y + m[2][2] * z + m[3][2]) / w);
-}
-
-glm::mat4 NormalMap::GetNormalMatrix(const glm::mat4& m) {
-
-	glm::mat4 normalMatrix;
-	float det;
-	float invDet;
-
-	det = m[0][0] * (m[1][1] * m[2][2] - m[2][1] * m[1][2]) +
-		  m[0][1] * (m[1][2] * m[2][0] - m[2][2] * m[1][0]) +
-		  m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
-
-	invDet = 1.0f / det;
-
-	normalMatrix[0][0] = (m[1][1] * m[2][2] - m[2][1] * m[1][2]) * invDet;
-	normalMatrix[1][0] = (m[2][1] * m[0][2] - m[2][2] * m[0][1]) * invDet;
-	normalMatrix[2][0] = (m[0][1] * m[1][2] - m[1][1] * m[0][2]) * invDet;
-	normalMatrix[3][0] = 0.0f;
-
-	normalMatrix[0][1] = (m[2][0] * m[1][2] - m[1][0] * m[2][2]) * invDet;
-	normalMatrix[1][1] = (m[0][0] * m[2][2] - m[2][0] * m[0][2]) * invDet;
-	normalMatrix[2][1] = (m[1][0] * m[0][2] - m[1][2] * m[0][0]) * invDet;
-	normalMatrix[3][1] = 0.0f;
-
-	normalMatrix[0][2] = (m[1][0] * m[2][1] - m[1][1] * m[2][0]) * invDet;
-	normalMatrix[1][2] = (m[2][0] * m[0][1] - m[0][0] * m[2][1]) * invDet;
-	normalMatrix[2][2] = (m[0][0] * m[1][1] - m[0][1] * m[1][0]) * invDet;
-	normalMatrix[3][2] = 0.0f;
-
-	normalMatrix[0][3] = 0.0f;
-	normalMatrix[1][3] = 0.0f;
-	normalMatrix[2][3] = 0.0f;
-	normalMatrix[3][3] = 1.0f;
-
-	return normalMatrix;
 }

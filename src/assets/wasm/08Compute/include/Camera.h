@@ -32,6 +32,9 @@ public:
 	const glm::mat4& getOrthographicMatrix() const;
 	const glm::mat4& getInvOrthographicMatrix() const;
 
+	const glm::mat4 getRotationMatrix() const;
+
+	static glm::mat4 GetNormalMatrix(const glm::mat4& m);
 protected:
 
    void updateViewMatrix();

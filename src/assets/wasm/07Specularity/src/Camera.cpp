@@ -296,3 +296,45 @@ const glm::mat4& Camera::getViewMatrix() const{
 const glm::mat4& Camera::getInvViewMatrix() const{
 	return m_invViewMatrix;
 }
+
+const glm::mat4 Camera::getRotationMatrix() const{
+	return glm::mat4(m_viewMatrix[0][0], m_viewMatrix[0][1], m_viewMatrix[0][2], 0.0f,
+                     m_viewMatrix[1][0], m_viewMatrix[1][1], m_viewMatrix[1][2], 0.0f,
+                     m_viewMatrix[2][0], m_viewMatrix[2][1], m_viewMatrix[2][2], 0.0f,
+                     0.0f,0.0f, 0.0f, 1.0f);
+}
+
+glm::mat4 Camera::GetNormalMatrix(const glm::mat4& m) {
+
+	glm::mat4 normalMatrix;
+	float det;
+	float invDet;
+
+	det = m[0][0] * (m[1][1] * m[2][2] - m[2][1] * m[1][2]) +
+		  m[0][1] * (m[1][2] * m[2][0] - m[2][2] * m[1][0]) +
+		  m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+
+	invDet = 1.0f / det;
+
+	normalMatrix[0][0] = (m[1][1] * m[2][2] - m[2][1] * m[1][2]) * invDet;
+	normalMatrix[1][0] = (m[2][1] * m[0][2] - m[2][2] * m[0][1]) * invDet;
+	normalMatrix[2][0] = (m[0][1] * m[1][2] - m[1][1] * m[0][2]) * invDet;
+	normalMatrix[3][0] = 0.0f;
+
+	normalMatrix[0][1] = (m[2][0] * m[1][2] - m[1][0] * m[2][2]) * invDet;
+	normalMatrix[1][1] = (m[0][0] * m[2][2] - m[2][0] * m[0][2]) * invDet;
+	normalMatrix[2][1] = (m[1][0] * m[0][2] - m[1][2] * m[0][0]) * invDet;
+	normalMatrix[3][1] = 0.0f;
+
+	normalMatrix[0][2] = (m[1][0] * m[2][1] - m[1][1] * m[2][0]) * invDet;
+	normalMatrix[1][2] = (m[2][0] * m[0][1] - m[0][0] * m[2][1]) * invDet;
+	normalMatrix[2][2] = (m[0][0] * m[1][1] - m[0][1] * m[1][0]) * invDet;
+	normalMatrix[3][2] = 0.0f;
+
+	normalMatrix[0][3] = 0.0f;
+	normalMatrix[1][3] = 0.0f;
+	normalMatrix[2][3] = 0.0f;
+	normalMatrix[3][3] = 1.0f;
+
+	return normalMatrix;
+}

@@ -10,6 +10,7 @@
 #include "Camera.h"
 #include "TrackBall.h"
 #include "AssimpModel.h"
+#include "Shape.h"
 
 class ImageBasedLighting : public State {
 
@@ -36,21 +37,27 @@ private:
 
 	std::vector<WGPUBindGroupLayout> OnBindGroupLayouts();
 	std::vector<WGPUBindGroup> OnBindGroups();
+	std::vector<WGPUBindGroupLayout> OnBindGroupLayoutsEnvCube();
+	std::vector<WGPUBindGroup> OnBindGroupsEnvCube();
+	std::vector<WGPUBindGroupLayout> OnBindGroupLayoutsEnvSphere();
+	std::vector<WGPUBindGroup> OnBindGroupsEnvSphere();
 
 	void renderUi(const WGPURenderPassEncoder& renderPassEncoder);
 	void applyTransformation(const TrackBall& arc);
 
 	bool m_initUi = true;
-	bool m_drawUi = false;
+	bool m_drawUi = true;
 
-	Camera m_camera;
 	TrackBall m_trackball;
+	Camera m_camera;
 	Uniforms m_uniforms;
 	WgpBuffer m_uniformBuffer;
 
 	AssimpModel m_helmet;
-	WgpModel m_wgpHelmet;
+	Shape m_cube, m_sphere;
+	WgpModel m_wgpHelmet, m_wgpCube, m_wgpSphere;
+	WgpTexture m_wgpTextureCube, m_wgpTexture;
 
-	WgpTexture m_texture;
-	void addBindgroups(const WgpModel& model);
+	static void AddBindgroups(const WgpModel& model);
+	static void AddBindgroups(const WgpModel& model, const WgpTexture& texture, std::string pipelineName);
 };
