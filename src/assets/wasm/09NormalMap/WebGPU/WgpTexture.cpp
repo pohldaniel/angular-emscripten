@@ -490,7 +490,6 @@ unsigned char* WgpTexture::LoadFromFile(std::string fileName, uint32_t& width, u
     width = FreeImage_GetWidth(sourceBitmap);
     height = FreeImage_GetHeight(sourceBitmap);
 
-
     unsigned char* pixels = (unsigned char*)malloc(channels * width * height);
     memcpy(pixels, FreeImage_GetBits(sourceBitmap), channels * width * height);
 
@@ -517,7 +516,6 @@ unsigned char* WgpTexture::LoadFromMemory(unsigned char* data, uint32_t size, ui
     unsigned int channels = FreeImage_GetBPP(sourceBitmap) / 8;
     width = FreeImage_GetWidth(sourceBitmap);
     height = FreeImage_GetHeight(sourceBitmap);
-
 
     unsigned char* pixels = (unsigned char*)malloc(channels * width * height);
     memcpy(pixels, FreeImage_GetBits(sourceBitmap), channels * width * height);
@@ -589,7 +587,7 @@ FIBITMAP* WgpTexture::AddAlphaChannel(FIBITMAP* bitmap, const short alphaChannel
             float flt;
             unsigned char c[4];
         } one;
-        
+
         for (unsigned int i = 0, k = 0; i < width * height * 4u * sizeof(float); i = i + 4u * sizeof(float), k = k + 3u * sizeof(float)) {
             pixels[i + 0] = imageData[k + 0]; pixels[i + 1] = imageData[k + 1]; pixels[i + 2] = imageData[k + 2];  pixels[i + 3] = imageData[k + 3];
             pixels[i + 4] = imageData[k + 4]; pixels[i + 5] = imageData[k + 5]; pixels[i + 6] = imageData[k + 6];  pixels[i + 7] = imageData[k + 7];

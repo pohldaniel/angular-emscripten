@@ -65,6 +65,7 @@ void Application::initWindow() {
   glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
   glfwWindowHint(GLFW_SCALE_FRAMEBUFFER, GLFW_FALSE);
   glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE);
+  //glfwWindowHint(GLFW_SAMPLES, 4);
   Window = glfwCreateWindow(Width, Height, "WebGPU window", nullptr, nullptr);
 }
 
