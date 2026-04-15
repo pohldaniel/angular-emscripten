@@ -24,7 +24,6 @@ InstancedCube::InstancedCube(StateMachine& machine) : State(machine, States::INS
 
 	m_uniformBuffer.createBuffer(1024u, WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform);
 
-	wgpContext.addSampler(wgpCreateSampler());
 	wgpContext.setClearColor({ 0.1f, 0.2f, 0.3f, 1.0f });
 	wgpContext.addSahderModule("FONT", "res/shader/instance.wgsl");
 	wgpContext.createRenderPipeline("FONT", "RP_INSTANCED", VL_PTN, std::bind(&InstancedCube::OnBindGroupLayouts, this));

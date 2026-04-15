@@ -55,7 +55,9 @@ enum SamplerSlot {
 	SS_LINEAR_CLAMP,
 	SS_LINEAR_REPEAT,
 	SS_NEAREST_CLAMP,
-	SS_NEAREST_REPEAT
+	SS_NEAREST_REPEAT,
+	SS_0,
+	SS_1
 };
 
 struct WgpContext {
@@ -70,7 +72,7 @@ struct WgpContext {
 
 	
     void createVertexBufferLayout(VertexLayoutSlot slot = VL_PTN);
-    void addSampler(const WGPUSampler& sampler, SamplerSlot samplerSlot = SS_LINEAR_CLAMP);
+    void addSampler(const WGPUSampler& sampler, SamplerSlot samplerSlot);
     const WGPUSampler& getSampler(SamplerSlot samplerSlot);
     void addSahderModule(const std::string& shaderModuleName, const std::string& shaderModulePath);
     const WGPUShaderModule& getShaderModule(std::string shaderModuleName);

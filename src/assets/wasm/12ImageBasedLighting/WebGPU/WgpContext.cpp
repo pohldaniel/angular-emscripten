@@ -184,6 +184,12 @@ bool wgpCreateDevice(void* window) {
 	wgpCreateVertexBufferLayout(VL_PTNC);
 	wgpCreateVertexBufferLayout(VL_PTNTB);
 	wgpCreateVertexBufferLayout(VL_BATCH);
+
+	wgpContext.addSampler(wgpCreateSampler(WGPUFilterMode_Linear, WGPUAddressMode_ClampToEdge), SS_LINEAR_CLAMP);
+	wgpContext.addSampler(wgpCreateSampler(WGPUFilterMode_Linear, WGPUAddressMode_Repeat), SS_LINEAR_REPEAT);
+	wgpContext.addSampler(wgpCreateSampler(WGPUFilterMode_Nearest, WGPUAddressMode_ClampToEdge), SS_NEAREST_CLAMP);
+	wgpContext.addSampler(wgpCreateSampler(WGPUFilterMode_Nearest, WGPUAddressMode_Repeat), SS_NEAREST_REPEAT);
+
     return true;
 }
 

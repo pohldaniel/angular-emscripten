@@ -36,10 +36,6 @@ ImageBasedLighting::ImageBasedLighting(StateMachine& machine) : State(machine, S
 
 	m_uniformBuffer.createBuffer(sizeof(Uniforms), WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform);
 
-	wgpContext.addSampler(wgpCreateSampler(WGPUFilterMode_Linear, WGPUAddressMode_ClampToEdge));
-	wgpContext.addSampler(wgpCreateSampler(WGPUFilterMode_Linear, WGPUAddressMode_Repeat), SS_LINEAR_REPEAT);
-	wgpContext.addSampler(wgpCreateSampler(WGPUFilterMode_Nearest, WGPUAddressMode_ClampToEdge), SS_NEAREST_CLAMP);
-
 	wgpContext.setMSAASampleCount(1u);
 	wgpContext.setClearColor({ 0.1f, 0.2f, 0.3f, 1.0f });
 	wgpContext.addSahderModule("TEXTURE", "res/shader/texture.wgsl");

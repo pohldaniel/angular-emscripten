@@ -12,7 +12,6 @@
 Wireframe::Wireframe(StateMachine& machine) : State(machine, States::WIREFRAME) {
 
 	m_uniformBuffer.createBuffer(sizeof(Uniforms), WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform);	
-	wgpContext.addSampler(wgpCreateSampler());
 
 	wgpContext.addSahderModule("PTN", "res/shader/shader.wgsl");
 	wgpContext.createRenderPipeline("PTN", "RP_PTNC", VL_PTNC, std::bind(&Wireframe::OnBindGroupLayoutsPTN, this));

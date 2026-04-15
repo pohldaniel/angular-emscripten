@@ -13,10 +13,11 @@ struct VertexOutput {
 };
 
 struct Uniforms {
-    projectionMatrix: mat4x4f,
-    viewMatrix: mat4x4f,
-    modelMatrix: mat4x4f,
-	normalMatrix: mat4x4f,
+    projection mat4x4f,
+    view: mat4x4f,
+	env: mat4x4f,
+    model: mat4x4f,
+	normal: mat4x4f,
     color: vec4f,
 	camPosition: vec3f,
 };
@@ -29,7 +30,7 @@ struct Uniforms {
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
 	var out: VertexOutput;
-	out.position = uniforms.projectionMatrix * vec4<f32>(in.pos, 0.0, 1.0);
+	out.position = uniforms.projection * vec4<f32>(in.pos, 0.0, 1.0);
 	out.uv = in.tex;
 	out.color = in.color;
 	out.layer = in.layer;
@@ -38,7 +39,6 @@ fn vs_main(in: VertexInput) -> VertexOutput {
 
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4f {
-
 	let sample = textureSample(texture, Sampler, in.uv);
 	return sample;
 }
