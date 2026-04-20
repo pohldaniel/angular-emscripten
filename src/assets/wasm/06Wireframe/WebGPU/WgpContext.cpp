@@ -129,11 +129,11 @@ void wgpRequestDeviceSync(WGPUAdapter instance, const WGPUDeviceDescriptor* devi
 #endif // __EMSCRIPTEN__
 }
 
-void wgpInit(void* window) {
-	wgpCreateDevice(window);
+void wgpInit(void* window, uint32_t msaaSampleCount) {
+	wgpCreateDevice(window, msaaSampleCount);
 }
 
-bool wgpCreateDevice(void* window) {
+bool wgpCreateDevice(void* window, uint32_t msaaSampleCount) {
 	wgpContext.instance = wgpuCreateInstance(NULL);
 	wgpRequestAdapterSync(wgpContext.instance, NULL);
 
@@ -190,6 +190,7 @@ bool wgpCreateDevice(void* window) {
 	wgpContext.addSampler(wgpCreateSampler(WGPUFilterMode_Nearest, WGPUAddressMode_ClampToEdge), SS_NEAREST_CLAMP);
 	wgpContext.addSampler(wgpCreateSampler(WGPUFilterMode_Nearest, WGPUAddressMode_Repeat), SS_NEAREST_REPEAT);
 
+	wgpContext.setMSAASampleCount(msaaSampleCount);
     return true;
 }
 

@@ -36,16 +36,15 @@ ImageBasedLighting::ImageBasedLighting(StateMachine& machine) : State(machine, S
 
 	m_uniformBuffer.createBuffer(sizeof(Uniforms), WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform);
 
-	wgpContext.setMSAASampleCount(1u);
 	wgpContext.setClearColor({ 0.1f, 0.2f, 0.3f, 1.0f });
 	wgpContext.addSahderModule("TEXTURE", "res/shader/texture.wgsl");
-	wgpContext.createRenderPipeline("TEXTURE", "RP_PTN", VL_PTN, std::bind(&ImageBasedLighting::OnBindGroupLayouts, this));
+	wgpContext.createRenderPipeline("TEXTURE", "RP_PTN", VL_PTN, std::bind(&ImageBasedLighting::OnBindGroupLayouts, this), 4u);
 
 	wgpContext.addSahderModule("ENV_CUBE", "res/shader/env_cube.wgsl");
-	wgpContext.createRenderPipeline("ENV_CUBE", "RP_ENV_CUBE", VL_P, std::bind(&ImageBasedLighting::OnBindGroupLayoutsEnvCube, this));
+	wgpContext.createRenderPipeline("ENV_CUBE", "RP_ENV_CUBE", VL_P, std::bind(&ImageBasedLighting::OnBindGroupLayoutsEnvCube, this), 4u);
 
 	wgpContext.addSahderModule("ENV_SPHERE", "res/shader/env_sphere.wgsl");
-	wgpContext.createRenderPipeline("ENV_SPHERE", "RP_ENV_SPHERE", VL_P, std::bind(&ImageBasedLighting::OnBindGroupLayoutsEnvSphere, this));
+	wgpContext.createRenderPipeline("ENV_SPHERE", "RP_ENV_SPHERE", VL_P, std::bind(&ImageBasedLighting::OnBindGroupLayoutsEnvSphere, this), 4u);
 
 	wgpContext.OnDraw = std::bind(&ImageBasedLighting::OnDraw, this, std::placeholders::_1);
 
@@ -157,8 +156,8 @@ void ImageBasedLighting::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) 
 
 	wgpuRenderPassEncoderSetViewport(renderPassEncoder, 0.0f, 0.0f, static_cast<float>(Application::Width), static_cast<float>(Application::Height), 0.0f, 1.0f);
 
-	//wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_ENV_CUBE"));
-	//m_wgpCube.draw(renderPassEncoder);
+	wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_ENV_CUBE"));
+	m_wgpCube.draw(renderPassEncoder);
 
 	//wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_ENV_SPHERE"));
 	//m_wgpSphere.draw(renderPassEncoder);

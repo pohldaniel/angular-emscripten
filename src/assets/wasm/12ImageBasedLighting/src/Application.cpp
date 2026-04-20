@@ -65,12 +65,11 @@ void Application::initWindow() {
   glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
   glfwWindowHint(GLFW_SCALE_FRAMEBUFFER, GLFW_FALSE);
   glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE);
-  //glfwWindowHint(GLFW_SAMPLES, 4);
   Window = glfwCreateWindow(Width, Height, "WebGPU window", nullptr, nullptr);
 }
 
 void Application::initWebGPU(){
-  wgpInit(Window);
+  wgpInit(Window, 4u);
 }
 
 void Application::initImGUI(){
@@ -85,6 +84,7 @@ void Application::initImGUI(){
 	initInfo.Device = wgpContext.device;
 	initInfo.RenderTargetFormat = wgpContext.colorformat;
 	initInfo.DepthStencilFormat = wgpContext.depthformat;
+  initInfo.PipelineMultisampleState.count = wgpContext.msaaSampleCount;
 
 	ImGui_ImplGlfw_InitForOther(Window, true);
 	ImGui_ImplWGPU_Init(&initInfo);

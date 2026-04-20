@@ -84,6 +84,7 @@ void Application::initImGUI(){
 	initInfo.Device = wgpContext.device;
 	initInfo.RenderTargetFormat = wgpContext.colorformat;
 	initInfo.DepthStencilFormat = wgpContext.depthformat;
+  initInfo.PipelineMultisampleState.count = wgpContext.msaaSampleCount;
 
 	ImGui_ImplGlfw_InitForOther(Window, true);
 	ImGui_ImplWGPU_Init(&initInfo);
