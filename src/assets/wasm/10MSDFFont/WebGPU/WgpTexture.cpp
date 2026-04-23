@@ -343,18 +343,7 @@ void WgpTexture::loadHDRICubeFromFile(const std::string& fileName, const bool fl
     uint32_t faceHeight = m_height > m_width ? m_height / 4u : m_height / 3u;
     uint32_t mipLevelCount = BitWidth(std::max(faceWidth, faceHeight));
 
-    WGPUTextureDescriptor textureDescriptor = {};
-    textureDescriptor.label = "texture";
-    textureDescriptor.dimension = WGPUTextureDimension::WGPUTextureDimension_2D;
-    textureDescriptor.size = { faceWidth, faceHeight, 6u };
-    textureDescriptor.format = m_format;
-    textureDescriptor.usage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst;
-    textureDescriptor.mipLevelCount = mipLevelCount;
-    textureDescriptor.sampleCount = 1u;
-    textureDescriptor.nextInChain = NULL;
-
-    m_texture = wgpuDeviceCreateTexture(wgpContext.device, &textureDescriptor);
-
+    m_texture = wgpCreateTexture(faceWidth, faceHeight, 6u, WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst, m_format, mipLevelCount);
     for (uint32_t face = 0u; face < faces.size(); ++face) {
         WriteMipMaps(m_texture, { faceWidth, faceHeight, 1u }, mipLevelCount, reinterpret_cast<float*>(faces[face]), face, halfBPP);
         free(faces[face]);
@@ -363,18 +352,7 @@ void WgpTexture::loadHDRICubeFromFile(const std::string& fileName, const bool fl
     FreeImage_Unload(sourceBitmap);
     FreeImage_DeInitialise();
 
-    WGPUTextureViewDescriptor textureViewDescriptor = {};
-    textureViewDescriptor.label = "texture_view";
-    textureViewDescriptor.aspect = WGPUTextureAspect::WGPUTextureAspect_All;
-    textureViewDescriptor.baseArrayLayer = 0u;
-    textureViewDescriptor.arrayLayerCount = 6u;
-    textureViewDescriptor.baseMipLevel = 0u;
-    textureViewDescriptor.mipLevelCount = mipLevelCount;
-    textureViewDescriptor.dimension = WGPUTextureViewDimension::WGPUTextureViewDimension_Cube;
-    textureViewDescriptor.format = m_format;
-    textureViewDescriptor.nextInChain = NULL;
-
-    m_textureView = wgpuTextureCreateView(m_texture, &textureViewDescriptor);  
+    m_textureView = wgpCreateTextureView(m_texture, WGPUTextureAspect::WGPUTextureAspect_All);
 }
 
 void WgpTexture::loadHDRIFromFile(const std::string& fileName, const bool flipVertical, const bool halfBPP) {
@@ -401,18 +379,6 @@ void WgpTexture::loadHDRIFromFile(const std::string& fileName, const bool flipVe
     m_channels = channels;
     m_format = halfBPP ? WGPUTextureFormat::WGPUTextureFormat_RGBA16Float : WGPUTextureFormat::WGPUTextureFormat_RGBA32Float;
 
-    WGPUTextureDescriptor textureDescriptor = {};
-    textureDescriptor.label = "texture";
-    textureDescriptor.dimension = WGPUTextureDimension::WGPUTextureDimension_2D;
-    textureDescriptor.size = { m_width, m_height, 1u };
-    textureDescriptor.format = m_format;
-    textureDescriptor.usage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst;
-    textureDescriptor.mipLevelCount = 1u;
-    textureDescriptor.sampleCount = 1u;
-    textureDescriptor.nextInChain = NULL;
-
-    m_texture = wgpuDeviceCreateTexture(wgpContext.device, &textureDescriptor);
-
     uint32_t mipLevelCount = BitWidth(std::max(m_width, m_height));
     m_texture = wgpCreateTexture(m_width, m_height, 1u, WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst, m_format, mipLevelCount);
     WriteMipMaps(m_texture, { m_width, m_height, 1u }, mipLevelCount, reinterpret_cast<float*>(imageData), 0u, halfBPP);
@@ -420,18 +386,7 @@ void WgpTexture::loadHDRIFromFile(const std::string& fileName, const bool flipVe
     FreeImage_Unload(sourceBitmap);
     FreeImage_DeInitialise();
 
-    WGPUTextureViewDescriptor textureViewDescriptor = {};
-    textureViewDescriptor.label = "texture_view";
-    textureViewDescriptor.aspect = WGPUTextureAspect::WGPUTextureAspect_All;
-    textureViewDescriptor.baseArrayLayer = 0u;
-    textureViewDescriptor.arrayLayerCount = 1u;
-    textureViewDescriptor.baseMipLevel = 0u;
-    textureViewDescriptor.mipLevelCount = mipLevelCount;
-    textureViewDescriptor.dimension = WGPUTextureViewDimension::WGPUTextureViewDimension_2D;
-    textureViewDescriptor.format = m_format;
-    textureViewDescriptor.nextInChain = NULL;
-
-    m_textureView = wgpuTextureCreateView(m_texture, &textureViewDescriptor);
+    m_textureView = wgpCreateTextureView(m_texture, WGPUTextureAspect::WGPUTextureAspect_All);
 }
 
 void WgpTexture::createEmpty(uint32_t width, uint32_t height, uint32_t depth, WGPUTextureUsageFlags textureUsageFlags, WGPUTextureFormat textureFormat, uint32_t mipLevelCount) {
