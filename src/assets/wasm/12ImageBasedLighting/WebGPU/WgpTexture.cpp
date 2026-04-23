@@ -265,13 +265,13 @@ void WgpTexture::loadFromFile(const std::string& fileName, const bool flipVertic
     m_format = WGPUTextureFormat::WGPUTextureFormat_RGBA8Unorm;
 
     uint32_t mipLevelCount = BitWidth(std::max(m_width, m_height));
-    m_texture = wgpCreateTexture(m_width, m_height, WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst, m_format, mipLevelCount);
+    m_texture = wgpCreateTexture(m_width, m_height, 1u, WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst, m_format, mipLevelCount);
     WriteMipMaps(m_texture, { m_width, m_height, 1u }, mipLevelCount, imageData);
 
     FreeImage_Unload(sourceBitmap);
     FreeImage_DeInitialise();
 
-    m_textureView = wgpCreateTextureView(m_format, WGPUTextureAspect::WGPUTextureAspect_All, mipLevelCount, m_texture);
+    m_textureView = wgpCreateTextureView(m_texture, WGPUTextureAspect::WGPUTextureAspect_All);
 }
 
 void WgpTexture::loadFromMemory(unsigned char* data, uint32_t size, const bool flipVertical, const short alphaChannel) {
@@ -299,14 +299,14 @@ void WgpTexture::loadFromMemory(unsigned char* data, uint32_t size, const bool f
     m_format = WGPUTextureFormat::WGPUTextureFormat_RGBA8Unorm;
 
     uint32_t mipLevelCount = BitWidth(std::max(m_width, m_height));
-    m_texture = wgpCreateTexture(m_width, m_height, WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst, m_format, mipLevelCount);
+    m_texture = wgpCreateTexture(m_width, m_height, 1u, WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst, m_format, mipLevelCount);
     WriteMipMaps(m_texture, { m_width, m_height, 1u }, mipLevelCount, imageData);
 
 
     FreeImage_Unload(sourceBitmap);
     FreeImage_DeInitialise();
 
-    m_textureView = wgpCreateTextureView(m_format, WGPUTextureAspect::WGPUTextureAspect_All, mipLevelCount, m_texture);
+    m_textureView = wgpCreateTextureView(m_texture, WGPUTextureAspect::WGPUTextureAspect_All);
 }
 
 void WgpTexture::loadHDRICubeFromFile(const std::string& fileName, const bool flipVertical, const bool halfBPP) {
@@ -414,7 +414,7 @@ void WgpTexture::loadHDRIFromFile(const std::string& fileName, const bool flipVe
     m_texture = wgpuDeviceCreateTexture(wgpContext.device, &textureDescriptor);
 
     uint32_t mipLevelCount = BitWidth(std::max(m_width, m_height));
-    m_texture = wgpCreateTexture(m_width, m_height, WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst, m_format, mipLevelCount);
+    m_texture = wgpCreateTexture(m_width, m_height, 1u, WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst, m_format, mipLevelCount);
     WriteMipMaps(m_texture, { m_width, m_height, 1u }, mipLevelCount, reinterpret_cast<float*>(imageData), 0u, halfBPP);
 
     FreeImage_Unload(sourceBitmap);
@@ -434,13 +434,13 @@ void WgpTexture::loadHDRIFromFile(const std::string& fileName, const bool flipVe
     m_textureView = wgpuTextureCreateView(m_texture, &textureViewDescriptor);
 }
 
-void WgpTexture::createEmpty(uint32_t width, uint32_t height, WGPUTextureUsageFlags textureUsageFlags, WGPUTextureFormat textureFormat) {
+void WgpTexture::createEmpty(uint32_t width, uint32_t height, uint32_t depth, WGPUTextureUsageFlags textureUsageFlags, WGPUTextureFormat textureFormat, uint32_t mipLevelCount) {
     m_width = width;
     m_height = height;
     m_channels = 4u;
     m_format = textureFormat;
-    m_texture = wgpCreateTexture(m_width, m_height, textureUsageFlags, textureFormat);
-    m_textureView = wgpCreateTextureView(m_format, WGPUTextureAspect::WGPUTextureAspect_All, 1u, m_texture);
+    m_texture = wgpCreateTexture(m_width, m_height, depth, textureUsageFlags, textureFormat, mipLevelCount);
+    m_textureView = wgpCreateTextureView(m_texture, WGPUTextureAspect::WGPUTextureAspect_All);
 }
 
 unsigned char* WgpTexture::LoadFromFile(std::string fileName, const bool flipVertical, const short alphaChannel) {
