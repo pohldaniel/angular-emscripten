@@ -31,8 +31,9 @@ public:
 	const glm::mat4& getInvPerspectiveMatrix() const;
 	const glm::mat4& getOrthographicMatrix() const;
 	const glm::mat4& getInvOrthographicMatrix() const;
-
 	const glm::mat4 getRotationMatrix() const;
+
+	const glm::vec3& getPosition() const;
 
 	static glm::mat4 GetNormalMatrix(const glm::mat4& m);
 protected:
