@@ -727,9 +727,8 @@ void WgpContext::createRenderPipeline(std::string shaderModuleName,
                                       bool addDepthStencilState,
                                       bool addBlendState) {
 
-	std::vector<WGPUBindGroupLayout> bindGroupLayouts = onBindGroupLayouts();
-
 	if (onBindGroupLayouts) {
+		std::vector<WGPUBindGroupLayout> bindGroupLayouts = onBindGroupLayouts();
 		WGPUPipelineLayoutDescriptor pipelineLayoutDescriptor = {};
 		pipelineLayoutDescriptor.bindGroupLayoutCount = bindGroupLayouts.size();
 		pipelineLayoutDescriptor.bindGroupLayouts = bindGroupLayouts.data();

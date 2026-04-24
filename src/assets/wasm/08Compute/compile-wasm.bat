@@ -21,6 +21,7 @@ emcc src/Mouse.cpp^
  WebGPU/WgpModel.cpp^
  WebGPU/WgpBatchRenderer.cpp^
  WebGPU/WgpFontRenderer.cpp^
+ WebGPU/WgpRenderer.cpp^
  states/StateMachine.cpp^
  states/compute.cpp^
  libimgui.a^
