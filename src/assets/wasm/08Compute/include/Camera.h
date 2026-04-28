@@ -1,5 +1,4 @@
-#ifndef __cameraH__
-#define __cameraH__
+#pragma once
 
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
@@ -9,6 +8,8 @@ class Camera {
 
 public:
 
+	static const glm::mat4 BIAS_SHIFT_Z;
+
 	Camera();
 	Camera(const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up);
 	~Camera();
@@ -16,6 +17,7 @@ public:
     void perspective(float fovx, float aspect, float znear, float zfar);
 	void orthographic(float left, float right, float bottom, float top, float znear, float zfar);
 	void lookAt(const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up);
+	void lookAt(float distance, float pitch, float yaw);
 
 	void move(const glm::vec3& direction);
 	void move(float distance);
@@ -33,10 +35,10 @@ public:
 	const glm::mat4& getOrthographicMatrix() const;
 	const glm::mat4& getInvOrthographicMatrix() const;
 	const glm::mat4 getRotationMatrix() const;
-
 	const glm::vec3& getPosition() const;
 
 	static glm::mat4 GetNormalMatrix(const glm::mat4& m);
+
 protected:
 
    void updateViewMatrix();
@@ -54,7 +56,7 @@ private:
 	float			m_accumYawDegrees;
 	float			m_rotationSpeed;
 	float			m_movingSpeed;
-	float			m_offsetDistance;
+	float			m_distance;
 
 	glm::vec3		m_eye;
 	glm::vec3		m_xAxis;
@@ -70,5 +72,3 @@ private:
 	glm::mat4		m_orthMatrix;
 	glm::mat4		m_invOrthMatrix;
 };
-
-#endif

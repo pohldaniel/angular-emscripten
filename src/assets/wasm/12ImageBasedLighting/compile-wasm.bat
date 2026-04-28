@@ -8,6 +8,7 @@ emcc src/Mouse.cpp^
  src/CharacterSet.cpp^
  src/Application.cpp^
  src/main.cpp^
+ shape/Quad.cpp^
  shape/Cube.cpp^
  shape/Sphere.cpp^
  shape/Torus.cpp^
