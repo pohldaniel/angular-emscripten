@@ -127,6 +127,18 @@ bool Application::IsInitialized(){
   return Init;
 }
 
+void Application::OnSurfaceChange(){
+  ImGui_ImplWGPU_Shutdown();
+
+  ImGui_ImplWGPU_InitInfo initInfo = {};
+  initInfo.Device = wgpContext.device;
+  initInfo.RenderTargetFormat = wgpContext.colorformat;
+  initInfo.DepthStencilFormat = wgpContext.depthformat;
+  initInfo.PipelineMultisampleState.count = wgpContext.msaaSampleCount;
+  
+  ImGui_ImplWGPU_Init(&initInfo);
+}
+
 void Application::Cleanup(){
   delete Machine;
   wgpShutDown();

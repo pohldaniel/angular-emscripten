@@ -40,9 +40,9 @@ Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
   Application::Width = 640;
   Application::Height = 480;
   initWindow();
-  initWebGPU();
-  initStates();
+  initWebGPU(); 
   initImGUI();
+  initStates();
 
   glfwSetWindowUserPointer(Window, this);
   glfwSetFramebufferSizeCallback(Window, glfwFramebufferResizeCallback);
@@ -120,6 +120,18 @@ void Application::Resize(uint32_t width, uint32_t height){
 
 bool Application::IsInitialized(){
   return Init;
+}
+
+void Application::OnSurfaceChange(){
+  ImGui_ImplWGPU_Shutdown();
+
+  ImGui_ImplWGPU_InitInfo initInfo = {};
+  initInfo.Device = wgpContext.device;
+  initInfo.RenderTargetFormat = wgpContext.colorformat;
+  initInfo.DepthStencilFormat = wgpContext.depthformat;
+  initInfo.PipelineMultisampleState.count = wgpContext.msaaSampleCount;
+  
+  ImGui_ImplWGPU_Init(&initInfo);
 }
 
 void Application::Cleanup(){

@@ -23,8 +23,9 @@ public:
 	static void MessageLopp(void *arg);
 	static void Resize(uint32_t width, uint32_t height);
 	static bool IsInitialized();
+	static void OnSurfaceChange();
 	static void Cleanup();
-
+	
 	static int Width;
 	static int Height;
 	static GLFWwindow* Window;
