@@ -1,4 +1,3 @@
-
 struct VertexInput {
 	@location(0) position: vec3f,
 	@location(1) normal: vec3f
@@ -15,7 +14,7 @@ struct Uniforms {
     projection: mat4x4<f32>,
 	view: mat4x4<f32>,
 	env: mat4x4<f32>,
-    model: mat4x4<f32>,    
+    model: mat4x4<f32>,
 	normal: mat4x4<f32>,
 	color: vec4<f32>,
 	camPos: vec3<f32>,
@@ -32,7 +31,7 @@ const ambientFactor = 0.2;
 @group(0) @binding(1) var shadowMap: texture_depth_2d;
 @group(0) @binding(2) var shadowSampler: sampler_comparison;
 
-@vertex 
+@vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
 	var out: VertexOutput;
 	out.position = uniforms.projection * uniforms.view * uniforms.model * vec4f(in.position, 1.0);
@@ -42,8 +41,8 @@ fn vs_main(in: VertexInput) -> VertexOutput {
 	return out;
 }
 
-@fragment 
-fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {	
+@fragment
+fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
 var visibility = 0.0;
 	let oneOverShadowDepthTextureSize = 1.0 / shadowDepthTextureSize;
 	for (var y = -1; y <= 1; y++) {
