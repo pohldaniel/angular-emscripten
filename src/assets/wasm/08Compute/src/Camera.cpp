@@ -288,6 +288,10 @@ void Camera::orthogonalize() {
 
 	m_viewDir = -m_zAxis;
 
+	fillRotationPart();
+}
+
+void Camera::fillRotationPart() {
 	m_viewMatrix[0][0] = m_xAxis[0];
 	m_viewMatrix[0][1] = m_yAxis[0];
 	m_viewMatrix[0][2] = m_zAxis[0];
@@ -331,13 +335,20 @@ void Camera::move(float distance) {
 	updateViewMatrix();
 }
 
-void Camera::setPosition(float x, float y, float z){
-    m_eye = glm::vec3(x, y, z);
-    updateViewMatrix();
+void Camera::setPosition(float x, float y, float z, bool observe){
+	setPosition(glm::vec3(x, y, z), observe);
+	updateViewMatrix();
 }
 
-void Camera::setPosition(const glm::vec3& position){
+void Camera::setPosition(const glm::vec3& position, bool observe){
     m_eye = position;
+	if (observe) {		
+		m_zAxis = glm::normalize(m_eye - m_target);
+		m_xAxis = glm::normalize(glm::cross(WORLD_YAXIS, m_zAxis));
+		m_yAxis = glm::normalize(glm::cross(m_zAxis, m_xAxis));
+		m_viewDir = -m_zAxis;
+		fillRotationPart();
+	}
     updateViewMatrix();
 }
 

@@ -750,9 +750,11 @@ void WgpContext::createRenderPipeline(std::string shaderModuleName,
                                       uint32_t msaaSampleCount, 
                                       WGPUPrimitiveTopology primitiveTopology,
                                       WGPUTextureFormat colorTextureFormat,
-									  WGPUCompareFunction compareFunction,
+									  WGPUTextureFormat depthTextureFormat,
+									  WGPUCompareFunction depthCompareFunction,
                                       bool addDepthStencilState,
-                                      bool addBlendState) {
+                                      bool addBlendState,
+									  bool addFragmentState) {
 
 	if (onBindGroupLayouts) {
 		std::vector<WGPUBindGroupLayout> bindGroupLayouts = onBindGroupLayouts();
@@ -793,9 +795,9 @@ void WgpContext::createRenderPipeline(std::string shaderModuleName,
 
 	WGPUDepthStencilState depthStencilState = {};
 	setDefault(depthStencilState);
-	depthStencilState.depthCompare = compareFunction;
+	depthStencilState.depthCompare = depthCompareFunction;
 	depthStencilState.depthWriteEnabled = true;
-	depthStencilState.format = depthformat;
+	depthStencilState.format = depthTextureFormat == WGPUTextureFormat_Undefined ? depthformat : depthTextureFormat;
 	depthStencilState.stencilReadMask = 0;
 	depthStencilState.stencilWriteMask = 0;
 
@@ -806,7 +808,7 @@ void WgpContext::createRenderPipeline(std::string shaderModuleName,
 	renderPipelineDescriptor.multisample.alphaToCoverageEnabled = false;
 
 	renderPipelineDescriptor.vertex = vertexState;
-	renderPipelineDescriptor.fragment = &fragmentState;
+	renderPipelineDescriptor.fragment = addFragmentState ? &fragmentState : NULL;
 	renderPipelineDescriptor.depthStencil = addDepthStencilState ? &depthStencilState : NULL;
 
 	renderPipelineDescriptor.primitive.topology = primitiveTopology;

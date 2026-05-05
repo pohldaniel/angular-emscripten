@@ -1,6 +1,7 @@
 emcc src/Mouse.cpp^
  src/Material.cpp^
  src/Transform.cpp^
+ src/Mesh.cpp^
  src/Model.cpp^
  src/ObjModel.cpp^
  src/AssimpModel.cpp^
