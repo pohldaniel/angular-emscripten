@@ -1,3 +1,4 @@
+
 struct VertexInput {
 	@location(0) position: vec3f,
 	@location(1) normal: vec3f
@@ -18,7 +19,7 @@ struct Uniforms {
 
 @group(0) @binding(0) var<uniform> uniforms: Uniforms;
 
-@vertex
+@vertex 
 fn vs_main(in: VertexInput) -> @builtin(position) vec4f {	
 	return uniforms.lightVP * uniforms.model * vec4(in.position, 1.0);
 }
