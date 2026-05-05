@@ -12,6 +12,7 @@ import {NormalMapComponent} from './pages/webgpu/normal-map/normal-map.component
 import {MSDFFontComponent} from './pages/webgpu/msdf-font/msdf-font.component';
 import {InstancedCubeComponent} from './pages/webgpu/instanced-cube/instanced-cube.component';
 import {ImageBasedLightingComponent} from './pages/webgpu/image-based-lighting/image-based-lighting.component';
+import {ShadowMappingComponent} from './pages/webgpu/shadow-mapping/shadow-mapping.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -74,8 +75,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/shadow-mapping', 
+    component: ShadowMappingComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/ibl'
+    redirectTo: 'webgpu/shadow-mapping'
   } 
 ];
