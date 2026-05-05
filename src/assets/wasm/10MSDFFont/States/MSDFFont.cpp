@@ -31,10 +31,10 @@ MSDFFont::MSDFFont(StateMachine& machine) : State(machine, States::MSDF_FONT) {
 	wgpContext.createRenderPipeline("FONT", "RP_FONT", VL_BATCH, std::bind(&MSDFFont::OnBindGroupLayouts, this));
 	wgpContext.OnDraw = std::bind(&MSDFFont::OnDraw, this, std::placeholders::_1);
 
-	m_uniforms.projectionMatrix = m_camera.getPerspectiveMatrix();
-	m_uniforms.viewMatrix = m_camera.getViewMatrix();
-	m_uniforms.modelMatrix = glm::mat4(1.0f);
-	m_uniforms.normalMatrix = glm::mat4(1.0f);
+	m_uniforms.projection = m_camera.getPerspectiveMatrix();
+	m_uniforms.view = m_camera.getViewMatrix();
+	m_uniforms.model = glm::mat4(1.0f);
+	m_uniforms.normal = glm::mat4(1.0f);
 	m_uniforms.color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	m_uniforms.camPosition = glm::vec3(0.0f);
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), 0, &m_uniforms, sizeof(Uniforms));
@@ -147,12 +147,12 @@ void MSDFFont::update() {
 
 	double sec = glfwGetTime();
 	float now = (float)sec / 5.0f;
-	m_uniforms.modelMatrix = glm::mat4(1.0f);
-	m_uniforms.modelMatrix = glm::translate(m_uniforms.modelMatrix, glm::vec3(0.0f, 2.0f, -3.0f));
-	m_uniforms.modelMatrix = glm::rotate(m_uniforms.modelMatrix, 1.0f, glm::vec3(sinf(now), cosf(now), 0.0f));
+	m_uniforms.model = glm::mat4(1.0f);
+	m_uniforms.model = glm::translate(m_uniforms.model, glm::vec3(0.0f, 2.0f, -3.0f));
+	m_uniforms.model = glm::rotate(m_uniforms.model, 1.0f, glm::vec3(sinf(now), cosf(now), 0.0f));
 
-	m_uniforms.projectionMatrix = m_camera.getPerspectiveMatrix();
-	m_uniforms.viewMatrix = m_camera.getViewMatrix();
+	m_uniforms.projection = m_camera.getPerspectiveMatrix();
+	m_uniforms.view = m_camera.getViewMatrix();
 
 	float crawl = fmodf((float)sec / 2.5f, 14.0f);
 	m_model = glm::mat4(1.0f);
@@ -167,9 +167,9 @@ void MSDFFont::render() {
 void MSDFFont::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
 	WgpFontRenderer::Get().reset();
 
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projectionMatrix), &m_uniforms.projectionMatrix, sizeof(Uniforms::projectionMatrix));
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, viewMatrix), &m_uniforms.viewMatrix, sizeof(Uniforms::viewMatrix));
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, modelMatrix), &m_uniforms.modelMatrix, sizeof(Uniforms::modelMatrix));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projection), &m_uniforms.projection, sizeof(Uniforms::projection));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, view), &m_uniforms.view, sizeof(Uniforms::view));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, model), &m_uniforms.model, sizeof(Uniforms::model));
 
 	wgpuRenderPassEncoderSetViewport(renderPassEncoder, 0.0f, 0.0f, static_cast<float>(Application::Width), static_cast<float>(Application::Height), 0.0f, 1.0f);
 	
@@ -180,27 +180,27 @@ void MSDFFont::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
 
 	glm::mat4 transOrigin = glm::mat4(1.0f);
 	transOrigin = glm::translate(transOrigin, glm::vec3(-m_characterSet.getWidth("Front") * 0.5f * largeScale, -m_characterSet.lineHeight * 0.5f * largeScale, 0.0f));
-	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Front", glm::value_ptr((m_uniforms.modelMatrix * m_textTransforms[0] * transOrigin)[0]), { 1.0f, 0.0f, 0.0f, 1.0f }, largeScale);
+	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Front", glm::value_ptr((m_uniforms.model * m_textTransforms[0] * transOrigin)[0]), { 1.0f, 0.0f, 0.0f, 1.0f }, largeScale);
 	
 	transOrigin = glm::mat4(1.0f);
 	transOrigin = glm::translate(transOrigin, glm::vec3(-m_characterSet.getWidth("Back") * 0.5f * largeScale, -m_characterSet.lineHeight * 0.5f * largeScale, 0.0f));
-	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Back", glm::value_ptr((m_uniforms.modelMatrix * m_textTransforms[1] * transOrigin)[0]), { 0.0f, 1.0f, 1.0f, 1.0f }, largeScale);
+	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Back", glm::value_ptr((m_uniforms.model * m_textTransforms[1] * transOrigin)[0]), { 0.0f, 1.0f, 1.0f, 1.0f }, largeScale);
 	
 	transOrigin = glm::mat4(1.0f);
 	transOrigin = glm::translate(transOrigin, glm::vec3(-m_characterSet.getWidth("Right") * 0.5f * largeScale, -m_characterSet.lineHeight * 0.5f * largeScale, 0.0f));
-	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Right", glm::value_ptr((m_uniforms.modelMatrix * m_textTransforms[2] * transOrigin)[0]), { 0.0f, 1.0f, 0.0f, 1.0f }, largeScale);
+	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Right", glm::value_ptr((m_uniforms.model * m_textTransforms[2] * transOrigin)[0]), { 0.0f, 1.0f, 0.0f, 1.0f }, largeScale);
 
 	transOrigin = glm::mat4(1.0f);
 	transOrigin = glm::translate(transOrigin, glm::vec3(-m_characterSet.getWidth("Left") * 0.5f * largeScale, -m_characterSet.lineHeight * 0.5f * largeScale, 0.0f));
-	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Left", glm::value_ptr((m_uniforms.modelMatrix * m_textTransforms[3] * transOrigin)[0]), { 1.0f, 0.0f, 1.0f, 1.0f }, largeScale);
+	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Left", glm::value_ptr((m_uniforms.model * m_textTransforms[3] * transOrigin)[0]), { 1.0f, 0.0f, 1.0f, 1.0f }, largeScale);
 
 	transOrigin = glm::mat4(1.0f);
 	transOrigin = glm::translate(transOrigin, glm::vec3(-m_characterSet.getWidth("Top") * 0.5f * largeScale, -m_characterSet.lineHeight * 0.5f * largeScale, 0.0f));
-	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Top", glm::value_ptr((m_uniforms.modelMatrix * m_textTransforms[4] * transOrigin)[0]), { 0.0f, 0.0f, 1.0f, 1.0f }, largeScale);
+	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Top", glm::value_ptr((m_uniforms.model * m_textTransforms[4] * transOrigin)[0]), { 0.0f, 0.0f, 1.0f, 1.0f }, largeScale);
 
 	transOrigin = glm::mat4(1.0f);
 	transOrigin = glm::translate(transOrigin, glm::vec3(-m_characterSet.getWidth("Bottom") * 0.5f * largeScale, -m_characterSet.lineHeight * 0.5f * largeScale, 0.0f));
-	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Bottom", glm::value_ptr((m_uniforms.modelMatrix * m_textTransforms[5] * transOrigin)[0]), { 1.0f, 1.0f, 0.0f, 1.0f }, largeScale);
+	WgpFontRenderer::Get().addTextTransformed(m_characterSet, "Bottom", glm::value_ptr((m_uniforms.model * m_textTransforms[5] * transOrigin)[0]), { 1.0f, 1.0f, 0.0f, 1.0f }, largeScale);
 
 	WgpFontRenderer::Get().draw(renderPassEncoder);
 

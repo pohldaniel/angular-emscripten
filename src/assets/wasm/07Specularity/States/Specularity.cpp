@@ -34,11 +34,11 @@ Specularity::Specularity(StateMachine& machine) : State(machine, States::SPECULA
 	float cy = cos(m_cameraState.angles.y);
 	float sy = sin(m_cameraState.angles.y);
 	glm::vec3 position = glm::vec3(cx * cy, sx * cy, sy) * std::exp(-m_cameraState.zoom);
-
-	m_uniforms.normalMatrix = glm::mat4(1.0f);
-	m_uniforms.modelMatrix = glm::mat4x4(1.0);
-	m_uniforms.viewMatrix = glm::lookAt(position, glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	m_uniforms.projectionMatrix = glm::perspective(glm::radians(45.0f), static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.01f, 100.0f);
+	
+	m_uniforms.projection = glm::perspective(glm::radians(45.0f), static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.01f, 100.0f);
+	m_uniforms.view = glm::lookAt(position, glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	m_uniforms.model = glm::mat4x4(1.0);
+	m_uniforms.normal = glm::mat4(1.0f);	
 	m_uniforms.color = { 0.0f, 1.0f, 0.4f, 1.0f };
 	m_uniforms.camPosition = glm::vec3(0.0f);
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), 0, &m_uniforms, sizeof(Uniforms));
@@ -69,9 +69,9 @@ void Specularity::render() {
 }
 
 void Specularity::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projectionMatrix), &m_uniforms.projectionMatrix, sizeof(Uniforms::projectionMatrix));
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, viewMatrix), &m_uniforms.viewMatrix, sizeof(Uniforms::viewMatrix));
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, modelMatrix), &m_uniforms.modelMatrix, sizeof(Uniforms::modelMatrix));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projection), &m_uniforms.projection, sizeof(Uniforms::projection));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, view), &m_uniforms.view, sizeof(Uniforms::view));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, model), &m_uniforms.model, sizeof(Uniforms::model));
 	
 	wgpuRenderPassEncoderSetViewport(renderPassEncoder, 0.0f, 0.0f, static_cast<float>(Application::Width), static_cast<float>(Application::Height), 0.0f, 1.0f);
 	wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_PTNC"));
@@ -128,8 +128,8 @@ void Specularity::OnKeyUp(const Event::KeyboardEvent& event) {
 
 void Specularity::resize(int deltaW, int deltaH) {
 	float ratio = static_cast<float>(Application::Width) / static_cast<float>(Application::Height);
-	m_uniforms.projectionMatrix = glm::perspective(glm::radians(45.0f), ratio, 0.01f, 100.0f);
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projectionMatrix), &m_uniforms.projectionMatrix, sizeof(Uniforms::projectionMatrix));
+	m_uniforms.projection = glm::perspective(glm::radians(45.0f), ratio, 0.01f, 100.0f);
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projection), &m_uniforms.projection, sizeof(Uniforms::projection));
 }
 
 namespace ImGui {
@@ -267,8 +267,8 @@ void Specularity::updateViewMatrix() {
 	float cy = cos(m_cameraState.angles.y);
 	float sy = sin(m_cameraState.angles.y);
 	glm::vec3 position = glm::vec3(cx * cy, sx * cy, sy) * std::exp(-m_cameraState.zoom);
-	m_uniforms.viewMatrix = glm::lookAt(position, glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, viewMatrix), &m_uniforms.viewMatrix, sizeof(Uniforms::viewMatrix));
+	m_uniforms.view = glm::lookAt(position, glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, viewMatrix), &m_uniforms.view, sizeof(Uniforms::view));
 
 	m_uniforms.camPosition = position;
     wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, camPosition), &m_uniforms.camPosition, sizeof(Uniforms::camPosition));

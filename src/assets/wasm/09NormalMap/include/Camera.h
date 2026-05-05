@@ -40,15 +40,12 @@ public:
 
 	static glm::mat4 GetNormalMatrix(const glm::mat4& m);
 
-protected:
-
-   void updateViewMatrix();
-
 private:
 
     void rotateFirstPerson(float yaw, float pitch);
     void orthogonalize();
 	void fillRotationPart();
+	void fillTranslationPart();
 
     glm::vec3 WORLD_XAXIS;
 	glm::vec3 WORLD_YAXIS;

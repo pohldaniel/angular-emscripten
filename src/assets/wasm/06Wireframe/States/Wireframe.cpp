@@ -25,7 +25,7 @@ Wireframe::Wireframe(StateMachine& machine) : State(machine, States::WIREFRAME) 
 	m_camera.setRotationSpeed(0.125f);
 	m_camera.setMovingSpeed(10.0f);
 
-	m_mammoth.loadModel("res/models/mammoth.obj");
+	m_mammoth.loadModel("res/models/mammoth/mammoth.obj");
 	m_mammoth.generateColors(ModelColor::MC_POSITION);
 
 	m_wgpMammoth.create(m_mammoth);	
@@ -44,10 +44,10 @@ Wireframe::Wireframe(StateMachine& machine) : State(machine, States::WIREFRAME) 
 
 	m_trackball.reshape(Application::Width, Application::Height);
 	m_trackball.setTrackballScale(0.5f);
-	m_uniforms.projectionMatrix = glm::mat4(1.0f);
-	m_uniforms.viewMatrix = glm::mat4(1.0f);
-	m_uniforms.modelMatrix = glm::mat4(1.0f);
-	m_uniforms.normalMatrix = glm::mat4(1.0f);
+	m_uniforms.projection = glm::mat4(1.0f);
+	m_uniforms.view = glm::mat4(1.0f);
+	m_uniforms.model = glm::mat4(1.0f);
+	m_uniforms.normal = glm::mat4(1.0f);
 	m_uniforms.color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	m_uniforms.camPosition = glm::vec3(0.0f);
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), 0, &m_uniforms, sizeof(Uniforms));
@@ -120,8 +120,8 @@ void Wireframe::update() {
     m_trackball.idle();
 	applyTransformation(m_trackball);
 
-	m_uniforms.projectionMatrix = m_camera.getPerspectiveMatrix();
-	m_uniforms.viewMatrix = m_camera.getViewMatrix();
+	m_uniforms.projection = m_camera.getPerspectiveMatrix();
+	m_uniforms.view = m_camera.getViewMatrix();
 }
 
 void Wireframe::render() {
@@ -129,9 +129,9 @@ void Wireframe::render() {
 }
 
 void Wireframe::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projectionMatrix), &m_uniforms.projectionMatrix, sizeof(Uniforms::projectionMatrix));
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, viewMatrix), &m_uniforms.viewMatrix, sizeof(Uniforms::viewMatrix));
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, modelMatrix), &m_uniforms.modelMatrix, sizeof(Uniforms::modelMatrix));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projection), &m_uniforms.projection, sizeof(Uniforms::projection));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, view), &m_uniforms.view, sizeof(Uniforms::view));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, model), &m_uniforms.model, sizeof(Uniforms::model));
 
 	wgpuRenderPassEncoderSetViewport(renderPassEncoder, 0.0f, 0.0f, static_cast<float>(Application::Width), static_cast<float>(Application::Height), 0.0f, 1.0f);
 
@@ -206,7 +206,7 @@ void Wireframe::resize(int deltaW, int deltaH) {
 }
 
 void Wireframe::applyTransformation(const TrackBall& arc) {
-  m_uniforms.modelMatrix = arc.getTransform();
+  m_uniforms.model = arc.getTransform();
 }
 
 void Wireframe::renderUi(const WGPURenderPassEncoder& renderPassEncoder) {

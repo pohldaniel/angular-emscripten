@@ -121,11 +121,11 @@ ImageBasedLighting::ImageBasedLighting(StateMachine& machine) : State(machine, S
 	lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 0.0f, 100.0f);
 	lightView = glm::lookAt(glm::vec3(0.25f, 0.5f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	m_uniforms.projectionMatrix = m_camera.getPerspectiveMatrix();
-	m_uniforms.viewMatrix = m_camera.getViewMatrix();
-	m_uniforms.envMatrix = m_camera.getRotationMatrix();
-	m_uniforms.modelMatrix = glm::mat4(1.0f);
-	m_uniforms.normalMatrix = glm::mat4(1.0f);
+	m_uniforms.projection = m_camera.getPerspectiveMatrix();
+	m_uniforms.view = m_camera.getViewMatrix();
+	m_uniforms.env = m_camera.getRotationMatrix();
+	m_uniforms.model = glm::mat4(1.0f);
+	m_uniforms.normal = glm::mat4(1.0f);
 	m_uniforms.color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	m_uniforms.camPosition = m_camera.getPosition();
 	m_uniforms.lightVP = lightProjection * lightView;
@@ -256,10 +256,10 @@ void ImageBasedLighting::update() {
 	m_trackball.idle();
 	applyTransformation(m_trackball);
 
-	m_uniforms.projectionMatrix = m_camera.getPerspectiveMatrix();
-	m_uniforms.viewMatrix = m_camera.getViewMatrix();
-	m_uniforms.envMatrix = m_camera.getRotationMatrix();
-	m_uniforms.normalMatrix = Camera::GetNormalMatrix(m_camera.getViewMatrix() * m_uniforms.modelMatrix);
+	m_uniforms.projection = m_camera.getPerspectiveMatrix();
+	m_uniforms.view = m_camera.getViewMatrix();
+	m_uniforms.env = m_camera.getRotationMatrix();
+	m_uniforms.normal = Camera::GetNormalMatrix(m_camera.getViewMatrix() * m_uniforms.model);
 	m_uniforms.camPosition = m_camera.getPosition();
 	m_uniforms.lightVP = lightProjection * lightView;
 	m_uniforms.shadow = Camera::BIAS_SHIFT_Z * m_uniforms.lightVP;
@@ -271,11 +271,11 @@ void ImageBasedLighting::render() {
 
 void ImageBasedLighting::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
 
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projectionMatrix), &m_uniforms.projectionMatrix, sizeof(Uniforms::projectionMatrix));
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, viewMatrix), &m_uniforms.viewMatrix, sizeof(Uniforms::viewMatrix));
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, envMatrix), &m_uniforms.envMatrix, sizeof(Uniforms::envMatrix));
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, modelMatrix), &m_uniforms.modelMatrix, sizeof(Uniforms::modelMatrix));
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, normalMatrix), &m_uniforms.normalMatrix, sizeof(Uniforms::normalMatrix));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projection), &m_uniforms.projection, sizeof(Uniforms::projection));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, view), &m_uniforms.view, sizeof(Uniforms::view));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, env), &m_uniforms.env, sizeof(Uniforms::env));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, model), &m_uniforms.model, sizeof(Uniforms::model));
+	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, normal), &m_uniforms.normal, sizeof(Uniforms::normal));
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, camPosition), &m_uniforms.camPosition, sizeof(Uniforms::camPosition));
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, lightVP), &m_uniforms.lightVP, sizeof(Uniforms::lightVP));
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, shadow), &m_uniforms.shadow, sizeof(Uniforms::shadow));
@@ -353,7 +353,7 @@ void ImageBasedLighting::resize(int deltaW, int deltaH) {
 }
 
 void ImageBasedLighting::applyTransformation(const TrackBall& arc) {
-  m_uniforms.modelMatrix = arc.getTransform();
+  m_uniforms.model = arc.getTransform();
 }
 
 void ImageBasedLighting::renderUi(const WGPURenderPassEncoder& renderPassEncoder) {
