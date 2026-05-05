@@ -73,3 +73,7 @@ const std::vector<unsigned int>& Mesh::getIndexBuffer() const {
 const unsigned int Mesh::getStride() const {
 	return m_stride;
 }
+
+const unsigned int Mesh::getNumberOfTriangles() const {
+	return m_drawCount / 3;
+}

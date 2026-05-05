@@ -304,7 +304,7 @@ WGPUSampler wgpCreateSampler(WGPUFilterMode filterMode, WGPUAddressMode addressM
 	return wgpuDeviceCreateSampler(device, &samplerDescriptor);
 }
 
-WGPUShaderModule wgpCreateShader(std::string path) {
+WGPUShaderModule wgpCreateShaderFromFile(std::string path) {
 	std::ifstream file(path);
 	if (!file.is_open()) {
 		return NULL;
@@ -324,6 +324,19 @@ WGPUShaderModule wgpCreateShader(std::string path) {
 	shaderModuleDescriptor.nextInChain = &shaderModuleWGSLDescriptor.chain;
 
     return wgpuDeviceCreateShaderModule(wgpContext.device, &shaderModuleDescriptor);
+}
+
+WGPUShaderModule wgpCreateShaderFromString(std::string strng) {
+	WGPUShaderModuleWGSLDescriptor shaderModuleWGSLDescriptor = {};
+	shaderModuleWGSLDescriptor.chain.next = NULL;
+	shaderModuleWGSLDescriptor.chain.sType = WGPUSType_ShaderModuleWGSLDescriptor;
+	shaderModuleWGSLDescriptor.code = strng.c_str();
+
+	WGPUShaderModuleDescriptor shaderModuleDescriptor = {};
+	shaderModuleDescriptor.label = "shader";
+	shaderModuleDescriptor.nextInChain = &shaderModuleWGSLDescriptor.chain;
+
+	return wgpuDeviceCreateShaderModule(wgpContext.device, &shaderModuleDescriptor);
 }
 
 void wgpCreateVertexBufferLayout(VertexLayoutSlot slot) {
@@ -726,8 +739,8 @@ const WGPUSampler& WgpContext::getSampler(SamplerSlot samplerSlot) {
 	return samplers.at(samplerSlot);
 }
 
-void WgpContext::addSahderModule(const std::string& shaderModuleName, const std::string& shaderModulePath) {
-	shaderModules[shaderModuleName] = wgpCreateShader(shaderModulePath);
+void WgpContext::addSahderModule(const std::string& shaderModuleName, const std::string& stringPath, bool fromString) {
+	shaderModules[shaderModuleName] = fromString ? wgpCreateShaderFromString(stringPath) : wgpCreateShaderFromFile(stringPath);
 }
 
 const WGPUShaderModule& WgpContext::getShaderModule(std::string shaderModuleName) {

@@ -25,17 +25,16 @@ ShadowMapping::ShadowMapping(StateMachine& machine) : State(machine, States::SHA
 
 	m_dragon.loadModel("res/models/dragon_vrip_res4.ply", glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, glm::vec3(0.0f, 0.0f, 0.0f), 500.0f);
 	m_dragon.generateNormals();
-
 	m_quad.buildQuadXZ({ -100.0f, 20.0f, -100.0f }, { 200.0f, 200.0f }, 1u, 1u, false, true);
 
 	m_uniformBuffer.createBuffer(sizeof(Uniforms), WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform);
 
 	wgpContext.addSampler(wgpCreateSampler(WGPUFilterMode_Nearest, WGPUAddressMode_ClampToEdge, 1u, WGPUMipmapFilterMode_Nearest, WGPUCompareFunction_Less), SS_0);
 	wgpContext.setClearColor({ 0.5f, 0.5f, 0.5f, 1.0f });
-	wgpContext.addSahderModule("DRAGON", "res/shader/shadow_base.wgsl");
-	wgpContext.createRenderPipeline("DRAGON", "RP_COLOR", VL_PN, std::bind(&ShadowMapping::OnBindGroupLayouts, this));
+	wgpContext.addSahderModule("SHADOW_BASE", SHADOW_MAPPING_WGSL, true);
+	wgpContext.createRenderPipeline("SHADOW_BASE", "RP_COLOR", VL_PN, std::bind(&ShadowMapping::OnBindGroupLayouts, this));
     
-	wgpContext.addSahderModule("SHADOW", "res/shader/shadow.wgsl");
+	wgpContext.addSahderModule("SHADOW", SHADOW_WGSL, true);
 	wgpContext.createRenderPipeline("SHADOW", "RP_SHADOW", 
 		VL_PN, 
 		std::bind(&ShadowMapping::OnBindGroupLayoutsShadow, this),
