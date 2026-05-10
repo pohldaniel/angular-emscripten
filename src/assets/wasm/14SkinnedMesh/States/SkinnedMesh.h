@@ -1,0 +1,59 @@
+#include <animation/AnimatedModel.h>
+#include <animation/Animation.h>
+
+#include <WebGPU/WgpBuffer.h>
+#include <WebGPU/WgpMesh.h>
+#include <WebGPU/WgpModel.h>
+#include <WebGPU/WgpData.h>
+
+#include <States/StateMachine.h>
+
+#include "Shape.h"
+#include "Camera.h"
+
+#define MAX_JOIN 96u
+
+class SkinnedMesh : public State {
+    enum SelectedModel {
+        VAMPIRE
+    };
+public:
+
+	SkinnedMesh(StateMachine& machine);
+	~SkinnedMesh();
+
+	void fixedUpdate() override;
+	void update() override;
+	void render() override;
+	void OnDraw(const WGPURenderPassEncoder& renderPass);
+
+	void OnMouseMotion(const Event::MouseMoveEvent& event) override;
+	void OnMouseButtonDown(const Event::MouseButtonEvent& event) override;
+	void OnMouseButtonUp(const Event::MouseButtonEvent& event) override;
+	void OnScroll(double xoffset, double yoffset) override;
+	void OnKeyDown(const Event::KeyboardEvent& event) override;
+	void OnKeyUp(const Event::KeyboardEvent& event) override;
+	void resize(int deltaW, int deltaH) override;
+
+private:
+
+	std::vector<WGPUBindGroupLayout> OnBindGroupLayouts();
+	std::vector<WGPUBindGroup> OnBindGroups();
+	
+	void renderUi(const WGPURenderPassEncoder& renderPassEncoder);
+
+	bool m_initUi = true;
+	bool m_drawUi = true;
+
+	Camera m_camera;
+	Uniforms m_uniforms;
+	glm::mat4 m_lightProjection, m_lightView, m_shadow;
+
+    Animation m_dance;
+    AnimatedModel m_vampire;
+   
+    WgpBuffer m_uniformBuffer, m_skinBuffer;
+    WgpModel m_wgpVampire;
+
+    SelectedModel m_model = SelectedModel::VAMPIRE;
+};

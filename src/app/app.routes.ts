@@ -13,6 +13,7 @@ import {MSDFFontComponent} from './pages/webgpu/msdf-font/msdf-font.component';
 import {InstancedCubeComponent} from './pages/webgpu/instanced-cube/instanced-cube.component';
 import {ImageBasedLightingComponent} from './pages/webgpu/image-based-lighting/image-based-lighting.component';
 import {ShadowMappingComponent} from './pages/webgpu/shadow-mapping/shadow-mapping.component';
+import {SkinnedMeshComponent} from './pages/webgpu/skinned-mesh/skinned-mesh.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -80,8 +81,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/skinned-mesh', 
+    component: SkinnedMeshComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/shadow-mapping'
+    redirectTo: 'webgpu/skinned-mesh'
   } 
 ];
