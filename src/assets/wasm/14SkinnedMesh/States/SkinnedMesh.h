@@ -14,8 +14,13 @@
 #define MAX_JOIN 96u
 
 class SkinnedMesh : public State {
+   enum SelectedAnimation {
+        ATTACK,
+        SWIM
+    };
     enum SelectedModel {
-        VAMPIRE
+        VAMPIRE,
+        WHALE
     };
 public:
 
@@ -49,11 +54,12 @@ private:
 	Uniforms m_uniforms;
 	glm::mat4 m_lightProjection, m_lightView, m_shadow;
 
-    Animation m_dance;
-    AnimatedModel m_vampire;
+    Animation m_attack, m_swim, m_dance;
+    AnimatedModel m_whale, m_vampire;
    
     WgpBuffer m_uniformBuffer, m_skinBuffer;
-    WgpModel m_wgpVampire;
+    WgpModel m_wgpWhale, m_wgpVampire;
 
-    SelectedModel m_model = SelectedModel::VAMPIRE;
+    SelectedAnimation m_animation = SelectedAnimation::ATTACK;
+    SelectedModel m_model = SelectedModel::WHALE;
 };

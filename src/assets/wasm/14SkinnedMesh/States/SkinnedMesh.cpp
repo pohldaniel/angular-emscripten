@@ -22,6 +22,17 @@ SkinnedMesh::SkinnedMesh(StateMachine& machine) : State(machine, States::SKINNED
 	m_camera.setRotationSpeed(0.1f);
 	m_camera.setMovingSpeed(50.0f);
 
+	m_attack.loadAnimation("res/models/whale/attack.anic");
+	m_swim.loadAnimation("res/models/whale/swim.anic");
+
+	m_whale.loadModel("res/models/whale/whale.mdlc", 1u);
+	m_whale.scale(10.0f, 10.0f, 10.0f);
+	m_whale.rotate(-90.0f, 0.0f, 0.0f);
+	m_whale.rotate(0.0f, 0.0f, 180.0f);
+	m_whale.translate(0.0f, -5.0f, 0.0f);
+	m_whale.addAnimationState(m_attack);
+	m_whale.getAnimationState(0)->setLooped(true);
+
 	m_dance.loadAnimationAssimp("res/models/vampire/dancing_vampire.dae", "Hips", "vampire_dance");
 	m_dance.setPositionOfTrack("Hips", 0.0f, 0.0f, 0.0f);
 	m_dance.scaleTrack("Hips", 0.1f, 0.1f, 0.1f);
@@ -54,6 +65,9 @@ SkinnedMesh::SkinnedMesh(StateMachine& machine) : State(machine, States::SKINNED
 	m_uniforms.lightPosition = glm::vec3(50.0f, 100.0f, -100.0f);
 	
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), 0, &m_uniforms, sizeof(Uniforms));
+
+	m_wgpWhale.create(m_whale);
+	m_wgpWhale.setBindGroups("BG", std::bind(&SkinnedMesh::OnBindGroups, this));
 
 	m_wgpVampire.create(m_vampire);
 	m_wgpVampire.setBindGroups("BG", std::bind(&SkinnedMesh::OnBindGroups, this));
@@ -133,9 +147,16 @@ void SkinnedMesh::update() {
 	m_uniforms.lightVP = m_lightProjection * m_lightView;
 	m_uniforms.shadow = Camera::BIAS * m_uniforms.lightVP;
 
-	m_vampire.update(m_dt);
-	m_vampire.updateSkinning();
-	const AnimatedMesh* mesh = static_cast<const AnimatedMesh*>(m_vampire.getMesh());
+	const AnimatedMesh* mesh;
+	if (m_model == SelectedModel::WHALE) {
+		m_whale.update(m_dt);
+		m_whale.updateSkinning();
+		mesh = static_cast<const AnimatedMesh*>(m_whale.getMesh());
+	}else {
+		m_vampire.update(m_dt);
+		m_vampire.updateSkinning();
+		mesh = static_cast<const AnimatedMesh*>(m_vampire.getMesh());
+	}
 
 	wgpuQueueWriteBuffer(wgpContext.queue, m_skinBuffer.getBuffer(), 0u, mesh->getSkinMatrices(), mesh->getNumBones() * sizeof(glm::mat4));
 }
@@ -158,7 +179,7 @@ void SkinnedMesh::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
 	wgpuRenderPassEncoderSetViewport(renderPassEncoder, 0.0f, 0.0f, static_cast<float>(Application::Width), static_cast<float>(Application::Height), 0.0f, 1.0f);
 
 	wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_ANIMATION"));
-	m_wgpVampire.draw(renderPassEncoder);
+	m_model == SelectedModel::WHALE ? m_wgpWhale.draw(renderPassEncoder) : m_wgpVampire.draw(renderPassEncoder);
 
 	if (m_drawUi)
 		renderUi(renderPassEncoder);
@@ -233,12 +254,27 @@ void SkinnedMesh::renderUi(const WGPURenderPassEncoder& renderPassEncoder) {
 
 	ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 	int currentModel = m_model;
-	if (ImGui::Combo("Model", &currentModel, "Vampire\0\0")) {
+	if (ImGui::Combo("Model", &currentModel, "Vampire\0Whale\0\0")) {
 		m_model = static_cast<SelectedModel>(currentModel);
 	}
 
+	if (m_model == SelectedModel::WHALE) {
+		int currentAnimation = m_animation;
+		if (ImGui::Combo("Animation", &currentAnimation, "Attack\0Swim\0\0")) {
+			m_animation = static_cast<SelectedAnimation>(currentAnimation);
+			if (m_animation == SelectedAnimation::ATTACK) {
+				m_whale.removeAnimationState(m_swim);
+				m_whale.addAnimationState(m_attack);
+				m_whale.getAnimationState(0)->setLooped(true);
+			}else {
+				m_whale.removeAnimationState(m_attack);
+				m_whale.addAnimationState(m_swim);
+				m_whale.getAnimationState(0)->setLooped(true);
+			}
+		}
+	}
 	ImGui::End();
-
+	
 	ImGui::Render();
 	ImGui_ImplWGPU_RenderDrawData(ImGui::GetDrawData(), renderPassEncoder);
 }

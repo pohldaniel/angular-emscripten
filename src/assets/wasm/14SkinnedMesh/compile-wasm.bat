@@ -1,9 +1,10 @@
 emcc^
- src/animation/MeshBone.cpp^
+ src/animation/BoneDescription.cpp^
  src/animation/Bone.cpp^
  src/animation/Animation.cpp^
  src/animation/AnimationState.cpp^
  src/animation/AnimatedModel.cpp^
+ src/BinaryIO.cpp^
  src/Mouse.cpp^
  src/Material.cpp^
  src/Transform.cpp^

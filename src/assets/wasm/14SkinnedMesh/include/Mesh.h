@@ -22,13 +22,13 @@ public:
 	const std::vector<float>& getVertexBuffer() const;
 	const std::vector<unsigned int>& getIndexBuffer() const;
 	const unsigned int getStride() const;
-	const unsigned int getNumberOfTriangles() const;
-	
+
 protected:
 
-	std::vector<unsigned int> m_indexBuffer;
-	std::vector<float> m_vertexBuffer;
+	mutable std::vector<unsigned int> m_indexBuffer;
+	mutable std::vector<float> m_vertexBuffer;
+	mutable unsigned int m_stride;
 
+	unsigned int m_drawCount, m_baseVertex, m_baseIndex;
 	bool m_hasTextureCoords, m_hasNormals, m_hasTangents;
-	unsigned int m_stride, m_drawCount, m_numberOfTriangles, m_baseVertex, m_baseIndex, m_triangleOffset;
 };
