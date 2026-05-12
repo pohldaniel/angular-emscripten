@@ -157,7 +157,7 @@ void SkinnedMesh::update() {
 	const AnimatedMesh* mesh;
 	if (m_model == SelectedModel::WHALE) {	
 		mesh = static_cast<const AnimatedMesh*>(m_whale.getMesh());
-		m_animation == SelectedAnimation::PROCEDURAL ? proceduralSking(mesh->bones(), mesh->getNumBones(), m_fadeValue) : m_whale.update(m_dt);
+		m_animation == SelectedAnimation::PROCEDURAL ? proceduralSkinning(mesh->bones(), mesh->getNumBones(), m_fadeValue) : m_whale.update(m_dt);
 		m_whale.updateSkinning();		
 	}else {
 		m_vampire.update(m_dt);
@@ -355,7 +355,7 @@ std::vector<WGPUBindGroup> SkinnedMesh::OnBindGroups() {
 	return bindGroups;
 }
 
-void SkinnedMesh::proceduralSking(Bone**& bones, unsigned short numBones, float angle) {
+void SkinnedMesh::proceduralSkinning(Bone**& bones, unsigned short numBones, float angle) {
 	angle = (angle - 0.5f) * 2.0f * m_angle * 0.5f * m_fade.getTransitionSpeed();
 
 	for (size_t i = 0u; i < numBones; ++i) {
