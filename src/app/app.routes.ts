@@ -14,6 +14,7 @@ import {InstancedCubeComponent} from './pages/webgpu/instanced-cube/instanced-cu
 import {ImageBasedLightingComponent} from './pages/webgpu/image-based-lighting/image-based-lighting.component';
 import {ShadowMappingComponent} from './pages/webgpu/shadow-mapping/shadow-mapping.component';
 import {SkinnedMeshComponent} from './pages/webgpu/skinned-mesh/skinned-mesh.component';
+import {ComputeParticleLogoComponent} from './pages/webgpu/compute-particle-logo/compute-particle-logo.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -86,8 +87,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/cpl', 
+    component: ComputeParticleLogoComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/skinned-mesh'
+    redirectTo: 'webgpu/cpl'
   } 
 ];
