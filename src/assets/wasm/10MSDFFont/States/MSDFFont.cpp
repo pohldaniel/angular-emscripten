@@ -29,7 +29,7 @@ MSDFFont::MSDFFont(StateMachine& machine) : State(machine, States::MSDF_FONT) {
 	wgpContext.setClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 	wgpContext.addSahderModule("FONT", "res/shader/font.wgsl");
 	wgpContext.createRenderPipeline("FONT", "RP_FONT", VL_BATCH, std::bind(&MSDFFont::OnBindGroupLayouts, this));
-	wgpContext.OnDraw = std::bind(&MSDFFont::OnDraw, this, std::placeholders::_1);
+	wgpContext.OnDraw = std::bind(&MSDFFont::OnDraw, this, std::placeholders::_1, std::placeholders::_2);
 
 	m_uniforms.projection = m_camera.getPerspectiveMatrix();
 	m_uniforms.view = m_camera.getViewMatrix();
@@ -164,13 +164,14 @@ void MSDFFont::render() {
     wgpDraw();
 }
 
-void MSDFFont::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
+void MSDFFont::OnDraw(const WGPUCommandEncoder& commandEncoder, const WGPURenderPassDescriptor& renderPassDescriptor) {
 	WgpFontRenderer::Get().reset();
 
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projection), &m_uniforms.projection, sizeof(Uniforms::projection));
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, view), &m_uniforms.view, sizeof(Uniforms::view));
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, model), &m_uniforms.model, sizeof(Uniforms::model));
 
+	WGPURenderPassEncoder renderPassEncoder = wgpuCommandEncoderBeginRenderPass(commandEncoder, &renderPassDescriptor);
 	wgpuRenderPassEncoderSetViewport(renderPassEncoder, 0.0f, 0.0f, static_cast<float>(Application::Width), static_cast<float>(Application::Height), 0.0f, 1.0f);
 	
 	wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_CUBE"));
@@ -216,6 +217,9 @@ void MSDFFont::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
 
 	if (m_drawUi)
 		renderUi(renderPassEncoder);
+
+	wgpuRenderPassEncoderEnd(renderPassEncoder);
+	wgpuRenderPassEncoderRelease(renderPassEncoder);
 }
 
 void MSDFFont::OnMouseButtonDown(const Event::MouseButtonEvent& event) {

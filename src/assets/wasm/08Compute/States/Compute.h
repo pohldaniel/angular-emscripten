@@ -33,8 +33,8 @@ public:
 	void fixedUpdate() override;
 	void update() override;
 	void render() override;
-	void OnDraw(const WGPURenderPassEncoder& renderPass);
-    void compute();
+	void OnDraw(const WGPUCommandEncoder& commandEncoder, const WGPURenderPassDescriptor& renderPassDescriptor);
+    void compute(const WGPUCommandEncoder& commandEncoder);
 
 	void OnMouseMotion(const Event::MouseMoveEvent& event) override;
 	void OnMouseButtonDown(const Event::MouseButtonEvent& event) override;

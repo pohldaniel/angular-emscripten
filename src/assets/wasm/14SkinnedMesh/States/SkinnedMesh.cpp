@@ -67,6 +67,7 @@ SkinnedMesh::SkinnedMesh(StateMachine& machine) : State(machine, States::SKINNED
 		WGPUTextureFormat_Undefined,
 		WGPUCompareFunction_LessEqual,
 		true,
+		true,
 		false,
 		true
 	);
@@ -98,7 +99,7 @@ SkinnedMesh::SkinnedMesh(StateMachine& machine) : State(machine, States::SKINNED
 	m_wgpCube.create(m_cube);
 	m_wgpCube.setBindGroups("BG", std::bind(&SkinnedMesh::OnBindGroupsSkybox, this));
 
-	wgpContext.OnDraw = std::bind(&SkinnedMesh::OnDraw, this, std::placeholders::_1);
+	wgpContext.OnDraw = std::bind(&SkinnedMesh::OnDraw, this, std::placeholders::_1, std::placeholders::_2);
 
 	m_fade.start();
 	m_fade.setTransitionSpeed(m_speed * 0.02f);
@@ -202,7 +203,7 @@ void SkinnedMesh::render() {
 	wgpDraw();
 }
 
-void SkinnedMesh::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
+void SkinnedMesh::OnDraw(const WGPUCommandEncoder& commandEncoder, const WGPURenderPassDescriptor& renderPassDescriptor) {
 
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projection), &m_uniforms.projection, sizeof(Uniforms::projection));
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, view), &m_uniforms.view, sizeof(Uniforms::view));
@@ -214,6 +215,7 @@ void SkinnedMesh::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, shadow), &m_uniforms.shadow, sizeof(Uniforms::shadow));
 	wgpuQueueWriteBuffer(wgpContext.queue, m_modeBuffer.getBuffer(), 0u, &m_mode, sizeof(unsigned int));
 
+	WGPURenderPassEncoder renderPassEncoder = wgpuCommandEncoderBeginRenderPass(commandEncoder, &renderPassDescriptor);
 	wgpuRenderPassEncoderSetViewport(renderPassEncoder, 0.0f, 0.0f, static_cast<float>(Application::Width), static_cast<float>(Application::Height), 0.0f, 1.0f);
 
 	wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_ANIMATION"));
@@ -226,6 +228,9 @@ void SkinnedMesh::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
 
 	if (m_drawUi)
 		renderUi(renderPassEncoder);
+
+	wgpuRenderPassEncoderEnd(renderPassEncoder);
+	wgpuRenderPassEncoderRelease(renderPassEncoder);
 }
 
 void SkinnedMesh::OnMouseButtonDown(const Event::MouseButtonEvent& event) {

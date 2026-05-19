@@ -44,6 +44,7 @@ ShadowMapping::ShadowMapping(StateMachine& machine) : State(machine, States::SHA
 		WGPUTextureFormat_Depth32Float,
 		WGPUCompareFunction_Less,
 		true,
+		true,
 		false,
 		false
 	);
@@ -75,7 +76,7 @@ ShadowMapping::ShadowMapping(StateMachine& machine) : State(machine, States::SHA
 	m_wgpQuad.addBindGroups("SHADOW", std::bind(&ShadowMapping::OnBindGroupsShadow, this));
 	m_wgpQuad.addBindGroups("COLOR", std::bind(&ShadowMapping::OnBindGroups, this));
 
-	wgpContext.OnDraw = std::bind(&ShadowMapping::OnDraw, this, std::placeholders::_1);
+	wgpContext.OnDraw = std::bind(&ShadowMapping::OnDraw, this, std::placeholders::_1, std::placeholders::_2);
 }
 
 ShadowMapping::~ShadowMapping() {
@@ -160,7 +161,7 @@ void ShadowMapping::render() {
 	wgpDraw();
 }
 
-void ShadowMapping::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
+void ShadowMapping::OnDraw(const WGPUCommandEncoder& commandEncoder, const WGPURenderPassDescriptor& renderPassDescriptor) {
 
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projection), &m_uniforms.projection, sizeof(Uniforms::projection));
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, view), &m_uniforms.view, sizeof(Uniforms::view));
@@ -173,7 +174,7 @@ void ShadowMapping::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
 
 	WgpRenderer::DrawDepth(m_wgpTextureShadow, std::bind(&ShadowMapping::OnDrawShadow, this, std::placeholders::_1));
 
-
+	WGPURenderPassEncoder renderPassEncoder = wgpuCommandEncoderBeginRenderPass(commandEncoder, &renderPassDescriptor);
 	wgpuRenderPassEncoderSetViewport(renderPassEncoder, 0.0f, 0.0f, static_cast<float>(Application::Width), static_cast<float>(Application::Height), 0.0f, 1.0f);
 
 	wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_COLOR"));
@@ -185,6 +186,9 @@ void ShadowMapping::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
 
 	if (m_drawUi)
 		renderUi(renderPassEncoder);
+
+	wgpuRenderPassEncoderEnd(renderPassEncoder);
+	wgpuRenderPassEncoderRelease(renderPassEncoder);
 }
 
 void ShadowMapping::OnMouseButtonDown(const Event::MouseButtonEvent& event) {

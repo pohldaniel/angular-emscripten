@@ -83,8 +83,6 @@ NormalMap::NormalMap(StateMachine& machine) : State(machine, States::NORMAL_MAP)
 	m_uniforms.camPosition = glm::vec3(0.0f);
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), 0, &m_uniforms, sizeof(Uniforms));
 
-	wgpContext.OnDraw = std::bind(&NormalMap::OnDraw, this, std::placeholders::_1);
-
 	glm::vec3 lightPos = glm_vec3_transform_mat4(m_camera.getViewMatrix(), glm::vec3(-1.7f, 0.7f, 1.9f));
 	m_normalUniforms.light_pos_vs = { lightPos[0], lightPos[1], lightPos[2] };
 	m_normalUniforms.light_intensity = 5.0f;
@@ -148,7 +146,7 @@ NormalMap::NormalMap(StateMachine& machine) : State(machine, States::NORMAL_MAP)
 	bindGroupDesc2.entries = bindGroupEntries2.data();
 	m_bindgroups[2] = wgpuDeviceCreateBindGroup(wgpContext.device, &bindGroupDesc2);
 
-	wgpContext.OnDraw = std::bind(&NormalMap::OnDraw, this, std::placeholders::_1);
+	wgpContext.OnDraw = std::bind(&NormalMap::OnDraw, this, std::placeholders::_1, std::placeholders::_2);
 }
 
 NormalMap::~NormalMap() {
@@ -229,7 +227,7 @@ void NormalMap::render() {
     wgpDraw();
 }
 
-void NormalMap::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
+void NormalMap::OnDraw(const WGPUCommandEncoder& commandEncoder, const WGPURenderPassDescriptor& renderPassDescriptor) {
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, projection), &m_uniforms.projection, sizeof(Uniforms::projection));
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, view), &m_uniforms.view, sizeof(Uniforms::view));
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), offsetof(Uniforms, model), &m_uniforms.model, sizeof(Uniforms::model));
@@ -237,6 +235,7 @@ void NormalMap::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
 
 	wgpuQueueWriteBuffer(wgpContext.queue, m_normalUniformBuffer.getBuffer(), 0u, &m_normalUniforms.light_pos_vs, sizeof(NormalUniforms::light_pos_vs));
 
+	WGPURenderPassEncoder renderPassEncoder = wgpuCommandEncoderBeginRenderPass(commandEncoder, &renderPassDescriptor);
 	wgpuRenderPassEncoderSetViewport(renderPassEncoder, 0.0f, 0.0f, static_cast<float>(Application::Width), static_cast<float>(Application::Height), 0.0f, 1.0f);
 
 	wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_PTNTB"));
@@ -245,6 +244,9 @@ void NormalMap::OnDraw(const WGPURenderPassEncoder& renderPassEncoder) {
 
 	if (m_drawUi)
 		renderUi(renderPassEncoder);
+
+	wgpuRenderPassEncoderEnd(renderPassEncoder);
+	wgpuRenderPassEncoderRelease(renderPassEncoder);
 }
 
 void NormalMap::OnMouseButtonDown(const Event::MouseButtonEvent& event) {

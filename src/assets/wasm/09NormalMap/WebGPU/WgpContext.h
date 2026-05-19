@@ -17,13 +17,16 @@ enum VertexLayoutSlot {
 	VL_PTNC,
 	VL_PTNTB,
 	VL_PTNWJ,
-	VL_BATCH
+	VL_BATCH,
+	VL_0,
+	VL_1,
+	VL_2
 };
 
 struct WgpContext;
 extern WgpContext wgpContext;
 extern std::unordered_map<VertexLayoutSlot, std::vector<WGPUVertexAttribute>> wgpVertexAttributes;
-extern std::unordered_map<VertexLayoutSlot, WGPUVertexBufferLayout> wgpVertexBufferLayouts;
+extern std::unordered_map<VertexLayoutSlot, std::vector<WGPUVertexBufferLayout>> wgpVertexBufferLayouts;
 
 extern "C" {
 	void wgpInit(void* window);
@@ -38,6 +41,8 @@ extern "C" {
 	WGPUSampler wgpCreateSampler(WGPUFilterMode filterMode = WGPUFilterMode_Linear, WGPUAddressMode addressMode = WGPUAddressMode_ClampToEdge, uint16_t maxAnisotropy = 1u, WGPUMipmapFilterMode mipmapFilterMode = WGPUMipmapFilterMode_Undefined, WGPUCompareFunction compareFunction = WGPUCompareFunction_Undefined);
 	WGPUShaderModule wgpCreateShaderFromFile(std::string path);
 	WGPUShaderModule wgpCreateShaderFromString(std::string strng);
+	std::vector<WGPUVertexAttribute>& wgpVertexAttribute(VertexLayoutSlot vertexLayoutSlot);
+	std::vector<WGPUVertexBufferLayout>& wgpVertexBufferLayout(VertexLayoutSlot vertexLayoutSlot);
 
 	void wgpCreateVertexBufferLayout(VertexLayoutSlot slot = VL_PTN);
 	void wgpShutDown();
@@ -64,7 +69,17 @@ enum SamplerSlot {
 	SS_2
 };
 
+enum BlendMode {
+	ALPHA_BLENDING,
+	ADDITIVE_BLENDING_0,
+	ADDITIVE_BLENDING_1
+};
+
 struct WgpContext {
+
+	struct PipelineConfiguration {
+		BlendMode blendMode;
+	};
 
 	friend bool wgpCreateDevice(void* window);
     friend void wgpPipelinesRelease();
@@ -75,7 +90,7 @@ struct WgpContext {
     void createComputePipeline(std::string shaderModuleName, 
                                std::string entrypoint,
                                std::string pipelineLayoutName, 
-                              const std::function<std::vector<WGPUBindGroupLayout>()>& onBindGroupLayouts = NULL);
+                               const std::function<std::vector<WGPUBindGroupLayout>()>& onBindGroupLayouts = NULL);
 
 	void createRenderPipeline(std::string shaderModuleName, 
 	                          std::string pipelineLayoutName, 
@@ -86,9 +101,11 @@ struct WgpContext {
 	                          WGPUTextureFormat colorTextureFormat = WGPUTextureFormat::WGPUTextureFormat_Undefined,
 							  WGPUTextureFormat depthTextureFormat = WGPUTextureFormat::WGPUTextureFormat_Undefined,
 							  WGPUCompareFunction depthCompareFunction = WGPUCompareFunction::WGPUCompareFunction_Less,
+							  bool writeDepth = true,
 	                          bool addDepthStencilState = true,
 	                          bool addBlendState = true,
-							  bool addFragmentState = true);
+							  bool addFragmentState = true,
+							  const PipelineConfiguration configuration = { BlendMode::ALPHA_BLENDING });
 
     void createVertexBufferLayout(VertexLayoutSlot slot = VL_PTN);
     void addSampler(const WGPUSampler& sampler, SamplerSlot samplerSlot);
@@ -103,6 +120,7 @@ struct WgpContext {
 	WGPUDevice device = NULL;
 	WGPUSurface surface = NULL;
 	WGPUQueue queue = NULL;
+	WGPUCommandEncoder commandEncoder = NULL;
 	WGPUColor clearColor = { 0.2f, 0.2f, 0.2f, 1.0f };
 
 	WGPUTextureView depthTextureView = NULL;
@@ -118,7 +136,7 @@ struct WgpContext {
 
 	std::unordered_map<std::string, WGPUComputePipeline> computePipelines;
 	std::unordered_map<std::string, WGPURenderPipeline> renderPipelines;
-	std::function<void(const WGPURenderPassEncoder& commandBuffer)> OnDraw = NULL;
+	std::function<void(const WGPUCommandEncoder& commandEncoder, const WGPURenderPassDescriptor& renderPassDescriptor)> OnDraw = NULL;
 
 private:
 

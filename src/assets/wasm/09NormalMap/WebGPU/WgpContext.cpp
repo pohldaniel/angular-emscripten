@@ -6,7 +6,7 @@
 
 WgpContext wgpContext = {};
 std::unordered_map<VertexLayoutSlot, std::vector<WGPUVertexAttribute>> wgpVertexAttributes;
-std::unordered_map<VertexLayoutSlot, WGPUVertexBufferLayout> wgpVertexBufferLayouts;
+std::unordered_map<VertexLayoutSlot, std::vector<WGPUVertexBufferLayout>> wgpVertexBufferLayouts;
 
 void OnRequestAdapter(WGPURequestAdapterStatus status, WGPUAdapter adapter, char const* message, void* userdata) {
 	std::pair<WgpContext&, bool>* userData = reinterpret_cast<std::pair<WgpContext&, bool>*>(userdata);
@@ -354,7 +354,7 @@ void wgpCreateVertexBufferLayout(VertexLayoutSlot slot) {
 		wgpVertexBufferLayout.attributes = wgpVertexAttribute.data();
 		wgpVertexBufferLayout.arrayStride = 3 * sizeof(float);
 		wgpVertexBufferLayout.stepMode = WGPUVertexStepMode::WGPUVertexStepMode_Vertex;
-		wgpVertexBufferLayouts.emplace(VL_P, wgpVertexBufferLayout);
+		wgpVertexBufferLayouts[VL_P].push_back(wgpVertexBufferLayout);
 	}else if (wgpVertexBufferLayouts.count(VL_PT) == 0 && slot == VL_PT) {
 		std::vector<WGPUVertexAttribute>& wgpVertexAttribute = wgpVertexAttributes[VL_PT];
 		wgpVertexAttribute.resize(2);
@@ -372,7 +372,7 @@ void wgpCreateVertexBufferLayout(VertexLayoutSlot slot) {
 		wgpVertexBufferLayout.attributes = wgpVertexAttribute.data();
 		wgpVertexBufferLayout.arrayStride = 5 * sizeof(float);
 		wgpVertexBufferLayout.stepMode = WGPUVertexStepMode::WGPUVertexStepMode_Vertex;
-		wgpVertexBufferLayouts.emplace(VL_PT, wgpVertexBufferLayout);
+		wgpVertexBufferLayouts[VL_PT].push_back(wgpVertexBufferLayout);
 	}else if (wgpVertexBufferLayouts.count(VL_PN) == 0 && slot == VL_PN) {
 		std::vector<WGPUVertexAttribute>& wgpVertexAttribute = wgpVertexAttributes[VL_PN];
 		wgpVertexAttribute.resize(2);
@@ -390,7 +390,7 @@ void wgpCreateVertexBufferLayout(VertexLayoutSlot slot) {
 		wgpVertexBufferLayout.attributes = wgpVertexAttribute.data();
 		wgpVertexBufferLayout.arrayStride = 6 * sizeof(float);
 		wgpVertexBufferLayout.stepMode = WGPUVertexStepMode::WGPUVertexStepMode_Vertex;
-		wgpVertexBufferLayouts.emplace(VL_PN, wgpVertexBufferLayout);
+		wgpVertexBufferLayouts[VL_PN].push_back(wgpVertexBufferLayout);
 	}else if (wgpVertexBufferLayouts.count(VL_PTN) == 0 && slot == VL_PTN) {
 		std::vector<WGPUVertexAttribute>& wgpVertexAttribute = wgpVertexAttributes[VL_PTN];
 		wgpVertexAttribute.resize(3);
@@ -412,7 +412,7 @@ void wgpCreateVertexBufferLayout(VertexLayoutSlot slot) {
 		wgpVertexBufferLayout.attributes = wgpVertexAttribute.data();
 		wgpVertexBufferLayout.arrayStride = 8 * sizeof(float);
 		wgpVertexBufferLayout.stepMode = WGPUVertexStepMode::WGPUVertexStepMode_Vertex;
-		wgpVertexBufferLayouts.emplace(VL_PTN, wgpVertexBufferLayout);
+		wgpVertexBufferLayouts[VL_PTN].push_back(wgpVertexBufferLayout);
 	}else if (wgpVertexBufferLayouts.count(VL_PTNC) == 0 && slot == VL_PTNC) {
 		std::vector<WGPUVertexAttribute>& wgpVertexAttribute = wgpVertexAttributes[VL_PTNC];
 		wgpVertexAttribute.resize(4);
@@ -438,7 +438,7 @@ void wgpCreateVertexBufferLayout(VertexLayoutSlot slot) {
 		wgpVertexBufferLayout.attributes = wgpVertexAttribute.data();
 		wgpVertexBufferLayout.arrayStride = 12 * sizeof(float);
 		wgpVertexBufferLayout.stepMode = WGPUVertexStepMode::WGPUVertexStepMode_Vertex;
-		wgpVertexBufferLayouts.emplace(VL_PTNC, wgpVertexBufferLayout);
+		wgpVertexBufferLayouts[VL_PTNC].push_back(wgpVertexBufferLayout);
 	}else if (wgpVertexBufferLayouts.count(VL_PTNTB) == 0 && slot == VL_PTNTB) {
 		std::vector<WGPUVertexAttribute>& wgpVertexAttribute = wgpVertexAttributes[VL_PTNTB];
 		wgpVertexAttribute.resize(5);
@@ -468,7 +468,7 @@ void wgpCreateVertexBufferLayout(VertexLayoutSlot slot) {
 		wgpVertexBufferLayout.attributes = wgpVertexAttribute.data();
 		wgpVertexBufferLayout.arrayStride = 14 * sizeof(float);
 		wgpVertexBufferLayout.stepMode = WGPUVertexStepMode::WGPUVertexStepMode_Vertex;
-		wgpVertexBufferLayouts.emplace(VL_PTNTB, wgpVertexBufferLayout);		
+		wgpVertexBufferLayouts[VL_PTNTB].push_back(wgpVertexBufferLayout);		
 	}else if (wgpVertexBufferLayouts.count(VL_PTNWJ) == 0 && slot == VL_PTNWJ) {
 		std::vector<WGPUVertexAttribute>& wgpVertexAttribute = wgpVertexAttributes[VL_PTNWJ];
 		wgpVertexAttribute.resize(5);
@@ -498,7 +498,7 @@ void wgpCreateVertexBufferLayout(VertexLayoutSlot slot) {
 		wgpVertexBufferLayout.attributes = wgpVertexAttribute.data();
 		wgpVertexBufferLayout.arrayStride = 12 * sizeof(float) + 4 * sizeof(uint32_t);
 		wgpVertexBufferLayout.stepMode = WGPUVertexStepMode::WGPUVertexStepMode_Vertex;
-		wgpVertexBufferLayouts.emplace(VL_PTNWJ, wgpVertexBufferLayout);
+		wgpVertexBufferLayouts[VL_PTNWJ].push_back(wgpVertexBufferLayout);
 	}else if (wgpVertexBufferLayouts.count(VL_BATCH) == 0 && slot == VL_BATCH) {
 		std::vector<WGPUVertexAttribute>& wgpVertexAttribute = wgpVertexAttributes[VL_BATCH];
 		wgpVertexAttribute.resize(4);
@@ -524,8 +524,16 @@ void wgpCreateVertexBufferLayout(VertexLayoutSlot slot) {
 		wgpVertexBufferLayout.attributes = wgpVertexAttribute.data();
 		wgpVertexBufferLayout.arrayStride = 9 * sizeof(float) + sizeof(unsigned int);
 		wgpVertexBufferLayout.stepMode = WGPUVertexStepMode::WGPUVertexStepMode_Vertex;
-		wgpVertexBufferLayouts.emplace(VL_BATCH, wgpVertexBufferLayout);
+		wgpVertexBufferLayouts[VL_BATCH].push_back(wgpVertexBufferLayout);
 	}
+}
+
+std::vector<WGPUVertexAttribute>& wgpVertexAttribute(VertexLayoutSlot vertexLayoutSlot) {
+	return wgpVertexAttributes[vertexLayoutSlot];
+}
+
+std::vector<WGPUVertexBufferLayout>& wgpVertexBufferLayout(VertexLayoutSlot vertexLayoutSlot) {
+	return wgpVertexBufferLayouts[vertexLayoutSlot];
 }
 
 void wgpPipelineLayoutsRelease() {
@@ -730,29 +738,27 @@ void wgpDraw() {
 	depthStencilAttachment.stencilStoreOp = WGPUStoreOp::WGPUStoreOp_Undefined;
 	depthStencilAttachment.stencilReadOnly = true;
 
-	WGPURenderPassDescriptor renderPassDesc = {};
-	renderPassDesc.colorAttachmentCount = 1;
-	renderPassDesc.colorAttachments = &renderPassColorAttachment;
-	renderPassDesc.depthStencilAttachment = &depthStencilAttachment;
-	renderPassDesc.timestampWrites = NULL;
+	WGPURenderPassDescriptor renderPassDescriptor = {};
+	renderPassDescriptor.colorAttachmentCount = 1;
+	renderPassDescriptor.colorAttachments = &renderPassColorAttachment;
+	renderPassDescriptor.depthStencilAttachment = &depthStencilAttachment;
+	renderPassDescriptor.timestampWrites = NULL;
 
-	WGPUCommandEncoderDescriptor commandEncoderDesc = {};
-	commandEncoderDesc.label = "command_encoder";
-	WGPUCommandEncoder encoder = wgpuDeviceCreateCommandEncoder(wgpContext.device, &commandEncoderDesc);
-	WGPURenderPassEncoder renderPass = wgpuCommandEncoderBeginRenderPass(encoder, &renderPassDesc);
-	wgpContext.OnDraw(renderPass);
+	WGPUCommandEncoderDescriptor commandEncoderDescriptor = {};
+	commandEncoderDescriptor.label = "command_encoder";
+	wgpContext.commandEncoder = wgpuDeviceCreateCommandEncoder(wgpContext.device, &commandEncoderDescriptor);
 
-	wgpuRenderPassEncoderEnd(renderPass);
-	wgpuRenderPassEncoderRelease(renderPass);
+	wgpContext.OnDraw(wgpContext.commandEncoder, renderPassDescriptor);
+
 	wgpuTextureViewRelease(texureView);
 
 	WGPUCommandBufferDescriptor commandBufferDescriptor = {};
 	commandBufferDescriptor.label = "command_buffer";
-	WGPUCommandBuffer command = wgpuCommandEncoderFinish(encoder, &commandBufferDescriptor);
-	wgpuQueueSubmit(wgpContext.queue, 1, &command );
+	WGPUCommandBuffer commandBuffer = wgpuCommandEncoderFinish(wgpContext.commandEncoder, &commandBufferDescriptor);
+	wgpuQueueSubmit(wgpContext.queue, 1, &commandBuffer );
 
-	wgpuCommandBufferRelease(command);
-	wgpuCommandEncoderRelease(encoder);
+	wgpuCommandBufferRelease(commandBuffer);
+	wgpuCommandEncoderRelease(wgpContext.commandEncoder);
 	
 	wgpuTextureRelease(surfaceTexture.texture);
 }
@@ -818,9 +824,11 @@ void WgpContext::createRenderPipeline(std::string shaderModuleName,
                                       WGPUTextureFormat colorTextureFormat,
 									  WGPUTextureFormat depthTextureFormat,
 									  WGPUCompareFunction depthCompareFunction,
+									  bool writeDepth,
                                       bool addDepthStencilState,
                                       bool addBlendState,
-									  bool addFragmentState) {
+									  bool addFragmentState,
+									  const PipelineConfiguration configuration) {
 
 	if (onBindGroupLayouts) {
 		std::vector<WGPUBindGroupLayout> bindGroupLayouts = onBindGroupLayouts();
@@ -835,16 +843,32 @@ void WgpContext::createRenderPipeline(std::string shaderModuleName,
 	vertexState.entryPoint = "vs_main";
 	vertexState.constantCount = 0u;
 	vertexState.constants = NULL;
-	vertexState.bufferCount = vertexLayoutSlot == VertexLayoutSlot::VL_NONE ? 0u : 1u;
-	vertexState.buffers = vertexLayoutSlot == VertexLayoutSlot::VL_NONE ? NULL : &wgpVertexBufferLayouts.at(vertexLayoutSlot);
+	vertexState.bufferCount = vertexLayoutSlot == VertexLayoutSlot::VL_NONE ? 0u : wgpVertexBufferLayouts.at(vertexLayoutSlot).size();
+	vertexState.buffers = vertexLayoutSlot == VertexLayoutSlot::VL_NONE ? NULL : wgpVertexBufferLayouts.at(vertexLayoutSlot).data();
 
 	WGPUBlendState blendState = {};
-	blendState.color.srcFactor = WGPUBlendFactor::WGPUBlendFactor_SrcAlpha;
-	blendState.color.dstFactor = WGPUBlendFactor::WGPUBlendFactor_OneMinusSrcAlpha;
-	blendState.color.operation = WGPUBlendOperation::WGPUBlendOperation_Add;
-	blendState.alpha.srcFactor = WGPUBlendFactor::WGPUBlendFactor_Zero;
-	blendState.alpha.dstFactor = WGPUBlendFactor::WGPUBlendFactor_One;
-	blendState.alpha.operation = WGPUBlendOperation::WGPUBlendOperation_Add;
+	if (configuration.blendMode == ALPHA_BLENDING) {
+		blendState.color.srcFactor = WGPUBlendFactor::WGPUBlendFactor_SrcAlpha;
+		blendState.color.dstFactor = WGPUBlendFactor::WGPUBlendFactor_OneMinusSrcAlpha;
+		blendState.color.operation = WGPUBlendOperation::WGPUBlendOperation_Add;
+		blendState.alpha.srcFactor = WGPUBlendFactor::WGPUBlendFactor_Zero;
+		blendState.alpha.dstFactor = WGPUBlendFactor::WGPUBlendFactor_One;
+		blendState.alpha.operation = WGPUBlendOperation::WGPUBlendOperation_Add;
+	}else if (configuration.blendMode == ADDITIVE_BLENDING_0) {
+		blendState.color.srcFactor = WGPUBlendFactor::WGPUBlendFactor_SrcAlpha;
+		blendState.color.dstFactor = WGPUBlendFactor::WGPUBlendFactor_One;
+		blendState.color.operation = WGPUBlendOperation::WGPUBlendOperation_Add;
+		blendState.alpha.srcFactor = WGPUBlendFactor::WGPUBlendFactor_Zero;
+		blendState.alpha.dstFactor = WGPUBlendFactor::WGPUBlendFactor_One;
+		blendState.alpha.operation = WGPUBlendOperation::WGPUBlendOperation_Add;
+	}else if (configuration.blendMode == ADDITIVE_BLENDING_1) {
+		blendState.color.srcFactor = WGPUBlendFactor::WGPUBlendFactor_One;
+		blendState.color.dstFactor = WGPUBlendFactor::WGPUBlendFactor_One;
+		blendState.color.operation = WGPUBlendOperation::WGPUBlendOperation_Add;
+		blendState.alpha.srcFactor = WGPUBlendFactor::WGPUBlendFactor_Zero;
+		blendState.alpha.dstFactor = WGPUBlendFactor::WGPUBlendFactor_One;
+		blendState.alpha.operation = WGPUBlendOperation::WGPUBlendOperation_Add;
+	}
 
 	WGPUColorTargetState colorTarget = {};
 	colorTarget.format = colorTextureFormat == WGPUTextureFormat_Undefined ? colorformat : colorTextureFormat;
@@ -862,7 +886,7 @@ void WgpContext::createRenderPipeline(std::string shaderModuleName,
 	WGPUDepthStencilState depthStencilState = {};
 	setDefault(depthStencilState);
 	depthStencilState.depthCompare = depthCompareFunction;
-	depthStencilState.depthWriteEnabled = true;
+	depthStencilState.depthWriteEnabled = writeDepth;
 	depthStencilState.format = depthTextureFormat == WGPUTextureFormat_Undefined ? depthformat : depthTextureFormat;
 	depthStencilState.stencilReadMask = 0u;
 	depthStencilState.stencilWriteMask = 0u;
