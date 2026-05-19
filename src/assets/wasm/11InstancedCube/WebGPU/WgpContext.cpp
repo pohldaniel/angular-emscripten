@@ -868,7 +868,7 @@ void WgpContext::createRenderPipeline(std::string shaderModuleName,
 
 	WGPUColorTargetState colorTarget = {};
 	colorTarget.format = colorTextureFormat == WGPUTextureFormat_Undefined ? colorformat : colorTextureFormat;
-	colorTarget.blend = configuration.flags & BLEND_STATE ? &blendState : NULL;
+	colorTarget.blend = (configuration.flags & BLEND_STATE) ? &blendState : NULL;
 	colorTarget.writeMask = WGPUColorWriteMask_All;
 
 	WGPUFragmentState fragmentState = {};
@@ -882,7 +882,7 @@ void WgpContext::createRenderPipeline(std::string shaderModuleName,
 	WGPUDepthStencilState depthStencilState = {};
 	setDefault(depthStencilState);
 	depthStencilState.depthCompare = depthCompareFunction;
-	depthStencilState.depthWriteEnabled = configuration.flags & WRITE_DEPTH;
+	depthStencilState.depthWriteEnabled = (configuration.flags & WRITE_DEPTH);
 	depthStencilState.format = depthTextureFormat == WGPUTextureFormat_Undefined ? depthformat : depthTextureFormat;
 	depthStencilState.stencilReadMask = 0u;
 	depthStencilState.stencilWriteMask = 0u;
@@ -894,8 +894,8 @@ void WgpContext::createRenderPipeline(std::string shaderModuleName,
 	renderPipelineDescriptor.multisample.alphaToCoverageEnabled = false;
 
 	renderPipelineDescriptor.vertex = vertexState;
-	renderPipelineDescriptor.fragment = configuration.flags & FRAGMENT_STATE ? &fragmentState : NULL;
-	renderPipelineDescriptor.depthStencil = configuration.flags & DEPTH_STENCIL_STATE ? &depthStencilState : NULL;
+	renderPipelineDescriptor.fragment = (configuration.flags & FRAGMENT_STATE) ? &fragmentState : NULL;
+	renderPipelineDescriptor.depthStencil = (configuration.flags & DEPTH_STENCIL_STATE) ? &depthStencilState : NULL;
 
 	renderPipelineDescriptor.primitive.topology = primitiveTopology;
 	renderPipelineDescriptor.primitive.stripIndexFormat = WGPUIndexFormat::WGPUIndexFormat_Undefined;

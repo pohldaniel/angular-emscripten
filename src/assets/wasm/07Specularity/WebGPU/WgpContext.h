@@ -70,10 +70,10 @@ enum SamplerSlot {
 };
 
 enum RenderPipelineFlags {
-	WRITE_DEPTH = 0,
-	DEPTH_STENCIL_STATE = 1,
-	BLEND_STATE = 2,
-	FRAGMENT_STATE = 4
+	WRITE_DEPTH = 1,
+	DEPTH_STENCIL_STATE = 2,
+	BLEND_STATE = 4,
+	FRAGMENT_STATE = 8
 };
 
 enum BlendMode {
