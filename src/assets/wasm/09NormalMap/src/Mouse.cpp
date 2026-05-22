@@ -57,9 +57,9 @@ void Mouse::attach(GLFWwindow* window, bool _hideCursor, bool reset, bool reatta
 
     if (_hideCursor) {
         hideCursor(true);
-        setCursorToMiddle();       
+        //setCursorToMiddle();       
     }else{
-        glfwSetCursorPos(m_window, m_xLastPos, m_yLastPos);
+        //glfwSetCursorPos(m_window, m_xLastPos, m_yLastPos);
 	    hideCursor(false);
     }
 

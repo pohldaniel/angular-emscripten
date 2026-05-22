@@ -88,7 +88,7 @@ void Specularity::OnDraw(const WGPUCommandEncoder& commandEncoder, const WGPURen
 
 void Specularity::OnMouseButtonDown(const Event::MouseButtonEvent& event) {
 	if (event.button == Event::MouseButtonEvent::BUTTON_RIGHT) {
-		Mouse::instance().attach(Application::Window, true, false, false);
+		Mouse::instance().attach(Application::Window, true, true);
 	}else if(event.button == Event::MouseButtonEvent::BUTTON_LEFT){
 		m_drag.active = true;
 		m_drag.startMouse = glm::vec2(-(float)event.x, (float)event.y);

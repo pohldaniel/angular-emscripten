@@ -15,6 +15,7 @@ import {ImageBasedLightingComponent} from './pages/webgpu/image-based-lighting/i
 import {ShadowMappingComponent} from './pages/webgpu/shadow-mapping/shadow-mapping.component';
 import {SkinnedMeshComponent} from './pages/webgpu/skinned-mesh/skinned-mesh.component';
 import {ComputeParticleLogoComponent} from './pages/webgpu/compute-particle-logo/compute-particle-logo.component';
+import {PrimitivePickingComponent} from './pages/webgpu/primitive-picking/primitive-picking.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -92,8 +93,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/primitive-picking', 
+    component: PrimitivePickingComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/cpl'
+    redirectTo: 'webgpu/primitive-picking'
   } 
 ];

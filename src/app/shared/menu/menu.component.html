@@ -111,7 +111,14 @@
           <li id="three-ten" class="list-item-button">
             <button [attr.tabindex]="router.url=='/webgpu/cpl' ? -1 : (storeTargetedSubmenu=='three' ? 0 : -1)" (click)="navigate('/webgpu/cpl')" [class.active]="router.url == '/webgpu/cpl'">Compute Particle Logo
               <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1" (click)="updateFavorites($event, 14, checked[14]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
-                <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[13] ? 'star' : 'star_outline'}}</mat-icon>                 
+                <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[14] ? 'star' : 'star_outline'}}</mat-icon>                 
+              </span>                       
+            </button>  
+          </li>
+           <li id="three-eleven" class="list-item-button">
+            <button [attr.tabindex]="router.url=='/webgpu/primitive-picking' ? -1 : (storeTargetedSubmenu=='three' ? 0 : -1)" (click)="navigate('/webgpu/primitive-picking')" [class.active]="router.url == '/webgpu/primitive-picking'">Primitive Picking
+              <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1" (click)="updateFavorites($event, 15, checked[15]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
+                <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[15] ? 'star' : 'star_outline'}}</mat-icon>                 
               </span>                       
             </button>  
           </li>

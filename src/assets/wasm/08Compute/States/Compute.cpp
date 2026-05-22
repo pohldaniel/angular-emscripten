@@ -87,7 +87,7 @@ void Compute::OnMouseMotion(const Event::MouseMoveEvent& event) {
 
 void Compute::OnMouseButtonDown(const Event::MouseButtonEvent& event) {
     if (event.button == Event::MouseButtonEvent::BUTTON_RIGHT) {
-		Mouse::instance().attach(Application::Window, true, false, false);
+		Mouse::instance().attach(Application::Window, true, true);
 	}
 }
 

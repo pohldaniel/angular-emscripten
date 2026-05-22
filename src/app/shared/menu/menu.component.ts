@@ -69,7 +69,8 @@ export class MenuComponent implements OnInit{
       this.router.url == '/webgpu/ibl' ||
       this.router.url == '/webgpu/shadow-mapping' ||
       this.router.url == '/webgpu/skinned-mesh'||
-      this.router.url == '/webgpu/cpl')
+      this.router.url == '/webgpu/cpl'||
+      this.router.url == '/webgpu/primitive-picking')
     {
       this.targetedSubmenu = 'three';
       this.storeTargetedSubmenu = 'three';     
@@ -98,7 +99,8 @@ export class MenuComponent implements OnInit{
     .set(Math.pow(2, 11), {target : '/webgpu/ibl', description: 'Image Based Lighting', descriptionLineBreak: '', class : 'three-seven', index : 11} as MenuItem)
     .set(Math.pow(2, 12), {target : '/webgpu/shadow-mapping', description: 'Shadow Mapping', descriptionLineBreak: '', class : 'three-eight', index : 12} as MenuItem)
     .set(Math.pow(2, 13), {target : '/webgpu/skinned-mesh', description: 'Skinned Mesh', descriptionLineBreak: '', class : 'three-nine', index : 13} as MenuItem)
-    .set(Math.pow(2, 14), {target : '/webgpu/cpl', description: 'Compute Particle Logo', descriptionLineBreak: '', class : 'three-ten', index : 14} as MenuItem);
+    .set(Math.pow(2, 14), {target : '/webgpu/cpl', description: 'Compute Particle Logo', descriptionLineBreak: '', class : 'three-ten', index : 14} as MenuItem)
+    .set(Math.pow(2, 15), {target : '/webgpu/primitive-picking', description: 'Primitive Picking', descriptionLineBreak: '', class : 'three-eleven', index : 15} as MenuItem);
 
     for(let key of map.keys()) {
       if((this.settings.favorites | key) == this.settings.favorites){
