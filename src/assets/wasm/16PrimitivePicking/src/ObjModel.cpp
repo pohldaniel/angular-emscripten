@@ -238,7 +238,7 @@ void ObjModel::loadModelCpu(const char* _filename, const glm::vec3& axis, float 
 					vertexCoords.push_back(tmpx);
 					vertexCoords.push_back(tmpy);
 					vertexCoords.push_back(tmpz);
-					std::cout << "POS: " << tmpx << "  " << tmpy << "  " << tmpz << std::endl;
+
 					xmin = (std::min)(tmpx, xmin);
 					ymin = (std::min)(tmpy, ymin);
 					zmin = (std::min)(tmpz, zmin);
@@ -539,7 +539,7 @@ void ObjModel::loadModelCpu(const char* _filename, const glm::vec3& axis, float 
 	m_numberOfMeshes = m_meshes.size();
 	dup.clear();
 	name.clear();
-
+	std::cout << "NUMBER OF MESHES: " << m_numberOfMeshes << std::endl;
 	m_isStacked = !(m_numberOfMeshes == 1) && isStacked;
 
 	IndexBufferCreator indexBufferCreator;
