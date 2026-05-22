@@ -289,7 +289,7 @@ void ObjModel::loadModelCpu(const char* _filename, const glm::vec3& axis, float 
 		}case 'u': {
 
 			if (m_hasMaterial) {
-				std::cout << "tttttttt" << std::endl;
+
 				fgets(buffer, sizeof(buffer), pFile);
 				sscanf(buffer, "%s %s", buffer, buffer);
 
@@ -311,7 +311,7 @@ void ObjModel::loadModelCpu(const char* _filename, const glm::vec3& axis, float 
 
 		}case 'g': {
 			if (!m_hasMaterial) {
-				std::cout << "ssssssss" << std::endl;
+
 				fgets(buffer, sizeof(buffer), pFile);
 				sscanf(buffer, "%s", buffer);
 
@@ -515,7 +515,7 @@ void ObjModel::loadModelCpu(const char* _filename, const glm::vec3& axis, float 
 	for (int i = 0; i < face.size(); i++) {
 		dup[face[i][9]]++;
 	}
-	std::cout << "DUP SIZE: " << dup.size() << "  " << name.empty() << std::endl;
+
 	std::vector<unsigned int> numberOfTriangles;
 	std::map<int, int>::const_iterator iterDup = dup.begin();
 	for (; iterDup != dup.end(); iterDup++) {
