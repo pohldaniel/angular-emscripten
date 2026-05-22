@@ -77,7 +77,7 @@ PrimitivePicking::PrimitivePicking(StateMachine& machine) : State(machine, State
 	m_computeBindGroup = createComputeBindGroup();
 	m_debugBindGroup = createDebugBindGroup();
 
-    std::cout << "###########" << std::endl;
+  
 
 	for (unsigned int k = 0; k < m_teapot.getMesh()->getIndexBuffer().size() / 3u; ++k) {
 		unsigned int index0 = m_teapot.getMesh()->getIndexBuffer()[k * 3];
@@ -105,6 +105,8 @@ PrimitivePicking::PrimitivePicking(StateMachine& machine) : State(machine, State
 
 	m_wgpTeapot.setBindGroups("BG", std::bind(&PrimitivePicking::OnBindGroupsPick, this));
 	wgpContext.OnDraw = std::bind(&PrimitivePicking::OnDraw, this, std::placeholders::_1, std::placeholders::_2);
+
+	  std::cout << "-----------" << std::endl;
 }
 
 PrimitivePicking::~PrimitivePicking() {
