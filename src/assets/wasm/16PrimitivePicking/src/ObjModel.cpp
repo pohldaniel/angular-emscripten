@@ -289,7 +289,7 @@ void ObjModel::loadModelCpu(const char* _filename, const glm::vec3& axis, float 
 		}case 'u': {
 
 			if (m_hasMaterial) {
-
+				std::cout << "tttttttt" << std::endl;
 				fgets(buffer, sizeof(buffer), pFile);
 				sscanf(buffer, "%s %s", buffer, buffer);
 
@@ -311,7 +311,7 @@ void ObjModel::loadModelCpu(const char* _filename, const glm::vec3& axis, float 
 
 		}case 'g': {
 			if (!m_hasMaterial) {
-
+				std::cout << "ssssssss" << std::endl;
 				fgets(buffer, sizeof(buffer), pFile);
 				sscanf(buffer, "%s", buffer);
 
