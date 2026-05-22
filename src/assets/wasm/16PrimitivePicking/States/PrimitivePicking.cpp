@@ -78,8 +78,9 @@ PrimitivePicking::PrimitivePicking(StateMachine& machine) : State(machine, State
 	m_debugBindGroup = createDebugBindGroup();
 
   
+  std::cout << "SIZE MESHES: " << m_teapot.getMeshes().size() << std::endl;
 	std::cout << "SIZE: " << m_teapot.getMesh()->getIndexBuffer().size() << std::endl;
-	for (unsigned int k = 0; k < 9 / 3u; ++k) {
+	for (unsigned int k = 0; k < 1; ++k) {
 		unsigned int index0 = m_teapot.getMesh()->getIndexBuffer()[k * 3];
 		unsigned int index1 = m_teapot.getMesh()->getIndexBuffer()[k * 3 + 1];
 		unsigned int index2 = m_teapot.getMesh()->getIndexBuffer()[k * 3 + 2];
@@ -95,8 +96,8 @@ PrimitivePicking::PrimitivePicking(StateMachine& machine) : State(machine, State
 		m_vertices.push_back({ m_teapot.getMesh()->getVertexBuffer()[index2 * 6 + 0] , m_teapot.getMesh()->getVertexBuffer()[index2 * 6 + 1] , m_teapot.getMesh()->getVertexBuffer()[index2 * 6 + 2],
 							m_teapot.getMesh()->getVertexBuffer()[index2 * 6 + 3] , m_teapot.getMesh()->getVertexBuffer()[index2 * 6 + 4] , m_teapot.getMesh()->getVertexBuffer()[index2 * 6 + 5],
 							k });	
-							
-		m_indices.push_back(k * 3); m_indices.push_back(k * 3 + 1); m_indices.push_back(k * 3 + 2);
+
+		//m_indices.push_back(k * 3); m_indices.push_back(k * 3 + 1); m_indices.push_back(k * 3 + 2);
 	}
 	std::cout << "22222222a" << std::endl;
 
