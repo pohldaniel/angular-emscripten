@@ -21,7 +21,6 @@ Mouse::Mouse(){
 	m_xDelta = 0.0f;
 	m_yDelta = 0.0f;
 	m_attached = false;
-	m_reset = false;
 }
 
 Mouse::~Mouse(){
@@ -39,7 +38,7 @@ void Mouse::update(){
     }
 }
 
-void Mouse::attach(GLFWwindow* window, bool _hideCursor, bool reattach, bool reset){
+void Mouse::attach(GLFWwindow* window, bool _hideCursor, bool reset, bool reattach){
 
     if (m_attached && !reattach) return;
         m_window = window;
@@ -48,20 +47,23 @@ void Mouse::attach(GLFWwindow* window, bool _hideCursor, bool reattach, bool res
     m_xPrevPos = m_xPos;
     m_yPrevPos = m_yPos;
 
-	if (!m_reset) {
+	if (reset) {
        m_xLastPos = m_xPos;
        m_yLastPos = m_yPos;
 	}
 
-    m_centerX = static_cast<float>(Application::Width / 2);
-    m_centerY = static_cast<float>(Application::Height / 2);
+    m_centerX = static_cast<double>(Application::Width / 2);
+    m_centerY = static_cast<double>(Application::Height / 2);
 
     if (_hideCursor) {
         hideCursor(true);
-        //setCursorToMiddle();
+        setCursorToMiddle();       
+    }else{
+        glfwSetCursorPos(m_window, m_xLastPos, m_yLastPos);
+	    hideCursor(false);
     }
+
 	m_attached = true;
-    m_reset = reset;
 }
 
 void Mouse::detach() {
@@ -69,7 +71,7 @@ void Mouse::detach() {
       m_attached = false;
 
 	if (!m_cursorVisible) {
-		//glfwSetCursorPos(m_window, m_xLastPos, m_yLastPos);
+		glfwSetCursorPos(m_window, m_xLastPos, m_yLastPos);
 		hideCursor(false);
 	}
 
@@ -79,11 +81,12 @@ void Mouse::detach() {
 }
 
 void Mouse::setCursorToMiddle(){
-    glfwSetCursorPos(m_window, static_cast<float>(m_centerX), static_cast<float>(m_centerY));
+    glfwSetCursorPos(m_window, m_centerX, m_centerY);
+    m_xPrevPos = m_centerX;
+    m_yPrevPos = m_centerY;
 }
 
 void Mouse::hideCursor(bool hideCursor){
-
     if (hideCursor) {
         glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
         m_cursorVisible = false;
@@ -101,6 +104,26 @@ const float Mouse::yDelta() const {
     return m_yDelta;
 }
 
+const float Mouse::xPos() const{
+    return m_xPos;
+}
+
+const float Mouse::yPos() const{
+    return m_yPos;
+}
+
 const bool Mouse::isAttached() const {
     return m_attached;
+}
+
+bool Mouse::isVisibile() {
+	return m_cursorVisible;
+}
+
+bool Mouse::buttonDown(unsigned int button) const {
+    return glfwGetMouseButton(Application::Window, button) == GLFW_PRESS;
+}
+
+bool Mouse::buttonDownInvisible(unsigned int button) const {
+    return glfwGetMouseButton(Application::Window, button) == GLFW_PRESS && !m_cursorVisible;
 }

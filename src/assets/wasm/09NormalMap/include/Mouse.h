@@ -10,13 +10,19 @@ public:
     static Mouse &instance();
     void update();
     
-    void attach(GLFWwindow* window, bool hideCursor = true, bool reattach = false, bool reset = false);
+    void attach(GLFWwindow* window, bool hideCursor = true, bool reset = false, bool reattach = false);
     void detach();
     void hideCursor(bool hideCursor);
     const float xDelta() const;
     const float yDelta() const;
+    const float xPos() const;
+    const float yPos() const;
     const bool isAttached() const;
-    
+    bool isVisibile();
+
+    bool buttonDown(unsigned int button) const;
+    bool buttonDownInvisible(unsigned int button) const;
+
 private:
 
     Mouse();
@@ -35,9 +41,8 @@ private:
 
     bool m_cursorVisible;
     bool m_attached;
-	bool m_reset;
 
-	float m_centerX, m_centerY;
+	double m_centerX, m_centerY;
 };
 
 #endif

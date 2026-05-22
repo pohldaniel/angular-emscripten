@@ -36,8 +36,6 @@ private:
 	void initImGUI();
 	void initStates();
 	void messageLopp();
-	void resizeWindow(int width, int height);
-	void resizeFramebufffer(int width, int height);
 	
 	float& fdt;
 	float& dt;

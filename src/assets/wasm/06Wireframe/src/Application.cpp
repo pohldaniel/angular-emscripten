@@ -4,7 +4,6 @@
 #include <imgui_impl_wgpu.h>
 
 #include <WebGPU/WgpContext.h>
-
 #include <States/Wireframe.h>
 
 #include "Application.h"
@@ -22,6 +21,9 @@ bool Application::Init = false;
 void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos);
+void glfwWindowScroll(GLFWwindow* window, double xoffset, double yoffset);
+void glfwWindowResizeCallback(GLFWwindow* window, int width, int height);
+void glfwFramebufferResizeCallback(GLFWwindow* window, int width, int height);
 
 void Application::MessageLopp(void *arg) {
   Application* application  = reinterpret_cast<Application*>(arg);
@@ -173,26 +175,27 @@ void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int 
 }
 
 void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods) { 
-  if(ImGui::GetIO().WantCaptureMouse && !Mouse::instance().isAttached()){
+  if(ImGui::GetIO().WantCaptureMouse && (!Mouse::instance().isAttached() || (Mouse::instance().isAttached() && Mouse::instance().isVisibile()))){
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-  }else{
-    double xpos, ypos;
-    glfwGetCursorPos(window, &xpos, &ypos);
-    
-    Event event; 
-    event.data.mouseButton.x = static_cast<int>(xpos);
-    event.data.mouseButton.y = static_cast<int>(ypos);
-    event.data.mouseButton.button = (button == GLFW_MOUSE_BUTTON_RIGHT) ? Event::MouseButtonEvent::MouseButton::BUTTON_RIGHT : Event::MouseButtonEvent::MouseButton::BUTTON_LEFT;
+    return;
+  }
 
-    if (action == GLFW_PRESS){
+  double xpos, ypos;
+  glfwGetCursorPos(window, &xpos, &ypos);
+    
+  Event event; 
+  event.data.mouseButton.x = static_cast<int>(xpos);
+  event.data.mouseButton.y = static_cast<int>(ypos);
+  event.data.mouseButton.button = (button == GLFW_MOUSE_BUTTON_RIGHT) ? Event::MouseButtonEvent::MouseButton::BUTTON_RIGHT : Event::MouseButtonEvent::MouseButton::BUTTON_LEFT;
+
+  if (action == GLFW_PRESS){
       event.type = Event::MOUSEBUTTONDOWN;
       Application::Machine->getStates().top()->OnMouseButtonDown(event.data.mouseButton);
-    }
+  }
 
-    if(action == GLFW_RELEASE){
-      event.type = Event::MOUSEBUTTONUP;
-      Application::Machine->getStates().top()->OnMouseButtonUp(event.data.mouseButton);
-    }
+  if(action == GLFW_RELEASE){
+    event.type = Event::MOUSEBUTTONUP;
+    Application::Machine->getStates().top()->OnMouseButtonUp(event.data.mouseButton);
   }
 }
 
@@ -205,4 +208,16 @@ void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos){
     event.data.mouseMove.y = static_cast<int>(ypos);
     
     Application::Machine->getStates().top()->OnMouseMotion(event.data.mouseMove);   
+}
+
+void glfwWindowScroll(GLFWwindow* m_window, double xoffset, double yoffset) {
+	Application::Machine->getStates().top()->OnScroll(xoffset, yoffset);
+}
+
+void glfwWindowResizeCallback(GLFWwindow* window, int width, int height){
+
+}
+
+void glfwFramebufferResizeCallback(GLFWwindow* m_window, int /* width */, int /* height */) {
+	
 }

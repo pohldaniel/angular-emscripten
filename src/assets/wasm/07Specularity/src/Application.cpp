@@ -5,7 +5,6 @@
 #include <imgui_impl_glfw.h>
 
 #include <WebGPU/WgpContext.h>
-
 #include <States/Specularity.h>
 
 #include "Application.h"
@@ -17,7 +16,6 @@ int Application::Width;
 int Application::Height;
 double Application::Time;
 bool Application::Init = false;
-
 
 void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
@@ -145,30 +143,59 @@ void Application::Cleanup(){
 }
 
 void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
+  if(ImGui::GetIO().WantCaptureMouse){  
+    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+    return;
+  }
 
+  switch(key){
+    case (GLFW_KEY_Z - 1):
+      if(action == GLFW_PRESS)
+        Application::Machine->ToggleWireframe();
+    return;
+    case GLFW_KEY_V:
+      if(action == GLFW_PRESS)
+        wgpToggleVerticalSync();
+    return;
+    default:{
+      Event event;
+      event.data.keyboard.keyCode = key;
+
+      if (action == GLFW_PRESS){
+        event.type = Event::KEYDOWN;
+        Application::Machine->getStates().top()->OnKeyDown(event.data.keyboard);
+      }
+
+      if(action == GLFW_RELEASE){
+        event.type = Event::KEYUP;
+        Application::Machine->getStates().top()->OnKeyUp(event.data.keyboard);
+      }
+    }
+  }
 }
 
 void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
-  if(ImGui::GetIO().WantCaptureMouse && !Mouse::instance().isAttached()){
+  if(ImGui::GetIO().WantCaptureMouse && (!Mouse::instance().isAttached() || (Mouse::instance().isAttached() && Mouse::instance().isVisibile()))){
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-  }else{
-    double xpos, ypos;
-    glfwGetCursorPos(window, &xpos, &ypos);
-    
-    Event event; 
-    event.data.mouseButton.x = static_cast<int>(xpos);
-    event.data.mouseButton.y = static_cast<int>(ypos);
-    event.data.mouseButton.button = (button == GLFW_MOUSE_BUTTON_RIGHT) ? Event::MouseButtonEvent::MouseButton::BUTTON_RIGHT : Event::MouseButtonEvent::MouseButton::BUTTON_LEFT;
+    return;
+  }
 
-    if (action == GLFW_PRESS){
+  double xpos, ypos;
+  glfwGetCursorPos(window, &xpos, &ypos);
+    
+  Event event; 
+  event.data.mouseButton.x = static_cast<int>(xpos);
+  event.data.mouseButton.y = static_cast<int>(ypos);
+  event.data.mouseButton.button = (button == GLFW_MOUSE_BUTTON_RIGHT) ? Event::MouseButtonEvent::MouseButton::BUTTON_RIGHT : Event::MouseButtonEvent::MouseButton::BUTTON_LEFT;
+
+  if (action == GLFW_PRESS){
       event.type = Event::MOUSEBUTTONDOWN;
       Application::Machine->getStates().top()->OnMouseButtonDown(event.data.mouseButton);
-    }
+  }
 
-    if(action == GLFW_RELEASE){
-      event.type = Event::MOUSEBUTTONUP;
-      Application::Machine->getStates().top()->OnMouseButtonUp(event.data.mouseButton);
-    }
+  if(action == GLFW_RELEASE){
+    event.type = Event::MOUSEBUTTONUP;
+    Application::Machine->getStates().top()->OnMouseButtonUp(event.data.mouseButton);
   }
 }
 

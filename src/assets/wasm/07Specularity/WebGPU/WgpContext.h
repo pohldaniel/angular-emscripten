@@ -52,6 +52,7 @@ extern "C" {
 	void wgpPipelineLayoutsRelease();
 
 	void wgpDraw();
+	void wgpSubmitQueue();
 	void wgpResize(uint32_t width, uint32_t height);
 	void wgpToggleVerticalSync();
 	void wgpConfigureSurface();
@@ -87,6 +88,8 @@ struct WgpContext {
 	struct PipelineConfiguration {
 		unsigned int flags;
 		BlendMode blendMode;
+		WGPUTextureFormat colorTextureFormat;
+		WGPUCullMode cullMode;
 	};
 
 	friend bool wgpCreateDevice(void* window);
@@ -109,7 +112,7 @@ struct WgpContext {
 	                          WGPUTextureFormat colorTextureFormat = WGPUTextureFormat::WGPUTextureFormat_Undefined,
 							  WGPUTextureFormat depthTextureFormat = WGPUTextureFormat::WGPUTextureFormat_Undefined,
 							  WGPUCompareFunction depthCompareFunction = WGPUCompareFunction::WGPUCompareFunction_Less,
-							  const PipelineConfiguration configuration = { WRITE_DEPTH | DEPTH_STENCIL_STATE | BLEND_STATE | FRAGMENT_STATE, BlendMode::ALPHA_BLENDING });
+							  const PipelineConfiguration configuration = { WRITE_DEPTH | DEPTH_STENCIL_STATE | BLEND_STATE | FRAGMENT_STATE, BlendMode::ALPHA_BLENDING, WGPUTextureFormat_Undefined, WGPUCullMode_Undefined });
 
     void createVertexBufferLayout(VertexLayoutSlot slot = VL_PTN);
     void addSampler(const WGPUSampler& sampler, SamplerSlot samplerSlot);
@@ -118,6 +121,7 @@ struct WgpContext {
     const WGPUShaderModule& getShaderModule(std::string shaderModuleName) const;
 	const WGPUPipelineLayout& getPipelineLayout(std::string pipelineLayoutName) const;
 	void setClearColor(const WGPUColor& clearColor);
+	bool isBlendAble(WGPUTextureFormat textureFormat);
 
 	WGPUInstance instance = NULL;
 	WGPUAdapter adapter = NULL;
