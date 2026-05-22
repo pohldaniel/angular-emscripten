@@ -34,8 +34,6 @@ PrimitivePicking::PrimitivePicking(StateMachine& machine) : State(machine, State
 
 	m_uniformBuffer.createBuffer(sizeof(Uniforms), WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform);
 	m_computeBuffer.createBuffer(2 * sizeof(glm::mat4) + 4 * sizeof(float), WGPUBufferUsage_CopyDst | WGPUBufferUsage_CopySrc | WGPUBufferUsage_Uniform| WGPUBufferUsage_Storage);
-
-	std::cout << "WIDTH: " << Application::Width << "  " << Application::Height << std::endl;
 	m_indexTexture.createEmpty(Application::Width, Application::Height, 1u, WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment, WGPUTextureFormat_R32Uint);
 
 	WGPURenderPassColorAttachment renderPassColorAttachment = {};
