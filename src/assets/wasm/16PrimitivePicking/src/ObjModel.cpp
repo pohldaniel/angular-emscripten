@@ -515,7 +515,7 @@ void ObjModel::loadModelCpu(const char* _filename, const glm::vec3& axis, float 
 	for (int i = 0; i < face.size(); i++) {
 		dup[face[i][9]]++;
 	}
-
+	std::cout << "DUP SIZE: " << dup.size() << "  " << name.empty() << std::endl;
 	std::vector<unsigned int> numberOfTriangles;
 	std::map<int, int>::const_iterator iterDup = dup.begin();
 	for (; iterDup != dup.end(); iterDup++) {
@@ -539,7 +539,7 @@ void ObjModel::loadModelCpu(const char* _filename, const glm::vec3& axis, float 
 	m_numberOfMeshes = m_meshes.size();
 	dup.clear();
 	name.clear();
-	std::cout << "NUMBER OF MESHES: " << m_numberOfMeshes << std::endl;
+
 	m_isStacked = !(m_numberOfMeshes == 1) && isStacked;
 
 	IndexBufferCreator indexBufferCreator;
