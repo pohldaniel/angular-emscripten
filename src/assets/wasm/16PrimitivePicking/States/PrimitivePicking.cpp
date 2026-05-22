@@ -60,10 +60,10 @@ PrimitivePicking::PrimitivePicking(StateMachine& machine) : State(machine, State
 
 	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), 0, &m_uniforms, sizeof(Uniforms));
 
-	wgpContext.addSahderModule("PICK_COMPUTE", "res/shader/pick_compute.wgsl");
+	wgpContext.addSahderModule("PICK_COMPUTE", PICK_COMPUTE_WGSL, true);
 	wgpContext.createComputePipeline("PICK_COMPUTE", "cs_main", "CP_PICK", std::bind(&PrimitivePicking::OnBindGroupLayoutsCompute, this));
 
-	wgpContext.addSahderModule("PICK", "res/shader/pick.wgsl");
+	wgpContext.addSahderModule("PICK", PICK_WGSL, true);
 	wgpContext.createRenderPipeline("PICK", "RP_PICK", VL_0, std::bind(&PrimitivePicking::OnBindGroupLayoutsPick, this),
 		1u,
 		WGPUPrimitiveTopology_TriangleList,
@@ -73,7 +73,7 @@ PrimitivePicking::PrimitivePicking(StateMachine& machine) : State(machine, State
 		{ WRITE_DEPTH | DEPTH_STENCIL_STATE | BLEND_STATE | FRAGMENT_STATE, BlendMode::ALPHA_BLENDING, WGPUTextureFormat_R32Uint, WGPUCullMode_None}
 	);
 
-	wgpContext.addSahderModule("PICK_DEBUG", "res/shader/pick_debug.wgsl");
+	wgpContext.addSahderModule("PICK_DEBUG", PICK_DEBUG_WGSL, true);
 	wgpContext.createRenderPipeline("PICK_DEBUG", "RP_PICK_DEBUG", VL_NONE, std::bind(&PrimitivePicking::OnBindGroupLayoutsDebug, this));
 
 	m_computeBindGroup = createComputeBindGroup();

@@ -11,6 +11,132 @@
 #include "TrackBall.h"
 #include "ObjModel.h"
 
+#define PICK_WGSL  "struct VertexInput {                                                                        \n \
+	                    @location(0) position: vec3f,                                                           \n \
+	                    @location(1) normal: vec3f,                                                             \n \
+	                    @location(2) primitiveIndex: u32,                                                       \n \
+	                    @builtin(vertex_index) vertexIndex : u32                                                \n \
+                    };                                                                                          \n \
+                                                                                                                \n \
+                    struct Uniforms {                                                                           \n \
+                        projection: mat4x4<f32>,                                                                \n \
+	                    view: mat4x4<f32>,                                                                      \n \
+	                    env: mat4x4<f32>,                                                                       \n \
+                        model: mat4x4<f32>,                                                                     \n \
+	                    normal: mat4x4<f32>,                                                                    \n \
+	                    color: vec4<f32>,                                                                       \n \
+	                    camPos: vec3<f32>,                                                                      \n \
+	                    lightVP: mat4x4<f32>,                                                                   \n \
+	                    shadow: mat4x4<f32>,                                                                    \n \
+	                    lightPos: vec3<f32>                                                                     \n \
+                    };                                                                                          \n \
+                                                                                                                \n \
+                    struct Frame {                                                                              \n \
+                        viewProjectionMatrix : mat4x4f,                                                         \n \
+                        invViewProjectionMatrix : mat4x4f,                                                      \n \
+                        pickCoord : vec2u,                                                                      \n \
+                        pickedPrimitive : u32,                                                                  \n \
+                    }                                                                                           \n \
+                                                                                                                \n \
+                    @group(0) @binding(0) var<uniform> uniforms : Uniforms;                                     \n \
+                    @group(0) @binding(1) var<uniform> frame : Frame;                                           \n \
+                                                                                                                \n \
+                    struct VertexOutput {                                                                       \n \
+                        @builtin(position) position : vec4f,                                                    \n \
+                        @location(0) normal : vec3f,                                                            \n \
+                        @location(1) @interpolate(flat) vertexIndex : u32,                                      \n \
+                        @location(2) @interpolate(flat) primitiveIndex : u32,                                   \n \
+                    }                                                                                           \n \
+                                                                                                                \n \
+                    @vertex                                                                                     \n \
+                    fn vs_main(in: VertexInput) -> VertexOutput {                                               \n \
+                        var out : VertexOutput;                                                                 \n \
+                        let worldPosition = (uniforms.model * vec4(in.position, 1.0)).xyz;                      \n \
+                        out.position = frame.viewProjectionMatrix * vec4(worldPosition, 1.0);                   \n \
+                        out.normal = normalize((uniforms.normal * vec4(in.normal, 1.0)).xyz);                   \n \
+                        out.vertexIndex = in.vertexIndex;                                                       \n \
+                        out.primitiveIndex = in.primitiveIndex;                                                 \n \
+                        return out;                                                                             \n \
+                    }                                                                                           \n \
+                                                                                                                \n \
+                    struct PassOutput {                                                                         \n \
+                        @location(0) primitive : u32,                                                           \n \
+                        @location(1) color : vec4f,                                                             \n \
+                    }                                                                                           \n \
+                                                                                                                \n \
+                    @fragment                                                                                   \n \
+                    fn fs_main(in: VertexOutput) -> PassOutput {                                                \n \
+                        // Compute primitive index from vertex index (3 vertices per triangle)                  \n \
+                        let primIndex = in.primitiveIndex;                                                      \n \
+                                                                                                                \n \
+                        // Very simple N-dot-L lighting model                                                   \n \
+                        let lightDirection = normalize(vec3f(4, 10, 6));                                        \n \
+                        let light        = dot(normalize(in.normal), lightDirection) * 0.5 + 0.5;               \n \
+                        let surfaceColor = vec4f(0.8, 0.8, 0.8, 1.0);                                           \n \
+                                                                                                                \n \
+                        var output : PassOutput;                                                                \n \
+                                                                                                                \n \
+                        // Highlight the primitive if it's the selected one, otherwise shade                    \n \
+                        // normally.                                                                            \n \
+                        if (primIndex + 1 == frame.pickedPrimitive) {                                           \n \
+                            output.color = vec4f(1.0, 1.0, 0.0, 1.0);                                           \n \
+                        }                                                                                       \n \
+                        else {                                                                                  \n \
+                            output.color = vec4f(surfaceColor.xyz * light, surfaceColor.a);                     \n \
+                        }                                                                                       \n \
+                                                                                                                \n \
+                        // Adding one to each primitive index so that 0 can mean nothing picked                 \n \
+                        output.primitive = primIndex + 1;                                                       \n \
+                        return output;                                                                          \n \
+                    }"
+
+#define PICK_COMPUTE_WGSL  "struct Frame {                                                                      \n \
+                                viewProjectionMatrix : mat4x4f,                                                 \n \
+                                invViewProjectionMatrix : mat4x4f,                                              \n \
+                                pickCoord : vec2f,                                                              \n \
+                                pickedPrimitive : u32,                                                          \n \
+                            }                                                                                   \n \
+                            @group(0) @binding(0) var<storage, read_write> frame : Frame;                       \n \
+                            @group(0) @binding(1) var primitiveTex : texture_2d<u32>;                           \n \
+                                                                                                                \n \
+                            @compute @workgroup_size(1)                                                         \n \
+                            fn cs_main() {                                                                      \n \
+                                // Load the primitive index from the picking texture and store it in the        \n \
+                                // pickedPrimitive value (exposed to the rendering shaders as a uniform).       \n \
+                                let texel = vec2u(frame.pickCoord);                                             \n \
+                                frame.pickedPrimitive = textureLoad(primitiveTex, texel, 0).x;                  \n \
+                            }"
+
+#define PICK_DEBUG_WGSL "@vertex                                                                                \n \
+                         fn vs_main(@builtin(vertex_index) VertexIndex : u32) ->@builtin(position) vec4f {      \n \
+                             const pos                                                                          \n \
+                             = array(vec2(-1.0, -1.0), vec2(1.0, -1.0), vec2(-1.0, 1.0),                        \n \
+                               vec2(-1.0, 1.0), vec2(1.0, -1.0), vec2(1.0, 1.0), );                             \n \
+                                                                                                                \n \
+                             return vec4f(pos[VertexIndex], 0.0, 1.0);                                          \n \
+                         }                                                                                      \n \
+                                                                                                                \n \
+                         @group(0) @binding(0) var primitiveTex: texture_2d<u32>;                               \n \
+                                                                                                                \n \
+                         @fragment                                                                              \n \
+                         fn fs_main(@builtin(position) coord : vec4f) -> @location(0) vec4f {                   \n \
+                             // Load the primitive index for this pixel from the picking texture.               \n \
+                             let primitiveIndex = textureLoad(primitiveTex, vec2i(floor(coord.xy)), 0).x;       \n \
+                             var result : vec4f;                                                                \n \
+                                                                                                                \n \
+                             // Generate a color for the primitive index. If we only increment the color        \n \
+                             // channels by 1 for each primitive index we can show a very large range of        \n \
+                             // unique values but it can make the individual primitives hard to distinguish.    \n \
+                             // This code steps through 8 distinct values per-channel, which may end up         \n \
+                             // repeating some colors for larger meshes but makes the unique primitive          \n \
+                             // index values easier to see.                                                     \n \
+                             result.r = f32(primitiveIndex % 8) / 8;                                            \n \
+                             result.g = f32((primitiveIndex / 8) % 8) / 8;                                      \n \
+                             result.b = f32((primitiveIndex / 64) % 8) / 8;                                     \n \
+                             result.a = 1.0;                                                                    \n \
+                             return result;                                                                     \n \
+                         }"
+
 class PrimitivePicking : public State {
 
 	struct Vertex {
