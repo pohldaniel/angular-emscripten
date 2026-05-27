@@ -115,10 +115,17 @@
               </span>                       
             </button>  
           </li>
-           <li id="three-eleven" class="list-item-button">
+          <li id="three-eleven" class="list-item-button">
             <button [attr.tabindex]="router.url=='/webgpu/primitive-picking' ? -1 : (storeTargetedSubmenu=='three' ? 0 : -1)" (click)="navigate('/webgpu/primitive-picking')" [class.active]="router.url == '/webgpu/primitive-picking'">Primitive Picking
               <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1" (click)="updateFavorites($event, 15, checked[15]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
                 <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[15] ? 'star' : 'star_outline'}}</mat-icon>                 
+              </span>                       
+            </button>  
+          </li>
+          <li id="three-twelve" class="list-item-button">
+            <button [attr.tabindex]="router.url=='/webgpu/stencil-mask' ? -1 : (storeTargetedSubmenu=='three' ? 0 : -1)" (click)="navigate('/webgpu/stencil-mask')" [class.active]="router.url == '/webgpu/stencil-mask'">Stencil Mask
+              <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1" (click)="updateFavorites($event, 16, checked[16]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
+                <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[16] ? 'star' : 'star_outline'}}</mat-icon>                 
               </span>                       
             </button>  
           </li>

@@ -59,8 +59,8 @@ void TorusKnot::BuildMesh(const std::array<float, 3>& position, float radius, fl
 		for (unsigned int i = 0; i <= vResolution; ++i) {
 			float v = currentTubeSegmentAngle * 2.0f * M_PI;
 
-			float cx = tubeRadius * std::sinf(v);
-			float cy = tubeRadius * std::cosf(v);
+			float cx = tubeRadius * sinf(v);
+			float cy = tubeRadius * cosf(v);
 
 			std::array<float, 3> pos = { p1[0] + (cx * N[0] + cy * B[0]), p1[1] + (cx * N[1] + cy * B[1]), p1[2] + (cx * N[2] + cy * B[2]) };
 			std::array<float, 3> surfacePosition = { pos[0] + position[0], pos[1] + position[1], pos[2] + position[2] };
@@ -118,20 +118,20 @@ void TorusKnot::BuildMesh(const std::array<float, 3>& position, float radius, fl
 }
 
 void TorusKnot::CalculatePositionOnCurve(float u, float p, float q, float radius, std::array<float, 3>& position) {
-	float cu = std::cosf(u);
-	float su = std::sinf(u);
+	float cu = cosf(u);
+	float su = sinf(u);
 	float quOverP = (q / p) * u;
-	float cs = std::cosf(quOverP);
+	float cs = cosf(quOverP);
 
 	position[0] = radius * (2.0f + cs) * 0.5f * cu;
 	position[1] = radius * (2.0f + cs) * su * 0.5f;
-	position[2] = radius * std::sinf(quOverP) * 0.5f;
+	position[2] = radius * sinf(quOverP) * 0.5f;
 }
 
 void TorusKnot::CalculatePositionOnCurve(float u, float p, float q, float r1, float r2, std::array<float, 3>& position) {
-	position[0] = (r1 + r2 * std::cosf(q * u)) * std::cosf(p * u);
-	position[1] = (r1 + r2 * std::cosf(q * u)) * std::sinf(p * u);
-	position[2] = -r2 * std::sinf(q * u);
+	position[0] = (r1 + r2 * cosf(q * u)) * cosf(p * u);
+	position[1] = (r1 + r2 * cosf(q * u)) * sinf(p * u);
+	position[2] = -r2 * sinf(q * u);
 }
 
 std::array<float, 3> TorusKnot::Normalize(const std::array<float, 3>& v) {

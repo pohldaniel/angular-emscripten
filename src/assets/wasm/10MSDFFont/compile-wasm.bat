@@ -17,12 +17,15 @@ emcc^
  src/CharacterSet.cpp^
  src/Application.cpp^
  src/main.cpp^
- shape/Quad.cpp^
+ shape/Capsule.cpp^
  shape/Cube.cpp^
+ shape/Cylinder.cpp^
+ shape/Quad.cpp^
+ shape/Segment.cpp^
  shape/Sphere.cpp^
+ shape/Spiral.cpp^
  shape/Torus.cpp^
  shape/TorusKnot.cpp^
- shape/Spiral.cpp^
  shape/Shape.cpp^
  WebGPU/WgpContext.cpp^
  WebGPU/WgpTexture.cpp^
