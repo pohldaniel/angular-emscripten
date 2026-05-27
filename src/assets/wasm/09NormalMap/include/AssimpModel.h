@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <functional>
 #include <numeric>
 #include <unordered_map>
@@ -11,8 +12,6 @@
 #include "Model.h"
 #include "Mesh.h"
 #include "Material.h"
-#include "Transform.h"
-
 
 //#define ASSIMP_LOAD_FLAGS (aiProcess_JoinIdenticalVertices | aiProcess_RemoveRedundantMaterials | aiProcess_PreTransformVertices | aiProcess_Triangulate)
 #define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_FindDegenerates | aiProcess_GenUVCoords)
@@ -42,13 +41,10 @@ public:
 	void scale(float sx, float sy, float sz);
 	void setPosition(float x, float y, float z);
 
-	const glm::mat4& getTransformationMatrix() const;
-	const glm::mat4& getInvTransformationMatrix();
 	const glm::vec3& getCenter() const;
 
 	const unsigned int getStride() const override;
 	const std::string& getModelDirectory();
-	const Transform& getTransform() const;
 	const Mesh* getMesh(unsigned short index = 0u) const;
 	const std::vector<Mesh*>& getMeshes() const;
 	const std::vector<float>& getVertexBuffer() const;
@@ -71,7 +67,6 @@ private:
 
 	std::string m_modelDirectory;
 	glm::vec3 m_center;
-	Transform m_transform;
 	unsigned int m_drawCount;
 
 	std::vector<float> m_vertexBuffer;

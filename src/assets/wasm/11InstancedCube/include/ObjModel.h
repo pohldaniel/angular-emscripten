@@ -16,7 +16,6 @@
 #include "Model.h"
 #include "Mesh.h"
 #include "Material.h"
-#include "Transform.h"
 
 struct IndexBufferCreator {
 
@@ -62,14 +61,11 @@ public:
 	void scale(float sx, float sy, float sz);
 	void setPosition(float x, float y, float z);
 
-	const glm::mat4& getTransformationMatrix() const;
-	const glm::mat4& getInvTransformationMatrix();
 	const glm::vec3& getCenter() const;
 
 	const unsigned int getStride() const override;
 	const std::string& getMltPath();
 	const std::string& getModelDirectory();
-	const Transform& getTransform() const;
 	const Mesh* getMesh(unsigned short index = 0u) const;
 	const std::vector<Mesh*>& getMeshes() const;
 	const std::vector<float>& getVertexBuffer() const;
@@ -94,7 +90,6 @@ private:
 	std::string m_mltPath;
 	std::string m_modelDirectory;
 	glm::vec3 m_center;
-	Transform m_transform;
 
 	std::vector<float> m_vertexBuffer;
 	std::vector<unsigned int> m_indexBuffer;
