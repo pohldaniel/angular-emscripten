@@ -16,7 +16,8 @@ import {ShadowMappingComponent} from './pages/webgpu/shadow-mapping/shadow-mappi
 import {SkinnedMeshComponent} from './pages/webgpu/skinned-mesh/skinned-mesh.component';
 import {ComputeParticleLogoComponent} from './pages/webgpu/compute-particle-logo/compute-particle-logo.component';
 import {PrimitivePickingComponent} from './pages/webgpu/primitive-picking/primitive-picking.component';
-import { StencilMaskComponent } from './pages/webgpu/stencil-mask/stencil-mask.component';
+import {StencilMaskComponent} from './pages/webgpu/stencil-mask/stencil-mask.component';
+import {DefferedRenderingComponent} from './pages/webgpu/deffered-rendering/deffered-rendering.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -104,8 +105,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/deffered-rendering', 
+    component: DefferedRenderingComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/stencil-mask'
+    redirectTo: 'webgpu/deffered-rendering'
   } 
 ];
