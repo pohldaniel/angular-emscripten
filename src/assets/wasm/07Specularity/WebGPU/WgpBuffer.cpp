@@ -30,12 +30,12 @@ void WgpBuffer::markForDelete() {
 	m_markForDelete = true;
 }
 
-void WgpBuffer::createBuffer(uint32_t size, WGPUBufferUsageFlags bufferUsageFlags) {
-	m_buffer = wgpCreateEmptyBuffer(size, bufferUsageFlags);
-}
-
 void WgpBuffer::createBuffer(const void* data, uint32_t size, WGPUBufferUsageFlags bufferUsageFlags) {
 	m_buffer = wgpCreateBuffer(data, size, bufferUsageFlags);
+}
+
+void WgpBuffer::createBuffer(uint32_t size, WGPUBufferUsageFlags bufferUsageFlags, bool mappedAtCreation) {
+	m_buffer = wgpCreateEmptyBuffer(size, bufferUsageFlags, mappedAtCreation);
 }
 
 const WGPUBuffer& WgpBuffer::getBuffer() const {

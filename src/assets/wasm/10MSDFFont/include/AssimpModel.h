@@ -55,6 +55,7 @@ public:
 	void rewind();
 
 	void generateColors(ModelColor modelColor = MC_WHITE);
+	void generateUVs(ProjectedPlane projectedPlane = XY);
 	void packBuffer();
 	void cleanup();
 
