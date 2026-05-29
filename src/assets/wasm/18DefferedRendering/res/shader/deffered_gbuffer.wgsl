@@ -43,4 +43,4 @@ fn fs_main(@location(0) fragNormal: vec3<f32>, @location(1) fragUV : vec2<f32>) 
    output.albedo = vec4(c, c, c, 1.0);
 
    return output;
- }
+}

@@ -83,10 +83,10 @@ DefferedRendering::DefferedRendering(StateMachine& machine) : State(machine, Sta
 	memcpy(&light_extent_data[4], &light_extent_max, sizeof(glm::vec3));
 	wgpuQueueWriteBuffer(wgpContext.queue, m_extentBuffer.getBuffer(), 0u, &light_extent_data, 32u);
 	
-	wgpContext.addSahderModule("DEFFERED", "res/shader/deffered.wgsl");
+	wgpContext.addSahderModule("DEFFERED", DEFFERED_WGSL, true);
 	wgpContext.createRenderPipeline("DEFFERED", "RP_DEFFERED", VL_NONE, std::bind(&DefferedRendering::OnBindGroupLayoutsDeffered, this));
 
-	wgpContext.addSahderModule("DEFFERED_DEBUG", "res/shader/deffered_debug.wgsl");
+	wgpContext.addSahderModule("DEFFERED_DEBUG", DEFFERED_DEBUG_WGSL, true);
 	wgpContext.createRenderPipeline("DEFFERED_DEBUG", "RP_DEFFERED_DEBUG", VL_NONE, std::bind(&DefferedRendering::OnBindGroupLayoutsDefferedDebug, this),
 		1u,
 		WGPUPrimitiveTopology_TriangleList,
@@ -101,7 +101,7 @@ DefferedRendering::DefferedRendering(StateMachine& machine) : State(machine, Sta
 		}
 	);
 
-	wgpContext.addSahderModule("GBUFFER", "res/shader/deffered_gbuffer.wgsl");
+	wgpContext.addSahderModule("GBUFFER", DEFFERED_GBUFFER_WGSL, true);
 	wgpContext.createRenderPipeline("GBUFFER", "RP_GBUFFER", VL_PTN, std::bind(&DefferedRendering::OnBindGroupLayoutsGBuffer, this),
 		1u,
 		WGPUPrimitiveTopology_TriangleList,
@@ -111,7 +111,7 @@ DefferedRendering::DefferedRendering(StateMachine& machine) : State(machine, Sta
 		{ WRITE_DEPTH | DEPTH_STENCIL_STATE | BLEND_STATE | FRAGMENT_STATE, BlendMode::ALPHA_BLENDING, WGPUTextureFormat_RGBA16Float , WGPUCullMode_Undefined,  DEFAULT }
 	);
 
-	wgpContext.addSahderModule("COMPUTE", "res/shader/deffered_compute.wgsl");
+	wgpContext.addSahderModule("COMPUTE", DEFFERED_COMPUTE_WGSL, true);
 	wgpContext.createComputePipeline("COMPUTE", "main", "CP_DEFFERED", std::bind(&DefferedRendering::OnBindGroupLayoutsCompute, this));
 
 	wgpContext.OnDraw = std::bind(&DefferedRendering::OnDraw, this, std::placeholders::_1, std::placeholders::_2);
