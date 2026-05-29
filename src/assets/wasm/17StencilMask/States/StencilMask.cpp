@@ -289,6 +289,7 @@ void StencilMask::OnKeyUp(const Event::KeyboardEvent& event) {
 void StencilMask::resize(int deltaW, int deltaH) {
 	m_camera.perspective(glm::radians(30.0f), static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 100.0f);
 	m_camera.orthographic(0.0f, static_cast<float>(Application::Width), 0.0f, static_cast<float>(Application::Height), -1.0f, 1.0f);
+	m_trackball.reshape(Application::Width, Application::Height);
 }
 
 void StencilMask::renderUi(const WGPURenderPassEncoder& renderPassEncoder) {

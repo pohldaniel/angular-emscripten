@@ -295,6 +295,7 @@ void NormalMap::resize(int deltaW, int deltaH) {
 
 void NormalMap::applyTransformation(const TrackBall& arc) {
   m_uniforms.model = arc.getTransform();
+  m_trackball.reshape(Application::Width, Application::Height);
 }
 
 void NormalMap::renderUi(const WGPURenderPassEncoder& renderPassEncoder) {
