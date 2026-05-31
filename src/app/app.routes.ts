@@ -18,6 +18,7 @@ import {ComputeParticleLogoComponent} from './pages/webgpu/compute-particle-logo
 import {PrimitivePickingComponent} from './pages/webgpu/primitive-picking/primitive-picking.component';
 import {StencilMaskComponent} from './pages/webgpu/stencil-mask/stencil-mask.component';
 import {DefferedRenderingComponent} from './pages/webgpu/deffered-rendering/deffered-rendering.component';
+import {VolumeRenderingComponent} from './pages/webgpu/volume-rendering/volume-rendering.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -110,8 +111,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/volume-rendering', 
+    component: VolumeRenderingComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/deffered-rendering'
+    redirectTo: 'webgpu/volume-rendering'
   } 
 ];

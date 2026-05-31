@@ -1,17 +1,20 @@
 #pragma once
 
 #include <functional>
-#include <States/StateMachine.h>
+
 #include <WebGPU/WgpTexture.h>
 #include <WebGPU/WgpBuffer.h>
 #include <WebGPU/WgpMesh.h>
 #include <WebGPU/WgpData.h>
 #include <WebGPU/WgpModel.h>
 #include <WebGPU/WgpFontRenderer.h>
+
+#include <States/StateMachine.h>
+#include <Shape/Shape.h>
+
 #include "Camera.h"
 #include "TrackBall.h"
 #include "CharacterSet.h"
-#include "Shape.h"
 
 class MSDFFont : public State {
 

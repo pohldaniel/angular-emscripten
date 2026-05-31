@@ -1,16 +1,18 @@
 #pragma once
 
 #include <functional>
-#include <States/StateMachine.h>
+
 #include <WebGPU/WgpBuffer.h>
 #include <WebGPU/WgpModel.h>
 #include <WebGPU/WgpTexture.h>
 #include <WebGPU/WgpData.h>
 
+#include <States/StateMachine.h>
+#include <Shape/Shape.h>
+
 #include "Camera.h"
 #include "TrackBall.h"
 #include "AssimpModel.h"
-#include "Shape.h"
 
 class ImageBasedLighting : public State {
 	enum Scene {

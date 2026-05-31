@@ -7,8 +7,8 @@
 #include <WebGPU/WgpData.h>
 
 #include <States/StateMachine.h>
+#include <Shape/Shape.h>
 
-#include "Shape.h"
 #include "Camera.h"
 #include "Fade.h"
 

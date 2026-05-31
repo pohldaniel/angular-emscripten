@@ -5,11 +5,11 @@
 #include <WebGPU/WgpData.h>
 
 #include <States/StateMachine.h>
+#include <Shape/Shape.h>
 
 #include "Camera.h"
 #include "TrackBall.h"
 #include "Transform.h"
-#include "Shape.h"
 
 class StencilMask : public State {
 

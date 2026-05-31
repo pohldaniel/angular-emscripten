@@ -5,7 +5,7 @@
 #include <WebGPU/WgpData.h>
 
 #include <States/StateMachine.h>
-#include <shape/Shape.h>
+#include <Shape/Shape.h>
 
 #include "Camera.h"
 #include "TrackBall.h"

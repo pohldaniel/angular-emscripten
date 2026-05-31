@@ -1,5 +1,5 @@
 #include <animation/AnimatedModel.h>
-#include <shape/Shape.h>
+#include <Shape/Shape.h>
 #include "AssimpModel.h"
 #include "ObjModel.h"
 

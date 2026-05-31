@@ -1,13 +1,15 @@
 #include <functional>
-#include <States/StateMachine.h>
+
 #include <WebGPU/WgpBuffer.h>
 #include <WebGPU/WgpModel.h>
 #include <WebGPU/WgpTexture.h>
 #include <WebGPU/WgpData.h>
 
+#include <States/StateMachine.h>
+#include <Shape/Shape.h>
+
 #include "Camera.h"
 #include "AssimpModel.h"
-#include "Shape.h"
 
 #define SHADOW_WGSL             "struct VertexInput {                                                        \n \
                                      @location(0) position: vec3f,                                           \n \
