@@ -10,8 +10,8 @@ WgpMesh::WgpMesh(const std::vector<float>& vertexBuffer, const std::vector<unsig
 	m_bindGroupsSlot("BG"),
 	m_markForDelete(false) {
 
-	m_vertexBuffer.createBuffer(reinterpret_cast<const void*>(vertexBuffer.data()), sizeof(float) * vertexBuffer.size(), WGPUBufferUsage_Vertex | WGPUBufferUsage_Storage);
-	m_indexBuffer.createBuffer(reinterpret_cast<const void*>(indexBuffer.data()), sizeof(unsigned int) * indexBuffer.size(), WGPUBufferUsage_Index | WGPUBufferUsage_Storage);
+	m_vertexBuffer.createBuffer(reinterpret_cast<const void*>(vertexBuffer.data()), sizeof(float) * vertexBuffer.size(), WGPUBufferUsage_Vertex | WGPUBufferUsage_Storage | WGPUBufferUsage_CopySrc);
+	m_indexBuffer.createBuffer(reinterpret_cast<const void*>(indexBuffer.data()), sizeof(unsigned int) * indexBuffer.size(), WGPUBufferUsage_Index | WGPUBufferUsage_Storage | WGPUBufferUsage_CopySrc);
 }
 
 WgpMesh::WgpMesh(const std::vector<float>& vertexBuffer, const std::vector<unsigned int>& indexBuffer, const std::vector<std::array<float, 4>>& weights, const std::vector<std::array<unsigned int, 4>>& joints, uint32_t stride) :
@@ -28,9 +28,9 @@ WgpMesh::WgpMesh(const std::vector<float>& vertexBuffer, const std::vector<unsig
 									  {weights[i][0], weights[i][1], weights[i][2], weights[i][3]},
 									  {joints[i][0], joints[i][1], joints[i][2], joints[i][3]} });
 		}
-		m_vertexBuffer.createBuffer(reinterpret_cast<const void*>(_vertexBuffer.data()), sizeof(VertexAnimated) * _vertexBuffer.size(), WGPUBufferUsage_Vertex | WGPUBufferUsage_Storage);
+		m_vertexBuffer.createBuffer(reinterpret_cast<const void*>(_vertexBuffer.data()), sizeof(VertexAnimated) * _vertexBuffer.size(), WGPUBufferUsage_Vertex | WGPUBufferUsage_Storage | WGPUBufferUsage_CopySrc);
 	}
-	m_indexBuffer.createBuffer(reinterpret_cast<const void*>(indexBuffer.data()), sizeof(unsigned int) * indexBuffer.size(), WGPUBufferUsage_Index | WGPUBufferUsage_Storage);
+	m_indexBuffer.createBuffer(reinterpret_cast<const void*>(indexBuffer.data()), sizeof(unsigned int) * indexBuffer.size(), WGPUBufferUsage_Index | WGPUBufferUsage_Storage | WGPUBufferUsage_CopySrc);
 }
 
 WgpMesh::WgpMesh(const std::vector<float>& vertexBuffer, const std::vector<unsigned int>& indexBuffer, const std::string& texturePath) :
@@ -38,8 +38,8 @@ WgpMesh::WgpMesh(const std::vector<float>& vertexBuffer, const std::vector<unsig
 	m_bindGroupsSlot("BG"),
 	m_markForDelete(false) {
 
-	m_vertexBuffer.createBuffer(reinterpret_cast<const void*>(vertexBuffer.data()), sizeof(float) * vertexBuffer.size(), WGPUBufferUsage_Vertex | WGPUBufferUsage_Storage);
-	m_indexBuffer.createBuffer(reinterpret_cast<const void*>(indexBuffer.data()), sizeof(unsigned int) * indexBuffer.size(), WGPUBufferUsage_Index | WGPUBufferUsage_Storage);
+	m_vertexBuffer.createBuffer(reinterpret_cast<const void*>(vertexBuffer.data()), sizeof(float) * vertexBuffer.size(), WGPUBufferUsage_Vertex | WGPUBufferUsage_Storage | WGPUBufferUsage_CopySrc);
+	m_indexBuffer.createBuffer(reinterpret_cast<const void*>(indexBuffer.data()), sizeof(unsigned int) * indexBuffer.size(), WGPUBufferUsage_Index | WGPUBufferUsage_Storage | WGPUBufferUsage_CopySrc);
 	m_texture.loadFromFile(texturePath);
 }
 
@@ -57,9 +57,9 @@ WgpMesh::WgpMesh(const std::vector<float>& vertexBuffer, const std::vector<unsig
 									  {weights[i][0], weights[i][1], weights[i][2], weights[i][3]},
 									  {joints[i][0], joints[i][1], joints[i][2], joints[i][3]} });
 		}
-		m_vertexBuffer.createBuffer(reinterpret_cast<const void*>(_vertexBuffer.data()), sizeof(VertexAnimated) * _vertexBuffer.size(), WGPUBufferUsage_Vertex | WGPUBufferUsage_Storage);
+		m_vertexBuffer.createBuffer(reinterpret_cast<const void*>(_vertexBuffer.data()), sizeof(VertexAnimated) * _vertexBuffer.size(), WGPUBufferUsage_Vertex | WGPUBufferUsage_Storage | WGPUBufferUsage_CopySrc);
 	}
-	m_indexBuffer.createBuffer(reinterpret_cast<const void*>(indexBuffer.data()), sizeof(unsigned int) * indexBuffer.size(), WGPUBufferUsage_Index | WGPUBufferUsage_Storage);
+	m_indexBuffer.createBuffer(reinterpret_cast<const void*>(indexBuffer.data()), sizeof(unsigned int) * indexBuffer.size(), WGPUBufferUsage_Index | WGPUBufferUsage_Storage | WGPUBufferUsage_CopySrc);
 	m_texture.loadFromFile(texturePath);
 }
 
@@ -68,8 +68,8 @@ WgpMesh::WgpMesh(const std::vector<float>& vertexBuffer, const std::vector<unsig
 	m_bindGroupsSlot("BG"),
 	m_markForDelete(false) {
 
-	m_vertexBuffer.createBuffer(reinterpret_cast<const void*>(vertexBuffer.data()), sizeof(float) * vertexBuffer.size(), WGPUBufferUsage_Vertex | WGPUBufferUsage_Storage);
-	m_indexBuffer.createBuffer(reinterpret_cast<const void*>(indexBuffer.data()), sizeof(unsigned int) * indexBuffer.size(), WGPUBufferUsage_Index | WGPUBufferUsage_Storage);
+	m_vertexBuffer.createBuffer(reinterpret_cast<const void*>(vertexBuffer.data()), sizeof(float) * vertexBuffer.size(), WGPUBufferUsage_Vertex | WGPUBufferUsage_Storage | WGPUBufferUsage_CopySrc);
+	m_indexBuffer.createBuffer(reinterpret_cast<const void*>(indexBuffer.data()), sizeof(unsigned int) * indexBuffer.size(), WGPUBufferUsage_Index | WGPUBufferUsage_Storage | WGPUBufferUsage_CopySrc);
 	m_texture.loadFromMemory(texture.first, texture.second);
 }
 
@@ -159,7 +159,7 @@ void WgpMesh::addColor(std::array<float, 4> color) {
 
 		wgpuBufferMapAsync(stagingBuffer.getBuffer(), WGPUMapMode_Read, 0u, wgpuBufferGetSize(stagingBuffer.getBuffer()), OnMapIndexBuffer, (void*)&userdata);			
 		while (!std::get<0>(userdata)) {
-			emscripten_sleep(100);
+			emscripten_sleep(10);
 		}
 		
 		stagingBuffer.markForDelete();
@@ -185,7 +185,7 @@ void WgpMesh::addColor(std::array<float, 4> color) {
 
 		wgpuBufferMapAsync(stagingBuffer.getBuffer(), WGPUMapMode_Read, 0u, wgpuBufferGetSize(stagingBuffer.getBuffer()), OnMapColorToBuffer, (void*)&userdata);			
 		while (!std::get<0>(userdata)) {
-			emscripten_sleep(100);
+			emscripten_sleep(10);
 		}
 		
 		stagingBuffer.markForDelete();
@@ -229,7 +229,7 @@ void WgpMesh::draw(const WGPURenderPassEncoder& renderPassEncoder, uint32_t inst
 	wgpuRenderPassEncoderDrawIndexed(renderPassEncoder, m_drawCount, instanceCount, 0u, 0u, 0u);
 }
 
-void WgpMesh::OnMapColorToBuffer(WGPUBufferMapAsyncStatus status, void * userdata){
+void WgpMesh::OnMapColorToBuffer(WGPUBufferMapAsyncStatus status, void* userdata){
 	if (status == WGPUBufferMapAsyncStatus_Success) {	
 		std::tuple<bool, WgpBuffer, WgpBuffer&, size_t, std::array<float, 4>>* userData = static_cast<std::tuple<bool, WgpBuffer, WgpBuffer&, size_t, std::array<float, 4>>*>(userdata);
 		WgpBuffer& vertexBuffer = std::get<2>(*userData);
@@ -256,7 +256,7 @@ void WgpMesh::OnMapColorToBuffer(WGPUBufferMapAsyncStatus status, void * userdat
 	}
 }
 
-void WgpMesh::OnMapIndexBuffer(WGPUBufferMapAsyncStatus status, void * userdata){
+void WgpMesh::OnMapIndexBuffer(WGPUBufferMapAsyncStatus status, void* userdata){
 	if (status == WGPUBufferMapAsyncStatus_Success) {
 		std::tuple<bool, WgpBuffer, unsigned int&>* userData = static_cast<std::tuple<bool, WgpBuffer, unsigned int&>*>(userdata);
 		uint64_t size = wgpuBufferGetSize(std::get<1>(*userData).getBuffer()) / sizeof(unsigned int);

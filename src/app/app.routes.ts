@@ -19,6 +19,7 @@ import {PrimitivePickingComponent} from './pages/webgpu/primitive-picking/primit
 import {StencilMaskComponent} from './pages/webgpu/stencil-mask/stencil-mask.component';
 import {DefferedRenderingComponent} from './pages/webgpu/deffered-rendering/deffered-rendering.component';
 import {VolumeRenderingComponent} from './pages/webgpu/volume-rendering/volume-rendering.component';
+import {OcclusionQueryComponent} from './pages/webgpu/occlusion-query/occlusion-query.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -116,8 +117,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/occlusion-query', 
+    component: OcclusionQueryComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/volume-rendering'
+    redirectTo: 'webgpu/occlusion-query'
   } 
 ];
