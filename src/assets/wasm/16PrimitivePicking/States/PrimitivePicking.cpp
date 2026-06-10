@@ -16,10 +16,10 @@ PrimitivePicking::PrimitivePicking(StateMachine& machine) : State(machine, State
 
 	wgpSetSurfaceColorFormat(WGPUTextureFormat::WGPUTextureFormat_BGRA8Unorm, Application::OnSurfaceChange);
 
-	wgpVertexAttribute(VL_0).push_back(WGPUVertexAttribute{ WGPUVertexFormat_Float32x3, 0u, 0u });
-	wgpVertexAttribute(VL_0).push_back(WGPUVertexAttribute{ WGPUVertexFormat_Float32x3, 3 * sizeof(float), 1u });
-	wgpVertexAttribute(VL_0).push_back(WGPUVertexAttribute{ WGPUVertexFormat_Uint32, 6 * sizeof(float), 2u });
-	wgpVertexBufferLayout(VL_0).push_back(WGPUVertexBufferLayout{ 6u * sizeof(float) + sizeof(unsigned int), WGPUVertexStepMode_Vertex, wgpVertexAttribute(VL_0).size(), wgpVertexAttribute(VL_0).data()});
+	wgpVertexAttribute(VL_0).push_back(WGPUVertexAttribute{NULL, WGPUVertexFormat_Float32x3, 0u, 0u });
+	wgpVertexAttribute(VL_0).push_back(WGPUVertexAttribute{NULL, WGPUVertexFormat_Float32x3, 3 * sizeof(float), 1u });
+	wgpVertexAttribute(VL_0).push_back(WGPUVertexAttribute{NULL, WGPUVertexFormat_Uint32, 6 * sizeof(float), 2u });
+	wgpVertexBufferLayout(VL_0).push_back(WGPUVertexBufferLayout{ NULL, WGPUVertexStepMode_Vertex, 6u * sizeof(float) + sizeof(unsigned int), wgpVertexAttribute(VL_0).size(), wgpVertexAttribute(VL_0).data()});
 
 	m_camera.perspective(glm::radians(72.0f), static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 2000.0f);
 	m_camera.orthographic(0.0f, static_cast<float>(Application::Width), 0.0f, static_cast<float>(Application::Height), -1.0f, 1.0f);
@@ -74,7 +74,7 @@ PrimitivePicking::PrimitivePicking(StateMachine& machine) : State(machine, State
 
 	wgpContext.addSahderModule("PICK_DEBUG", PICK_DEBUG_WGSL, true);
 	wgpContext.createRenderPipeline("PICK_DEBUG", "RP_PICK_DEBUG", VL_NONE, std::bind(&PrimitivePicking::OnBindGroupLayoutsDebug, this));
-
+    std::cout << "----------" << std::endl;
 	m_computeBindGroup = createComputeBindGroup();
 	m_debugBindGroup = createDebugBindGroup();
 

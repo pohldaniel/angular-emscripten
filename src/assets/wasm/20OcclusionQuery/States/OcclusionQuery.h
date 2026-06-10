@@ -65,5 +65,5 @@ private:
 	static float PingPongSine(float t);
 	static void InitScene(Scene& scene, Shape& shape, const WgpBuffer& uniformBuffer, std::array<float, 4> color);
 	static void UpdateScene(Scene& scene, const glm::vec3& position, float time);
-	static void OnMapBuffer(WGPUBufferMapAsyncStatus status, void* userdata);
+	static void OnMapBuffer(WGPUMapAsyncStatus status, WGPUStringView message, void* userdata1, void* userdata2);
 };

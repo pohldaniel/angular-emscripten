@@ -21,11 +21,11 @@ public:
 	void loadHDRIFromFile(const std::string& fileName, const bool flipVertical = false, const bool halfBPP = false);
 	void loadCubeFromFiles(std::string* fileNames, const bool flipVertical = false);
 
-	void createEmpty(uint32_t width, uint32_t height, uint32_t depth, WGPUTextureUsageFlags textureUsageFlags, WGPUTextureFormat textureFormat, uint32_t mipLevelCount = 1u);
+	void createEmpty(uint32_t width, uint32_t height, uint32_t depth, WGPUTextureUsage textureUsage, WGPUTextureFormat textureFormat, uint32_t mipLevelCount = 1u);
 	void resize(uint32_t width, uint32_t height);
 	void cleanup();
 	void markForDelete();
-	void setTextureUsage(WGPUTextureUsageFlags textureUsageFlags = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst);
+	void setTextureUsage(WGPUTextureUsage textureUsage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst);
 
 	const WGPUTexture& getTexture() const;
 	const WGPUTextureView& getTextureView() const;
@@ -64,5 +64,5 @@ private:
 	unsigned int m_height;
 	unsigned short m_channels;
 	bool m_markForDelete;
-	WGPUTextureUsageFlags m_textureUsage;
+	WGPUTextureUsage m_textureUsage;
 };

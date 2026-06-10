@@ -165,6 +165,7 @@ void WgpMesh::addColor(std::array<float, 4> color) {
 
 		wgpuBufferMapAsync(stagingBuffer.getBuffer(), WGPUMapMode_Read, 0u, wgpuBufferGetSize(stagingBuffer.getBuffer()), bufferMapCallbackInfo);			
 		while (!std::get<0>(userdata)) {
+			wgpuInstanceProcessEvents(wgpContext.instance);
 			emscripten_sleep(10);
 		}
 		
@@ -196,6 +197,7 @@ void WgpMesh::addColor(std::array<float, 4> color) {
 
 		wgpuBufferMapAsync(stagingBuffer.getBuffer(), WGPUMapMode_Read, 0u, wgpuBufferGetSize(stagingBuffer.getBuffer()), bufferMapCallbackInfo);			
 		while (!std::get<0>(userdata)) {
+			wgpuInstanceProcessEvents(wgpContext.instance);
 			emscripten_sleep(10);
 		}
 		

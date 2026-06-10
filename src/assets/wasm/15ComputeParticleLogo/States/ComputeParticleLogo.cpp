@@ -16,11 +16,12 @@ ComputeParticleLogo::ComputeParticleLogo(StateMachine& machine) : State(machine,
 
 	wgpSetSurfaceColorFormat(WGPUTextureFormat::WGPUTextureFormat_BGRA8Unorm, Application::OnSurfaceChange);
 
-	wgpVertexAttribute(VL_0).push_back({WGPUVertexFormat_Float32x3, 0u, 0u});
-	wgpVertexAttribute(VL_0).push_back({WGPUVertexFormat_Float32x4, 4 * sizeof(float), 1u});
-	wgpVertexAttribute(VL_1).push_back({WGPUVertexFormat_Float32x2, 0u, 2u});
-	wgpVertexBufferLayout(VL_0).push_back({48u, WGPUVertexStepMode_Instance, wgpVertexAttribute(VL_0).size(), wgpVertexAttribute(VL_0).data()});
-	wgpVertexBufferLayout(VL_0).push_back({8u, WGPUVertexStepMode_Vertex,  wgpVertexAttribute(VL_1).size(), wgpVertexAttribute(VL_1).data()});
+	wgpVertexAttribute(VL_0).push_back(WGPUVertexAttribute{NULL, WGPUVertexFormat_Float32x3, 0u, 0u});
+	wgpVertexAttribute(VL_0).push_back(WGPUVertexAttribute{NULL, WGPUVertexFormat_Float32x4, 4 * sizeof(float), 1u});
+	wgpVertexAttribute(VL_1).push_back(WGPUVertexAttribute{NULL, WGPUVertexFormat_Float32x2, 0u, 2u});
+
+	wgpVertexBufferLayout(VL_0).push_back(WGPUVertexBufferLayout{NULL, WGPUVertexStepMode_Instance, 48u, wgpVertexAttribute(VL_0).size(), wgpVertexAttribute(VL_0).data()});
+	wgpVertexBufferLayout(VL_0).push_back(WGPUVertexBufferLayout{NULL, WGPUVertexStepMode_Vertex, 8u , wgpVertexAttribute(VL_1).size(), wgpVertexAttribute(VL_1).data()});
 
 	m_camera.perspective(glm::radians(72.0f), static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 2000.0f);
 	m_camera.orthographic(0.0f, static_cast<float>(Application::Width), 0.0f, static_cast<float>(Application::Height), -1.0f, 1.0f);

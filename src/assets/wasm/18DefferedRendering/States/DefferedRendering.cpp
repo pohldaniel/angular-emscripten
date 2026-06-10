@@ -95,8 +95,8 @@ DefferedRendering::DefferedRendering(StateMachine& machine) : State(machine, Sta
 		WGPUCompareFunction_Less,
 		{ WRITE_DEPTH | DEPTH_STENCIL_STATE | BLEND_STATE | FRAGMENT_STATE, BlendMode::ALPHA_BLENDING, WGPUTextureFormat_Undefined , WGPUCullMode_Undefined,  DEFAULT ,  
 		{ 
-			{ NULL, "canvasSizeWidth", static_cast<double>(Application::Width)   },
-			{ NULL, "canvasSizeHeight", static_cast<double>(Application::Height) } 
+			{ NULL, STRVIEW("canvasSizeWidth"), static_cast<double>(Application::Width) },
+			{ NULL, STRVIEW("canvasSizeHeight"), static_cast<double>(Application::Height) } 
 		} 
 		}
 	);

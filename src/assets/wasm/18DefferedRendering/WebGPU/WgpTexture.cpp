@@ -47,8 +47,8 @@ void WgpTexture::markForDelete() {
     m_markForDelete = true;
 }
 
-void  WgpTexture::setTextureUsage(WGPUTextureUsageFlags textureUsageFlags){
-    m_textureUsage = textureUsageFlags;
+void  WgpTexture::setTextureUsage(WGPUTextureUsage textureUsage){
+    m_textureUsage = textureUsage;
 }
 
 const WGPUTexture& WgpTexture::getTexture() const {
@@ -125,13 +125,13 @@ template<typename component_t>
 static void WriteMipMaps(WGPUTexture& texture, WGPUExtent3D textureSize, uint32_t mipLevelCount, component_t* pixelData, uint32_t layer = 0u, const bool halfBPP = false) {
     uint32_t channels = 4u;
 
-    WGPUImageCopyTexture destination = {};
+    WGPUTexelCopyTextureInfo destination = {};
     destination.texture = texture;
     destination.mipLevel = 0u;
     destination.origin = { 0u, 0u, layer };
     destination.aspect = WGPUTextureAspect_All;
 
-    WGPUTextureDataLayout source = {};
+    WGPUTexelCopyBufferLayout source = {};
     source.offset = 0u;
 
     // Create image data
@@ -301,7 +301,7 @@ void WgpTexture::loadFromFile(const std::string& fileName, uint32_t width, uint3
 
     WGPUTextureFormat viewFormat = WGPUTextureFormat::WGPUTextureFormat_R8Unorm;
     WGPUTextureDescriptor textureDescriptor = {};
-    textureDescriptor.label = "texture";
+    textureDescriptor.label = WGPU_STR("texture");
     textureDescriptor.dimension = WGPUTextureDimension::WGPUTextureDimension_3D;
     textureDescriptor.size = { width, height, depth };
     textureDescriptor.format = WGPUTextureFormat_R8Unorm;
@@ -315,13 +315,13 @@ void WgpTexture::loadFromFile(const std::string& fileName, uint32_t width, uint3
     }
     m_texture = wgpuDeviceCreateTexture(wgpContext.device, &textureDescriptor);
 
-    WGPUImageCopyTexture destination = {};
+    WGPUTexelCopyTextureInfo destination = {};
     destination.texture = m_texture;
     destination.mipLevel = 0u;
     destination.origin = { 0u, 0u, 0u };
     destination.aspect = WGPUTextureAspect_All;
 
-    WGPUTextureDataLayout source = {};
+    WGPUTexelCopyBufferLayout source = {};
     source.offset = 0u;
     source.bytesPerRow = width;
     source.rowsPerImage = height;
@@ -330,7 +330,7 @@ void WgpTexture::loadFromFile(const std::string& fileName, uint32_t width, uint3
     wgpuQueueWriteTexture(wgpContext.queue, &destination, imageData, width * height * depth, &source, &extent3D);
 
     WGPUTextureViewDescriptor textureViewDescriptor = {};
-    textureViewDescriptor.label = "texture_view";
+    textureViewDescriptor.label = WGPU_STR("texture_view");
     textureViewDescriptor.aspect = WGPUTextureAspect::WGPUTextureAspect_All;
     textureViewDescriptor.baseArrayLayer = 0u;
     textureViewDescriptor.arrayLayerCount = 1u;
@@ -499,12 +499,12 @@ void WgpTexture::loadCubeFromFiles(std::string* fileNames, const bool flipVertic
     m_textureView = wgpCreateTextureView(m_texture, WGPUTextureAspect::WGPUTextureAspect_All);
 }
 
-void WgpTexture::createEmpty(uint32_t width, uint32_t height, uint32_t depth, WGPUTextureUsageFlags textureUsageFlags, WGPUTextureFormat textureFormat, uint32_t mipLevelCount) {
+void WgpTexture::createEmpty(uint32_t width, uint32_t height, uint32_t depth, WGPUTextureUsage textureUsage, WGPUTextureFormat textureFormat, uint32_t mipLevelCount) {
     m_width = width;
     m_height = height;
     m_channels = 4u;
     m_format = textureFormat;
-    m_texture = wgpCreateTexture(m_width, m_height, depth, textureUsageFlags, textureFormat, mipLevelCount);
+    m_texture = wgpCreateTexture(m_width, m_height, depth, textureUsage, textureFormat, mipLevelCount);
     m_textureView = wgpCreateTextureView(m_texture, WGPUTextureAspect::WGPUTextureAspect_All);
 }
 
@@ -512,7 +512,7 @@ void WgpTexture::resize(uint32_t width, uint32_t height) {
     if (m_texture) {
         uint32_t mipLevelCount = wgpuTextureGetMipLevelCount(m_texture);
         uint32_t depth = wgpuTextureGetDepthOrArrayLayers(m_texture);
-        WGPUTextureUsageFlags textureUsageFlags = wgpuTextureGetUsage(m_texture);
+        WGPUTextureUsage textureUsage = wgpuTextureGetUsage(m_texture);
 
         wgpuTextureDestroy(m_texture);
         wgpuTextureRelease(m_texture);
@@ -521,7 +521,7 @@ void WgpTexture::resize(uint32_t width, uint32_t height) {
         m_width = width;
         m_height = height;
 
-        m_texture = wgpCreateTexture(m_width, m_height, depth, textureUsageFlags, m_format, mipLevelCount);
+        m_texture = wgpCreateTexture(m_width, m_height, depth, textureUsage, m_format, mipLevelCount);
         m_textureView = wgpCreateTextureView(m_texture, WGPUTextureAspect::WGPUTextureAspect_All);
     }
 }

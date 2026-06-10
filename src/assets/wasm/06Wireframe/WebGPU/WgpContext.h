@@ -9,6 +9,7 @@
 #endif // __EMSCRIPTEN__
 
 #define WGPU_STR(str) { str, sizeof(str) - 1 }
+#define STRVIEW(str) WGPUStringView{ str, sizeof(str) - 1 }
 
 enum VertexLayoutSlot {
 	VL_NONE,

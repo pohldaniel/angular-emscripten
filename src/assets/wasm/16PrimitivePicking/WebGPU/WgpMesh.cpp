@@ -157,8 +157,15 @@ void WgpMesh::addColor(std::array<float, 4> color) {
 		wgpuCommandBufferRelease(commandBuffer);
 		wgpuCommandEncoderRelease(commandEncoder);
 
-		wgpuBufferMapAsync(stagingBuffer.getBuffer(), WGPUMapMode_Read, 0u, wgpuBufferGetSize(stagingBuffer.getBuffer()), OnMapIndexBuffer, (void*)&userdata);			
+		WGPUBufferMapCallbackInfo bufferMapCallbackInfo = {};
+		bufferMapCallbackInfo.callback = OnMapIndexBuffer;
+		bufferMapCallbackInfo.mode = WGPUCallbackMode_AllowProcessEvents;
+		bufferMapCallbackInfo.userdata1 = &userdata;
+
+
+		wgpuBufferMapAsync(stagingBuffer.getBuffer(), WGPUMapMode_Read, 0u, wgpuBufferGetSize(stagingBuffer.getBuffer()), bufferMapCallbackInfo);			
 		while (!std::get<0>(userdata)) {
+			wgpuInstanceProcessEvents(wgpContext.instance);
 			emscripten_sleep(10);
 		}
 		
@@ -183,8 +190,14 @@ void WgpMesh::addColor(std::array<float, 4> color) {
 		wgpuCommandBufferRelease(commandBuffer);
 		wgpuCommandEncoderRelease(commandEncoder);
 
-		wgpuBufferMapAsync(stagingBuffer.getBuffer(), WGPUMapMode_Read, 0u, wgpuBufferGetSize(stagingBuffer.getBuffer()), OnMapColorToBuffer, (void*)&userdata);			
+		WGPUBufferMapCallbackInfo bufferMapCallbackInfo = {};
+		bufferMapCallbackInfo.callback = OnMapColorToBuffer;
+		bufferMapCallbackInfo.mode = WGPUCallbackMode_AllowProcessEvents;
+		bufferMapCallbackInfo.userdata1 = &userdata;
+
+		wgpuBufferMapAsync(stagingBuffer.getBuffer(), WGPUMapMode_Read, 0u, wgpuBufferGetSize(stagingBuffer.getBuffer()), bufferMapCallbackInfo);			
 		while (!std::get<0>(userdata)) {
+			wgpuInstanceProcessEvents(wgpContext.instance);
 			emscripten_sleep(10);
 		}
 		
@@ -229,49 +242,49 @@ void WgpMesh::draw(const WGPURenderPassEncoder& renderPassEncoder, uint32_t inst
 	wgpuRenderPassEncoderDrawIndexed(renderPassEncoder, m_drawCount, instanceCount, 0u, 0u, 0u);
 }
 
-void WgpMesh::OnMapColorToBuffer(WGPUBufferMapAsyncStatus status, void* userdata){
-	if (status == WGPUBufferMapAsyncStatus_Success) {	
-		std::tuple<bool, WgpBuffer, WgpBuffer&, size_t, std::array<float, 4>>* userData = static_cast<std::tuple<bool, WgpBuffer, WgpBuffer&, size_t, std::array<float, 4>>*>(userdata);
-		WgpBuffer& vertexBuffer = std::get<2>(*userData);
-		size_t stride = std::get<3>(*userData);
+void WgpMesh::OnMapColorToBuffer(WGPUMapAsyncStatus status, WGPUStringView message, void* userdata1, void* userdata2){
+	if (status == WGPUMapAsyncStatus_Success) {	
+		std::tuple<bool, WgpBuffer, WgpBuffer&, size_t, std::array<float, 4>>* userdata = static_cast<std::tuple<bool, WgpBuffer, WgpBuffer&, size_t, std::array<float, 4>>*>(userdata1);
+		WgpBuffer& vertexBuffer = std::get<2>(*userdata);
+		size_t stride = std::get<3>(*userdata);
 		uint64_t size = wgpuBufferGetSize(vertexBuffer.getBuffer());
 		uint64_t floatCount = size / (sizeof(float));
-		std::array<float, 4> color = std::get<4>(*userData);
+		std::array<float, 4> color = std::get<4>(*userdata);
 
 		std::vector<float> vertices;
-		float* bufferData = (float*)wgpuBufferGetConstMappedRange(std::get<1>(*userData).getBuffer(), 0u, wgpuBufferGetSize(std::get<1>(*userData).getBuffer()));
+		float* bufferData = (float*)wgpuBufferGetConstMappedRange(std::get<1>(*userdata).getBuffer(), 0u, wgpuBufferGetSize(std::get<1>(*userdata).getBuffer()));
 		for (uint64_t i = 0; i < floatCount; i++) {
 			vertices.push_back(bufferData[i]);
 			if ((i + 1) % stride == 0) {
 				vertices.push_back(color[0]); vertices.push_back(color[1]); vertices.push_back(color[2]); vertices.push_back(color[3]);
 			}
 		}
-		wgpuBufferUnmap(std::get<1>(*userData).getBuffer());
+		wgpuBufferUnmap(std::get<1>(*userdata).getBuffer());
 
 		vertexBuffer.cleanup();
 		vertexBuffer.createBuffer(reinterpret_cast<const void*>(vertices.data()), sizeof(float) * vertices.size(), WGPUBufferUsage_Vertex | WGPUBufferUsage_Storage | WGPUBufferUsage_CopySrc);
-		std::get<0>(*userData) = true;
+		std::get<0>(*userdata) = true;
 	}else {
-		printf("Buffer error:");
+		printf("Buffer message: %s", message.data);
 	}
 }
 
-void WgpMesh::OnMapIndexBuffer(WGPUBufferMapAsyncStatus status, void* userdata){
-	if (status == WGPUBufferMapAsyncStatus_Success) {
-		std::tuple<bool, WgpBuffer, unsigned int&>* userData = static_cast<std::tuple<bool, WgpBuffer, unsigned int&>*>(userdata);
-		uint64_t size = wgpuBufferGetSize(std::get<1>(*userData).getBuffer()) / sizeof(unsigned int);
+void WgpMesh::OnMapIndexBuffer(WGPUMapAsyncStatus status, WGPUStringView message, void* userdata1, void* userdata2){
+	if (status == WGPUMapAsyncStatus_Success) {
+		std::tuple<bool, WgpBuffer, unsigned int&>* userdata = static_cast<std::tuple<bool, WgpBuffer, unsigned int&>*>(userdata1);
+		uint64_t size = wgpuBufferGetSize(std::get<1>(*userdata).getBuffer()) / sizeof(unsigned int);
 
-		unsigned int* bufferData = (unsigned int*)wgpuBufferGetConstMappedRange(std::get<1>(*userData).getBuffer(), 0u, wgpuBufferGetSize(std::get<1>(*userData).getBuffer()));
+		unsigned int* bufferData = (unsigned int*)wgpuBufferGetConstMappedRange(std::get<1>(*userdata).getBuffer(), 0u, wgpuBufferGetSize(std::get<1>(*userdata).getBuffer()));
 
 		unsigned int maxIndex = bufferData[0];
 		for (uint64_t i = 1u; i < size; i++) {
 			maxIndex = std::max(maxIndex, bufferData[i]);
 		}
 		
-		wgpuBufferUnmap(std::get<1>(*userData).getBuffer());
-		std::get<0>(*userData) = true;
-		std::get<2>(*userData) = maxIndex;
+		wgpuBufferUnmap(std::get<1>(*userdata).getBuffer());
+		std::get<0>(*userdata) = true;
+		std::get<2>(*userdata) = maxIndex;
 	} else {
-		printf("Buffer error:");
+		printf("Buffer message: %s", message.data);
 	}	
 }

@@ -124,6 +124,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'webgpu/occlusion-query'
+    redirectTo: 'webgpu/primitive-picking'
   } 
 ];

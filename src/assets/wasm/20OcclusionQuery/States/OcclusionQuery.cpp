@@ -209,8 +209,14 @@ void OcclusionQuery::OnDraw(const WGPUCommandEncoder& commandEncoder, const WGPU
 void OcclusionQuery::OnPostDraw() {
 	if (wgpuBufferGetMapState(m_resultBuffer.getBuffer()) == WGPUBufferMapState_Unmapped) {
 		std::tuple<bool, WgpBuffer&, std::vector<Scene>&> userdata = {false, m_resultBuffer, m_scenes};
-		wgpuBufferMapAsync(m_resultBuffer.getBuffer(), WGPUMapMode_Read, 0u, wgpuBufferGetSize(m_resultBuffer.getBuffer()), OnMapBuffer, (void*)&userdata);
+		WGPUBufferMapCallbackInfo bufferMapCallbackInfo = {};
+		bufferMapCallbackInfo.callback = OnMapBuffer;
+		bufferMapCallbackInfo.mode = WGPUCallbackMode_AllowProcessEvents;
+		bufferMapCallbackInfo.userdata1 = &userdata;
+
+		wgpuBufferMapAsync(m_resultBuffer.getBuffer(), WGPUMapMode_Read, 0u, wgpuBufferGetSize(m_resultBuffer.getBuffer()), bufferMapCallbackInfo);
 		while (!std::get<0>(userdata)) {
+			wgpuInstanceProcessEvents(wgpContext.instance);
 			emscripten_sleep(5);
 		}
 	}
@@ -340,7 +346,7 @@ std::vector<WGPUBindGroupLayout> OcclusionQuery::OnBindGroupLayouts() {
 
 WGPUQuerySet OcclusionQuery::createQuerySet() {
 	WGPUQuerySetDescriptor querySetDescriptor = {};
-	querySetDescriptor.label = "query_set";
+	querySetDescriptor.label = WGPU_STR("query_set");;
 	querySetDescriptor.count = 6u;
 	querySetDescriptor.type = WGPUQueryType_Occlusion;
 
@@ -386,19 +392,19 @@ void OcclusionQuery::UpdateScene(Scene& scene, const glm::vec3& position, float 
 	wgpuQueueWriteBuffer(wgpContext.queue, scene.uniformBuffer.getBuffer(), 0, &transform.getTransformationMatrix(), sizeof(glm::mat4));
 }
 
-void OcclusionQuery::OnMapBuffer(WGPUBufferMapAsyncStatus status, void* userdata) {
-	if (status == WGPUBufferMapAsyncStatus_Success) {
-		std::tuple<bool, WgpBuffer&, std::vector<Scene>&>* userData = static_cast<std::tuple<bool, WgpBuffer&, std::vector<Scene>&>*>(userdata);
-		WgpBuffer& buffer = std::get<1>(*userData);
-		std::vector<Scene>& scenes = std::get<2>(*userData);
+void OcclusionQuery::OnMapBuffer(WGPUMapAsyncStatus status, WGPUStringView message, void* userdata1, void* userdata2) {
+	if (status == WGPUMapAsyncStatus_Success) {
+		std::tuple<bool, WgpBuffer&, std::vector<Scene>&>* userdata = static_cast<std::tuple<bool, WgpBuffer&, std::vector<Scene>&>*>(userdata1);
+		WgpBuffer& buffer = std::get<1>(*userdata);
+		std::vector<Scene>& scenes = std::get<2>(*userdata);
 		uint64_t const* mapping = (uint64_t*)wgpuBufferGetConstMappedRange(buffer.getBuffer(), 0u, 6u * sizeof(uint64_t));
 		for (uint32_t i = 0; i < 6u; ++i) {
 			scenes[i].isVisible = mapping[i] > 0;
 		}
 
 		wgpuBufferUnmap(buffer.getBuffer());
-		std::get<0>(*userData) = true;
+		std::get<0>(*userdata) = true;
 	}else {
-		printf("Buffer error:");
+		printf("Buffer error: %s", message.data);
 	}
 }

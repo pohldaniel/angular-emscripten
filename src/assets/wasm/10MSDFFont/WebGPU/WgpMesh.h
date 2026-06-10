@@ -60,6 +60,6 @@ private:
 	std::string m_bindGroupsSlot;
 	bool m_markForDelete;	
 
-	static void OnMapColorToBuffer(WGPUBufferMapAsyncStatus status, void* userdata);
-	static void OnMapIndexBuffer(WGPUBufferMapAsyncStatus status, void* userdata);
+	static void OnMapColorToBuffer(WGPUMapAsyncStatus status, WGPUStringView message, void* userdata1, void* userdata2);
+	static void OnMapIndexBuffer(WGPUMapAsyncStatus status, WGPUStringView message, void* userdata1, void* userdata2);
 };
