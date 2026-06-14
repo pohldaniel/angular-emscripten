@@ -34,11 +34,10 @@ int main(int argc, const char* argv[]) {
 	float fixedDeltaTime = 0.0f;
   Application application(deltaTime, fixedDeltaTime);
 
-  //while(application.isRunning()){
-  //  application.update();
-  //  application.render();
-  //}
-
-  emscripten_set_main_loop_arg(Application::MessageLopp, &application, 0, true);
+ #ifdef __EMSCRIPTEN__
+  emscripten_set_main_loop_arg(Application::MessageLoop, &application, 0, true);
+#else
+  while(application.isRunning()){}
+#endif
   return 0;
 }

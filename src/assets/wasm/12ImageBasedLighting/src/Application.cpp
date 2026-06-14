@@ -30,8 +30,13 @@ void Application::MessageLopp(void *arg) {
   Time = glfwGetTime();
   application->dt = float(Time - application->last);
   application->last = Time;
+  application->accumulator = application->dt > FIXED_STEP * 2.0f ? application->accumulator + FIXED_STEP: application->accumulator + application->dt;
 
-  application->messageLopp();
+  while(application->accumulator >= FIXED_STEP) {
+    application->fdt = FIXED_STEP;
+    application->fixedUpdate();
+    application->accumulator -= FIXED_STEP;
+  }
 }
 
 Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
@@ -76,15 +81,15 @@ void Application::initImGUI(){
 	ImGui::CreateContext();
 	
 	ImGuiIO& io = ImGui::GetIO();
-  io.IniFilename = NULL;
-  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-  io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+	io.IniFilename = NULL;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
 	ImGui_ImplWGPU_InitInfo initInfo = {};
 	initInfo.Device = wgpContext.device;
 	initInfo.RenderTargetFormat = wgpContext.colorformat;
 	initInfo.DepthStencilFormat = wgpContext.depthformat;
-  initInfo.PipelineMultisampleState.count = wgpContext.msaaSampleCount;
+	initInfo.PipelineMultisampleState.count = wgpContext.msaaSampleCount;
 
 	ImGui_ImplGlfw_InitForOther(Window, true);
 	ImGui_ImplWGPU_Init(&initInfo);
@@ -100,9 +105,13 @@ void Application::initStates(){
     Machine->addStateAtTop(new ImageBasedLighting(*Machine));
 }
 
-void Application::messageLopp(){
+void Application::fixedUpdate(){
+  Machine->fixedUpdate();
+}
+
+void Application::update(){
   glfwPollEvents();
-	Mouse::instance().update();
+  Mouse::instance().update();
   Machine->update();
   Machine->render();
 }

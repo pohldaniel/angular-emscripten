@@ -25,14 +25,21 @@ void glfwWindowScroll(GLFWwindow* window, double xoffset, double yoffset);
 void glfwWindowResizeCallback(GLFWwindow* window, int width, int height);
 void glfwFramebufferResizeCallback(GLFWwindow* window, int width, int height);
 
-void Application::MessageLopp(void *arg) {
+void Application::MessageLoop(void *arg) {
   Application* application  = reinterpret_cast<Application*>(arg);
 
   Time = glfwGetTime();
   application->dt = float(Time - application->last);
   application->last = Time;
+  application->accumulator = application->dt > FIXED_STEP * 2.0f ? application->accumulator + FIXED_STEP: application->accumulator + application->dt;
 
-  application->messageLopp();
+  while(application->accumulator >= FIXED_STEP) {
+    application->fdt = FIXED_STEP;
+    application->fixedUpdate();
+    application->accumulator -= FIXED_STEP;
+  }
+
+  application->update();
 }
 
 Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
@@ -96,11 +103,15 @@ void Application::initStates(){
 }
 
 bool Application::isRunning(){
-  messageLopp();
+  MessageLoop(this);
   return glfwWindowShouldClose(Window);
 }
 
-void Application::messageLopp(){
+void Application::fixedUpdate(){
+  Machine->fixedUpdate();
+}
+
+void Application::update(){
     glfwPollEvents();
     Mouse::instance().update();
     Machine->update();

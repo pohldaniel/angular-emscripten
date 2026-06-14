@@ -1,7 +1,9 @@
 #pragma once
-#include <iostream>
+
 #include <webgpu/webgpu.h>
 #include <States/StateMachine.h>
+
+#define FIXED_STEP 0.0166666666666667f
 
 struct GLFWwindow;
 class Application {
@@ -20,7 +22,7 @@ public:
 
 	bool isRunning();
 
-	static void MessageLopp(void *arg);
+	static void MessageLoop(void *arg);
 	static void Resize(uint32_t width, uint32_t height);
 	static bool IsInitialized();
 	static void OnSurfaceChange();
@@ -36,11 +38,14 @@ private:
 	void initWebGPU();
 	void initImGUI();
 	void initStates();
-	void messageLopp();
+	
+	void fixedUpdate();
+	void update();
 	
 	float& fdt;
 	float& dt;
 	double last;
+	double accumulator;
 
 	static StateMachine* Machine;
 	static double Time;
