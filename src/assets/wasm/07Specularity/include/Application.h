@@ -38,7 +38,9 @@ private:
 	void initWebGPU();
 	void initImGUI();
 	void initStates();
-	void messageLopp();
+	
+	void fixedUpdate();
+	void update();
 	
 	float& fdt;
 	float& dt;

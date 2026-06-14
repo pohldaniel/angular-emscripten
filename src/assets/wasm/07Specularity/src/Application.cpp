@@ -24,7 +24,7 @@ void glfwWindowScroll(GLFWwindow* window, double xoffset, double yoffset);
 void glfwWindowResizeCallback(GLFWwindow* window, int width, int height);
 void glfwFramebufferResizeCallback(GLFWwindow* window, int width, int height);
 
-void Application::MessageLopp(void *arg) {
+void Application::MessageLoop(void *arg) {
   Application* application  = reinterpret_cast<Application*>(arg);
 
   Time = glfwGetTime();
@@ -98,7 +98,7 @@ void Application::initImGUI(){
 }
 
 bool Application::isRunning(){
-  messageLopp();
+  MessageLoop(this);
   return glfwWindowShouldClose(Window);
 }
 

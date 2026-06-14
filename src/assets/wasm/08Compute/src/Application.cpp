@@ -24,7 +24,7 @@ void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos);
 void glfwWindowResizeCallback(GLFWwindow* window, int width, int height);
 void glfwFramebufferResizeCallback(GLFWwindow* window, int width, int height);
 
-void Application::MessageLopp(void *arg) {
+void Application::MessageLoop(void *arg) {
   Application* application  = reinterpret_cast<Application*>(arg);
 
   Time = glfwGetTime();
@@ -37,6 +37,8 @@ void Application::MessageLopp(void *arg) {
     application->fixedUpdate();
     application->accumulator -= FIXED_STEP;
   }
+
+  application->update();
 }
 
 Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
@@ -96,7 +98,7 @@ void Application::initImGUI() {
 }
 
 bool Application::isRunning(){
-  messageLopp();
+  MessageLoop(this);
   return glfwWindowShouldClose(Window);
 }
 

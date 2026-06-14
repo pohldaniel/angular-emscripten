@@ -20,6 +20,7 @@ import {StencilMaskComponent} from './pages/webgpu/stencil-mask/stencil-mask.com
 import {DefferedRenderingComponent} from './pages/webgpu/deffered-rendering/deffered-rendering.component';
 import {VolumeRenderingComponent} from './pages/webgpu/volume-rendering/volume-rendering.component';
 import {OcclusionQueryComponent} from './pages/webgpu/occlusion-query/occlusion-query.component';
+import {VideoDecodeComponent} from './pages/webgpu/video-decode/video-decode.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -122,8 +123,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/video-decode', 
+    component: VideoDecodeComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/occlusion-query'
+    redirectTo: 'webgpu/video-decode'
   } 
 ];
