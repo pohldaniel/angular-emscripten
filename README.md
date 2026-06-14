@@ -1,6 +1,6 @@
 # angular-emscripten
 
-This repository shows how to integrate emscripten wasm-modules inside an angular 21 application. The modules are compiled with emscripten version 3.1.74 under Windows 11. There .bat files which I have used for compiling the examples. For building libfreeimge.a have a look at https://github.com/pohldaniel/FreeImage_emscripten and run compile.bat and link.bat. Some useful repositories I have visited as well https://github.com/cwoffenden/hello-webgpu, https://github.com/boyanio/angular-wasm and https://github.com/eliemichel/LearnWebGPU-Code/tree/main, https://github.com/samdauwe/webgpu-native-examples.git. 
+This repository shows how to integrate emscripten wasm-modules inside an angular 21 application. The modules are compiled with emscripten version 6.0.0 under Windows 11. There .bat files which I have used for compiling the examples. For building libfreeimge.a have a look at https://github.com/pohldaniel/FreeImage_emscripten and run compile.bat and link.bat. Some useful repositories I have visited as well https://github.com/cwoffenden/hello-webgpu, https://github.com/boyanio/angular-wasm and https://github.com/eliemichel/LearnWebGPU-Code/tree/main, https://github.com/samdauwe/webgpu-native-examples.git. 
 
 Try it out: https://pohldaniel.github.io/angular-emscripten/
 
@@ -28,3 +28,9 @@ an go with this.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; emcmake cmake ..  -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DASSIMP_BUILD_ZLIB=OFF -DASSIMP_BUILD_TESTS=OFF -DASSIMP_WARNINGS_AS_ERRORS=OFF -DASSIMP_BUILD_USE_CCACHE=OFF -DASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT=OFF -DASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT=OFF -DASSIMP_BUILD_GLTF_IMPORTER=ON -DASSIMP_BUILD_OBJ_IMPORTER=ON -DASSIMP_BUILD_COLLADA_IMPORTER=ON -DASSIMP_BUILD_FBX_IMPORTER=ON -DASSIMP_BUILD_PLY_IMPORTER=ON  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;emmake make  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;emmake make install
+
+For compiling FFMPEG I have used Vagrant installed "emscripten" and "make" there and used the following configuration  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; emconfigure ./configure --cc=emcc --cxx=em++ --ar=emar --target-os=none --disable-x86asm --disable-inline-asm --disable-stripping --disable-doc --disable-debug --disable-shared --disable-programs --disable-ffplay --disable-ffprobe --disable-ffmpeg --disable-sdl2 --enable-static --enable-gpl --enable-avcodec --enable-avformat --enable-avfilter --enable-avdevice --enable-avutil --enable-swresample --enable-swscale  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;emmake make  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;make install DESTDIR=installed  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cp installed /vagrant -r
