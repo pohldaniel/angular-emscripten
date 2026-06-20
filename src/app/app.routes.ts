@@ -21,6 +21,7 @@ import {DefferedRenderingComponent} from './pages/webgpu/deffered-rendering/deff
 import {VolumeRenderingComponent} from './pages/webgpu/volume-rendering/volume-rendering.component';
 import {OcclusionQueryComponent} from './pages/webgpu/occlusion-query/occlusion-query.component';
 import {VideoDecodeComponent} from './pages/webgpu/video-decode/video-decode.component';
+import {RenderBundlesComponent} from './pages/webgpu/render-bundles/render-bundles.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -128,8 +129,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/render-bundles', 
+    component: RenderBundlesComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/video-decode'
+    redirectTo: 'webgpu/render-bundles'
   } 
 ];

@@ -75,7 +75,8 @@ export class MenuComponent implements OnInit{
       this.router.url == '/webgpu/deffered-rendering' ||
       this.router.url == '/webgpu/volume-rendering' ||
       this.router.url == '/webgpu/occlusion-query' ||
-      this.router.url == '/webgpu/video-decode')
+      this.router.url == '/webgpu/video-decode' ||
+      this.router.url == '/webgpu/render-bundles')
     {
       this.targetedSubmenu = 'three';
       this.storeTargetedSubmenu = 'three';     
@@ -110,7 +111,8 @@ export class MenuComponent implements OnInit{
     .set(Math.pow(2, 17), {target : '/webgpu/deffered-rendering', description: 'Deffered Rendering', descriptionLineBreak: '', class : 'three-thirteen', index : 17} as MenuItem)
     .set(Math.pow(2, 18), {target : '/webgpu/volume-rendering', description: 'Volume Rendering', descriptionLineBreak: '', class : 'three-fourteen', index : 18} as MenuItem)
     .set(Math.pow(2, 19), {target : '/webgpu/occlusion-query', description: 'Occlusion Query', descriptionLineBreak: '', class : 'three-fifteen', index : 19} as MenuItem)
-    .set(Math.pow(2, 20), {target : '/webgpu/video-decode', description: 'Video Decode', descriptionLineBreak: '', class : 'three-sixteen', index : 20} as MenuItem);
+    .set(Math.pow(2, 20), {target : '/webgpu/video-decode', description: 'Video Decode', descriptionLineBreak: '', class : 'three-sixteen', index : 20} as MenuItem)
+    .set(Math.pow(2, 21), {target : '/webgpu/render-bundles', description: 'Render Bundles', descriptionLineBreak: '', class : 'three-seventeen', index : 21} as MenuItem);
     
     for(let key of map.keys()) {
       if((this.settings.favorites | key) == this.settings.favorites){

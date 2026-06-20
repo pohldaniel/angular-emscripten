@@ -15,8 +15,6 @@
 #define posix_memalign(p, a, s) (((*(p)) = std::aligned_alloc((a), (s))), *(p) ?0 :errno)
 
 VideoDecode::VideoDecode(StateMachine& machine) : State(machine, States::VIDEO_DECODE) {
-	Mouse::instance().attach(Application::Window, false, true);
-
 	wgpSetSurfaceColorFormat(WGPUTextureFormat::WGPUTextureFormat_BGRA8Unorm, Application::OnSurfaceChange);
 	wgpSetSurfaceDepthFormat(WGPUTextureFormat::WGPUTextureFormat_Depth24Plus, Application::OnSurfaceChange);
 
@@ -46,7 +44,6 @@ VideoDecode::VideoDecode(StateMachine& machine) : State(machine, States::VIDEO_D
 }
 
 VideoDecode::~VideoDecode() {
-	Mouse::instance().detach();
 	m_texture.markForDelete();
 	wgpuBindGroupRelease(m_bindGroup);
 }
@@ -130,23 +127,11 @@ void VideoDecode::OnDraw(const WGPUCommandEncoder& commandEncoder, const WGPURen
 }
 
 void VideoDecode::OnMouseButtonDown(const Event::MouseButtonEvent& event) {
-	if (event.button == Event::MouseButtonEvent::BUTTON_LEFT) {
-		m_trackball.mouse(TrackBall::Button::ELeftButton, TrackBall::Modifier::ENoModifier, true, event.x, event.y);
-		Mouse::instance().detach();	
-	}
-
-	if (event.button == Event::MouseButtonEvent::BUTTON_RIGHT)
-		Mouse::instance().attach(Application::Window, true, true, true);
+	
 }
 
 void VideoDecode::OnMouseButtonUp(const Event::MouseButtonEvent& event) {
-	if (event.button == Event::MouseButtonEvent::BUTTON_LEFT) {
-		m_trackball.mouse(TrackBall::Button::ELeftButton, TrackBall::Modifier::ENoModifier, false, event.x, event.y);
-		Mouse::instance().attach(Application::Window, false, true);
-	} 
-
-	if (event.button == Event::MouseButtonEvent::BUTTON_RIGHT)
-		Mouse::instance().attach(Application::Window, false, false, true);
+	
 }
 
 void VideoDecode::OnMouseMotion(const Event::MouseMoveEvent& event) {
