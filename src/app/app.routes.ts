@@ -136,6 +136,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'webgpu/deferred-rendering'
+    redirectTo: 'webgpu/render-bundles'
   } 
 ];

@@ -526,7 +526,7 @@ void WgpTexture::resize(uint32_t width, uint32_t height) {
     }
 }
 
-unsigned char* WgpTexture::LoadFromFile(std::string fileName, const bool flipVertical, const short alphaChannel) {
+unsigned char* WgpTexture::LoadFromFile(const std::string& fileName, const bool flipVertical, const short alphaChannel) {
     std::filesystem::path filePath = fileName;
 
     FreeImage_Initialise();
@@ -554,7 +554,7 @@ unsigned char* WgpTexture::LoadFromFile(std::string fileName, const bool flipVer
     return pixels;
 }
 
-unsigned char* WgpTexture::LoadFromFile(std::string fileName, uint32_t& width, uint32_t& height, const bool flipVertical, const short alphaChannel) {
+unsigned char* WgpTexture::LoadFromFile(const std::string& fileName, uint32_t& width, uint32_t& height, const bool flipVertical, const short alphaChannel) {
     std::filesystem::path filePath = fileName;
 
     FreeImage_Initialise();
