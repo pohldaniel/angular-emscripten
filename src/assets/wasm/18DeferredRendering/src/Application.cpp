@@ -5,7 +5,7 @@
 #include <imgui_impl_glfw.h>
 
 #include <WebGPU/WgpContext.h>
-#include <States/DefferedRendering.h>
+#include <States/DeferredRendering.h>
 
 #include "Application.h"
 #include "Mouse.h"
@@ -104,7 +104,7 @@ bool Application::isRunning(){
 
 void Application::initStates(){
     Machine = new StateMachine(dt, fdt);
-    Machine->addStateAtTop(new DefferedRendering(*Machine));
+    Machine->addStateAtTop(new DeferredRendering(*Machine));
 }
 
 void Application::fixedUpdate(){

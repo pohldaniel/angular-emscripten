@@ -36,7 +36,7 @@ emcc^
  WebGPU/WgpFontRenderer.cpp^
  WebGPU/WgpRenderer.cpp^
  states/StateMachine.cpp^
- states/DefferedRendering.cpp^
+ states/DeferredRendering.cpp^
  libimgui.a^
  ../lib/libfreeimage.a^
  ../lib/libassimp.a^
@@ -45,5 +45,5 @@ emcc^
  -Wall -Wno-return-type-c-linkage -Wno-missing-braces -Wunused-result^
  -DFREEIMAGE_LIB -DWEBGPU_BACKEND=WGPU^
  -o webgpu.js -std=c++17 -Os --use-port=contrib.glfw3 --use-port=emdawnwebgpu --preload-file res/shader --preload-file res/models -s ASYNCIFY -s ASSERTIONS -s TOTAL_MEMORY=67108864 -s ALLOW_MEMORY_GROWTH=1 -s "EXPORTED_FUNCTIONS=['_main']" -s "EXPORTED_RUNTIME_METHODS=['ccall']" -s MODULARIZE=1^
- -s EXPORT_NAME='DefferedRenderingModule'^
+ -s EXPORT_NAME='DeferredRenderingModule'^
  && exit

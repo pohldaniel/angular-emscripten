@@ -12,7 +12,7 @@
 #include "Transform.h"
 #include "AssimpModel.h"
 
-#define DEFFERED_WGSL             "@vertex\n \
+#define DEFERRED_WGSL             "@vertex\n \
                                    fn vs_main(@builtin(vertex_index) VertexIndex : u32) -> @builtin(position) vec4<f32> {\n \
                                        const pos = array(                                                                \n \
                                            vec2(-1.0, -1.0), vec2(1.0, -1.0), vec2(-1.0, 1.0),                           \n \
@@ -95,7 +95,7 @@
                                        return vec4(result, 1.0);                                                                                         \n \
                                    }"
 
-#define DEFFERED_GBUFFER_WGSL      "struct Uniforms {                                                                                                            \n \
+#define DEFERRED_GBUFFER_WGSL      "struct Uniforms {                                                                                                            \n \
                                         modelMatrix : mat4x4<f32>,                                                                                               \n \
                                         normalModelMatrix : mat4x4<f32>,                                                                                         \n \
                                     }                                                                                                                            \n \
@@ -142,7 +142,7 @@
                                         return output;                                                                                                           \n \
                                     }"
 
-#define DEFFERED_COMPUTE_WGSL       "struct LightData {                                                                                                                             \n \
+#define DEFERRED_COMPUTE_WGSL       "struct LightData {                                                                                                                             \n \
                                         position : vec4<f32>,                                                                                                                       \n \
                                         color : vec3<f32>,                                                                                                                          \n \
                                         radius : f32,                                                                                                                               \n \
@@ -178,7 +178,7 @@
                                        }                                                                                                                                            \n \
                                     }"
 
-#define DEFFERED_DEBUG_WGSL         "@vertex                                                                               \n \
+#define DEFERRED_DEBUG_WGSL         "@vertex                                                                               \n \
                                      fn vs_main(@builtin(vertex_index) VertexIndex : u32) -> @builtin(position) vec4<f32> {\n \
                                        const pos = array(                                                                  \n \
                                          vec2(-1.0, -1.0), vec2(1.0, -1.0), vec2(-1.0, 1.0),                               \n \
@@ -232,12 +232,12 @@
 
 #define MAX_NUM_LIGHTS 1024u
 
-class DefferedRendering : public State {
+class DeferredRendering : public State {
 
 public:
 
-	DefferedRendering(StateMachine& machine);
-	~DefferedRendering();
+	DeferredRendering(StateMachine& machine);
+	~DeferredRendering();
 
 	void fixedUpdate() override;
 	void update() override;
@@ -256,11 +256,11 @@ private:
 
 	std::vector<WGPUBindGroupLayout> OnBindGroupLayoutsGBuffer();
 	std::vector<WGPUBindGroupLayout> OnBindGroupLayoutsCompute();
-	std::vector<WGPUBindGroupLayout> OnBindGroupLayoutsDeffered();
-	std::vector<WGPUBindGroupLayout> OnBindGroupLayoutsDefferedDebug();
+	std::vector<WGPUBindGroupLayout> OnBindGroupLayoutsDeferred();
+	std::vector<WGPUBindGroupLayout> OnBindGroupLayoutsDeferredDebug();
 
 	std::vector<WGPUBindGroup> OnBindGroupsGBuffer();
-	WGPUBindGroup createDefferedBindGroup();
+	WGPUBindGroup createDeferredBindGroup();
 	WGPUBindGroup createLightBindGroup();
 	WGPUBindGroup createComputeBindGroup();
 
@@ -280,7 +280,7 @@ private:
 	WgpBuffer m_uniformBuffer, m_cameraBuffer, m_lightBuffer, m_configBuffer, m_extentBuffer;
 	WgpModel m_wgpDragon, m_wgpQuad;
 	WgpTexture m_normalTexture, m_albedoTexture, m_depthTexture;
-	WGPUBindGroup m_defferedBindGroup, m_lightBindGroup, m_computeBindGroup;
+	WGPUBindGroup m_deferredBindGroup, m_lightBindGroup, m_computeBindGroup;
 
 	std::vector<WGPURenderPassColorAttachment> renderPassColorAttachments;
 	WGPURenderPassDepthStencilAttachment renderPassDepthStencilAttachment;

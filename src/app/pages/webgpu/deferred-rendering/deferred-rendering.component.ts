@@ -6,13 +6,13 @@ import {ResizedEvent} from 'src/app/directives/resized.directive';
 import {SpinnerComponent} from 'src/app/shared/spinner/spinner.component';
 
 @Component({
-  selector: 'app-deffered-rendering',
-  templateUrl: './deffered-rendering.component.html',
-  styleUrls: ['./deffered-rendering.component.sass'],
+  selector: 'app-deferred-rendering',
+  templateUrl: './deferred-rendering.component.html',
+  styleUrls: ['./deferred-rendering.component.sass'],
   imports: [ResizedDirective, SpinnerComponent, NgStyle],
   standalone: true,
 })
-export class DefferedRenderingComponent extends EmscriptenWasmComponent implements OnInit, AfterViewInit, OnDestroy {
+export class DeferredRenderingComponent extends EmscriptenWasmComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('canvas') canvas!: ElementRef;
   @ViewChild('span') span!: ElementRef;
   error!: string;
@@ -20,7 +20,7 @@ export class DefferedRenderingComponent extends EmscriptenWasmComponent implemen
   useNativeSize: boolean = false;
 
   constructor(private ngZone: NgZone, private renderer: Renderer2) {
-    super("DefferedRenderingModule",  'assets/wasm/18DefferedRendering/webgpu.js', 'assets/wasm/18DefferedRendering/webgpu.wasm', 'assets/wasm/18DefferedRendering/webgpu.data');
+    super("DeferredRenderingModule",  'assets/wasm/18DeferredRendering/webgpu.js', 'assets/wasm/18DeferredRendering/webgpu.wasm', 'assets/wasm/18DeferredRendering/webgpu.data');
   }
 
   override ngOnInit(): void {

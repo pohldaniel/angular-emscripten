@@ -17,7 +17,7 @@ import {SkinnedMeshComponent} from './pages/webgpu/skinned-mesh/skinned-mesh.com
 import {ComputeParticleLogoComponent} from './pages/webgpu/compute-particle-logo/compute-particle-logo.component';
 import {PrimitivePickingComponent} from './pages/webgpu/primitive-picking/primitive-picking.component';
 import {StencilMaskComponent} from './pages/webgpu/stencil-mask/stencil-mask.component';
-import {DefferedRenderingComponent} from './pages/webgpu/deffered-rendering/deffered-rendering.component';
+import {DeferredRenderingComponent} from './pages/webgpu/deferred-rendering/deferred-rendering.component';
 import {VolumeRenderingComponent} from './pages/webgpu/volume-rendering/volume-rendering.component';
 import {OcclusionQueryComponent} from './pages/webgpu/occlusion-query/occlusion-query.component';
 import {VideoDecodeComponent} from './pages/webgpu/video-decode/video-decode.component';
@@ -109,8 +109,8 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
-  { path: 'webgpu/deffered-rendering', 
-    component: DefferedRenderingComponent,
+  { path: 'webgpu/deferred-rendering', 
+    component: DeferredRenderingComponent,
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
@@ -136,6 +136,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'webgpu/render-bundles'
+    redirectTo: 'webgpu/deferred-rendering'
   } 
 ];
