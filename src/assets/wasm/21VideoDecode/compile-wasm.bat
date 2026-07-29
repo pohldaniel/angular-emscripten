@@ -4,6 +4,7 @@ emcc^
  src/animation/Animation.cpp^
  src/animation/AnimationState.cpp^
  src/animation/AnimatedModel.cpp^
+ src/animation/AnimationController.cpp^
  src/VideoReader.cpp^
  src/BinaryIO.cpp^
  src/Fade.cpp^
