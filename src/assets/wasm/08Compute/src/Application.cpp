@@ -17,10 +17,12 @@ int Application::Width;
 int Application::Height;
 double Application::Time;
 bool Application::Init = false;
+float Application::ScrollDelta = 0.0f;
 
 void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos);
+void glfwWindowScroll(GLFWwindow* window, double xoffset, double yoffset);
 void glfwWindowResizeCallback(GLFWwindow* window, int width, int height);
 void glfwFramebufferResizeCallback(GLFWwindow* window, int width, int height);
 
@@ -51,10 +53,11 @@ Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
   
   glfwSetWindowUserPointer(Window, this);
   glfwSetFramebufferSizeCallback(Window, glfwFramebufferResizeCallback);
-  glfwSetCursorPosCallback(Window, glfwMouseMoveCallback);
-  glfwSetMouseButtonCallback(Window, glfwMouseButtonCallback);
-  glfwSetKeyCallback(Window, glfwKeyCallback);
   glfwSetWindowSizeCallback(Window, glfwWindowResizeCallback);
+  glfwSetMouseButtonCallback(Window, glfwMouseButtonCallback);
+  glfwSetCursorPosCallback(Window, glfwMouseMoveCallback);
+  glfwSetScrollCallback(Window, glfwWindowScroll);
+  glfwSetKeyCallback(Window, glfwKeyCallback);
 
   Application::Init = true;
   last = glfwGetTime();
@@ -210,8 +213,23 @@ void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mod
   }
 }
 
-void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos){
+void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos) {
   ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+	Event event;
+  event.type = Event::MOUSEMOTION;
+  event.data.mouseMove.x = static_cast<int>(xpos);
+  event.data.mouseMove.y = static_cast<int>(ypos);
+    
+  Application::Machine->getStates().top()->OnMouseMotion(event.data.mouseMove);   
+}
+
+void glfwWindowScroll(GLFWwindow* window, double xoffset, double yoffset) {
+  Event event;
+  event.type = Event::MOUSEWHEEL;
+  event.data.mouseWheel.delta = yoffset;
+  event.data.mouseWheel.direction = event.data.mouseWheel.delta > 0 ? Event::MouseWheelEvent::WheelDirection::UP : Event::MouseWheelEvent::WheelDirection::DOWN;
+	Application::ScrollDelta = event.data.mouseWheel.delta;
+  Application::Machine->getStates().top()->OnScroll(xoffset, yoffset);
 }
 
 void glfwWindowResizeCallback(GLFWwindow* window, int width, int height) {
