@@ -11,79 +11,55 @@
 
 #include <WebGPU/WgpContext.h>
 
+#include <Nuklear/NkStyle.h>
+#include <Nuklear/NkNodeEditor.h>
+#include <Nuklear/NkCalculator.h>
+
 #include "Application.h"
 #include "Mouse.h"
 #include "NuklearGui.h"
 
-NuklearGui::NuklearGui(StateMachine& machine) : State(machine, States::NUKLEAR_GUI), m_countAsteroids(5000u) {
+int style_id[] = {
+	999,
+	THEME_WHITE,
+	THEME_RED,
+	THEME_BLUE,
+	THEME_DARK
+};
+
+const char* style_name[] = {
+	"Default",
+	"White",
+	"Red",
+	"Blue",
+	"Dark"
+};
+static int selected_item = 0;
+struct nk_colorf backgroundf = { 0.2f, 0.2f, 0.2f, 1.0f };
+
+NuklearGui::NuklearGui(StateMachine& machine) : State(machine, States::NUKLEAR_GUI) {
 	wgpSetSurfaceColorFormat(WGPUTextureFormat::WGPUTextureFormat_BGRA8Unorm, Application::OnSurfaceChange);
 	wgpSetSurfaceDepthFormat(WGPUTextureFormat::WGPUTextureFormat_Depth24Plus, Application::OnSurfaceChange);
 
-	m_camera.perspective(glm::radians(72.0f), static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 100.0f);
+	nkInit(static_cast<float>(Application::Width), static_cast<float>(Application::Height));
+	nkInitFont("res/fonts/upheavtt.ttf");
+	nkInitIcon("res/textures/ui-icons-buttons-set-blue.png");
+
+	m_camera.perspective(glm::radians(72.0f), static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 1000.0f);
 	m_camera.orthographic(0.0f, static_cast<float>(Application::Width), 0.0f, static_cast<float>(Application::Height), -1.0f, 1.0f);
-	m_camera.lookAt(4.0f, 0.1f * 180.0f, 0.0f, 0.1f * 180.0f);
-	m_camera.setMovingSpeed(5.0f);
+	m_camera.lookAt(glm::vec3(0.0f, 15.0f, -50.0f), glm::vec3(0.0f, 15.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	m_camera.setMovingSpeed(50.0f);
 	m_camera.setRotationSpeed(0.1f);
 
 	m_trackball.reshape(Application::Width, Application::Height);
-	m_sphere.buildSphere({ 0.0f, 0.0f, 0.0f }, 1.0f, 0.0f, 32u, 16u, true, true);
 
-	m_asteroids.resize(5);
-	m_asteroids[0].buildSphere({ 0.0f, 0.0f, 0.0f }, 0.01f , 0.15f, 8u, 6u, true, true);
-	m_asteroids[1].buildSphere({ 0.0f, 0.0f, 0.0f }, 0.013f, 0.15f, 8u, 6u, true, true);
-	m_asteroids[2].buildSphere({ 0.0f, 0.0f, 0.0f }, 0.017f, 0.15f, 8u, 6u, true, true);
-	m_asteroids[3].buildSphere({ 0.0f, 0.0f, 0.0f }, 0.02f , 0.15f, 8u, 6u, true, true);
-	m_asteroids[4].buildSphere({ 0.0f, 0.0f, 0.0f }, 0.03f , 0.15f, 16u, 8u, true, true);
-
-	m_uniformBuffer.createBuffer(sizeof(Uniforms), WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform);	
-	m_uniforms.projection = m_camera.getPerspectiveMatrix();
-	m_uniforms.view = m_camera.getViewMatrix();
-	m_uniforms.env = m_camera.getRotationMatrix();
-	m_uniforms.model = glm::mat4(1.0f);
-	m_uniforms.normal = Camera::GetNormalMatrix(m_camera.getViewMatrix() * m_uniforms.model);
-	m_uniforms.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	m_uniforms.camPosition = m_camera.getPosition();
-	m_uniforms.lightVP = glm::mat4(1.0f);
-	m_uniforms.shadow = Camera::BIAS * m_uniforms.lightVP;
-	m_uniforms.lightPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), 0u, &m_uniforms, sizeof(Uniforms));
-
-	m_modelBuffer.createBuffer(sizeof(glm::mat4), WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform);
-	wgpuQueueWriteBuffer(wgpContext.queue, m_modelBuffer.getBuffer(), 0u, &m_uniforms.model, sizeof(glm::mat4));
-
-	wgpContext.setClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
-	wgpContext.addSahderModule("RENDER_BUNDLES", "res/shader/render_bundles.wgsl");
-	wgpContext.createRenderPipeline("RENDER_BUNDLES", "RP_RENDER_BUNDLES", VL_PTN, std::bind(&NuklearGui::OnBindGroupLayouts, this));
-
-	m_saturnTexture.loadFromFile("res/textures/saturn.jpg", true);
-	m_moonTexture.loadFromFile("res/textures/moon.jpg", true);
-	m_wgpSphere.create(m_sphere);
-	m_wgpSphere.setBindGroups("BG", std::bind(&NuklearGui::OnBindGroups, this));
-
-	m_wgpAsteroids.resize(5);
-	m_wgpAsteroids[0].create(m_asteroids[0]);
-	m_wgpAsteroids[1].create(m_asteroids[1]);
-	m_wgpAsteroids[2].create(m_asteroids[2]);
-	m_wgpAsteroids[3].create(m_asteroids[3]);
-	m_wgpAsteroids[4].create(m_asteroids[4]);
-
+	wgpContext.setClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 	wgpContext.OnDraw = std::bind(&NuklearGui::OnDraw, this, std::placeholders::_1, std::placeholders::_2);
-	wgpContext.OnPostDraw = std::bind(&NuklearGui::OnPostDraw, this);
-	placeAsteroids();
-	updateRenderBundle();
+	nkContext.OnFillBuffer = std::bind(&NuklearGui::OnFillBuffer, this, std::placeholders::_1);
 }
 
 NuklearGui::~NuklearGui() {
-	m_uniformBuffer.markForDelete();
-	m_modelBuffer.markForDelete();
-	m_saturnTexture.markForDelete();
-	m_moonTexture.markForDelete();
-
-	for (const Renderable& renderable : m_renderables) {
-		renderable.uniformBuffer.markForDelete();
-		wgpuBindGroupRelease(renderable.bindGroup);
-	}
-	wgpuRenderBundleRelease(m_renderBundle);
+	nkShutDown();
 }
 
 void NuklearGui::fixedUpdate() {
@@ -146,19 +122,7 @@ void NuklearGui::update() {
 
 	m_trackball.idle();
 
-	m_camera.rotateY(-m_dt * 2.0f);
-
-	m_uniforms.projection = m_camera.getPerspectiveMatrix();
-	m_uniforms.view = m_camera.getViewMatrix();
-	m_uniforms.env = m_camera.getRotationMatrix();
-	m_uniforms.model = m_trackball.getTransform();
-	m_uniforms.normal = Camera::GetNormalMatrix(m_camera.getViewMatrix() * m_uniforms.model);
-	m_uniforms.camPosition = m_camera.getPosition();
-	m_uniforms.lightVP = glm::mat4(1.0f);
-	m_uniforms.shadow = Camera::BIAS * m_uniforms.lightVP;
-
-	wgpuQueueWriteBuffer(wgpContext.queue, m_modelBuffer.getBuffer(), 0u, &m_uniforms.model, sizeof(glm::mat4));
-	wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), 0u, &m_uniforms, sizeof(Uniforms));
+	nkUpdateInput(mouse.xPos(), mouse.yPos(), mouse.buttonDown(GLFW_MOUSE_BUTTON_LEFT), mouse.buttonDown(GLFW_MOUSE_BUTTON_RIGHT), Application::ScrollDelta);
 }
 
 void NuklearGui::render() {
@@ -166,43 +130,69 @@ void NuklearGui::render() {
 }
 
 void NuklearGui::OnDraw(const WGPUCommandEncoder& commandEncoder, const WGPURenderPassDescriptor& renderPassDescriptor) {
-	WGPURenderPassEncoder renderPassEncoder = wgpuCommandEncoderBeginRenderPass(commandEncoder, &renderPassDescriptor);
-	wgpuRenderPassEncoderSetViewport(renderPassEncoder, 0.0f, 0.0f, static_cast<float>(Application::Width), static_cast<float>(Application::Height), 0.0f, 1.0f);
-	wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_RENDER_BUNDLES"));
+	{
+		WGPURenderPassColorAttachment renderPassColorAttachment = renderPassDescriptor.colorAttachments[0];
+		renderPassColorAttachment.loadOp = WGPULoadOp::WGPULoadOp_Load;
 
-	if (m_useRendeBundle) {
-		wgpuRenderPassEncoderExecuteBundles(renderPassEncoder, 1u, &m_renderBundle);
-	}else {
-		wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_RENDER_BUNDLES"));
-		m_wgpSphere.draw(renderPassEncoder);
+		WGPURenderPassDescriptor rndrPssDscrptor = renderPassDescriptor;
+		rndrPssDscrptor.colorAttachments = &renderPassColorAttachment;
 
-		for (uint32_t index = 0u; index < m_countAsteroids; index++) {
-			const Renderable& renderable = m_renderables[index];
-			wgpuRenderPassEncoderSetBindGroup(renderPassEncoder, 1u, renderable.bindGroup, 0u, NULL);
-			m_wgpAsteroids[renderable.geometryIndex].draw(renderPassEncoder);
-		}
+		nkDraw(commandEncoder, rndrPssDscrptor);
 	}
-
-	if (m_drawUi)
-		renderUi(renderPassEncoder);
-
-	wgpuRenderPassEncoderEnd(renderPassEncoder);
-	wgpuRenderPassEncoderRelease(renderPassEncoder);
 }
 
-void NuklearGui::OnPostDraw() {
-	if (m_replace) {
-		placeAsteroids();
-		wgpuRenderBundleRelease(m_renderBundle);
-		updateRenderBundle();
-		m_replace = false;
+void NuklearGui::OnFillBuffer(nk_context& nkCntxt) {
+	calculator();
+	node_editor();
+	if (nk_begin(&nkCntxt, "Demo", nk_rect(430, 10, 230, 250),
+		NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
+		NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE))
+	{
+
+		nk_layout_row_dynamic(&nkCntxt, 20, 1);
+		nk_label(&nkCntxt, "background:", NK_TEXT_LEFT);
+		nk_layout_row_dynamic(&nkCntxt, 25, 1);
+		if (nk_combo_begin_color(&nkCntxt, nk_rgba_cf(backgroundf), nk_vec2(nk_widget_width(&nkCntxt), 400))) {
+
+			nk_layout_row_dynamic(&nkCntxt, 120, 1);
+			backgroundf = nk_color_picker(&nkCntxt, backgroundf, NK_RGBA);
+			nk_layout_row_dynamic(&nkCntxt, 25, 1);
+
+			struct nk_color background = nk_rgba_cf(backgroundf);
+			background.r = (nk_byte)nk_propertyi(&nkCntxt, "#R:", 0, background.r, 255, 1, 1);
+			background.g = (nk_byte)nk_propertyi(&nkCntxt, "#G:", 0, background.g, 255, 1, 1);
+			background.b = (nk_byte)nk_propertyi(&nkCntxt, "#B:", 0, background.b, 255, 1, 1);
+			background.a = (nk_byte)nk_propertyi(&nkCntxt, "#A:", 0, background.a, 255, 1, 1);
+			nk_combo_end(&nkCntxt);
+			
+			backgroundf = nk_color_cf(background);
+			wgpContext.setClearColor({ backgroundf.r, backgroundf.g, backgroundf.b, backgroundf.a });
+		}
+
+		nk_layout_row_dynamic(&nkCntxt, 25, 2);
+		nk_label(&nkCntxt, "GUI skin:", NK_TEXT_LEFT);
+		if (nk_combo_begin_label(&nkCntxt, style_name[selected_item], nk_vec2(nk_widget_width(&nkCntxt), 200))) {
+			int i;
+			nk_layout_row_dynamic(&nkCntxt, 25, 1);
+			for (i = 0; i < sizeof(style_id) / sizeof(style_id[0]); ++i)
+				if (nk_combo_item_label(&nkCntxt, style_name[i], NK_TEXT_LEFT)) {
+					selected_item = i;
+					set_style(static_cast<theme>(style_id[i]));
+				}
+			nk_combo_end(&nkCntxt);
+		}
 	}
+	nk_end(&nkCntxt);	
+}
+
+void NuklearGui::OnMouseMotion(const Event::MouseMoveEvent& event) {
+	m_trackball.motion(event.x, event.y);
 }
 
 void NuklearGui::OnMouseButtonDown(const Event::MouseButtonEvent& event) {
 	if (event.button == Event::MouseButtonEvent::BUTTON_LEFT) {
 		m_trackball.mouse(TrackBall::Button::ELeftButton, TrackBall::Modifier::ENoModifier, true, event.x, event.y);
-		Mouse::instance().detach();	
+		Mouse::instance().attach(Application::Window, false, true);
 	}
 
 	if (event.button == Event::MouseButtonEvent::BUTTON_RIGHT)
@@ -219,10 +209,6 @@ void NuklearGui::OnMouseButtonUp(const Event::MouseButtonEvent& event) {
 		Mouse::instance().attach(Application::Window, false, false, true);
 }
 
-void NuklearGui::OnMouseMotion(const Event::MouseMoveEvent& event) {
-	m_trackball.motion(event.x, event.y);
-}
-
 void NuklearGui::OnScroll(double xoffset, double yoffset) {
 
 }
@@ -236,7 +222,8 @@ void NuklearGui::OnKeyUp(const Event::KeyboardEvent& event) {
 }
 
 void NuklearGui::resize(int deltaW, int deltaH) {
-	m_camera.perspective(glm::radians(72.0f), static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 100.0f);
+	nkResize(static_cast<float>(Application::Width), static_cast<float>(Application::Height));
+	m_camera.perspective(glm::radians(72.0f), static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 1000.0f);
 	m_camera.orthographic(0.0f, static_cast<float>(Application::Width), 0.0f, static_cast<float>(Application::Height), -1.0f, 1.0f);
 	m_trackball.reshape(Application::Width, Application::Height);
 }
@@ -276,180 +263,9 @@ void NuklearGui::renderUi(const WGPURenderPassEncoder& renderPassEncoder) {
 	}
 
 	ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-	ImGui::Text("Application average FPS %.1f", static_cast<double>(ImGui::GetIO().Framerate));
-	ImGui::Checkbox("Use Render Bundle", &m_useRendeBundle);
-	if (ImGui::SliderInt("Asteroid Count", &m_countAsteroids, 1000, MAX_ASTEROID_COUNT)) {
-		m_replace = true;
-	}
+	
 	ImGui::End();
 
 	ImGui::Render();
 	ImGui_ImplWGPU_RenderDrawData(ImGui::GetDrawData(), renderPassEncoder);
-}
-
-std::vector<WGPUBindGroupLayout> NuklearGui::OnBindGroupLayouts() {
-	std::vector<WGPUBindGroupLayout> bindingLayouts(2);
-
-	std::vector<WGPUBindGroupLayoutEntry> bindingLayoutEntries0(1);
-
-	bindingLayoutEntries0[0].binding = 0u;
-	bindingLayoutEntries0[0].visibility = WGPUShaderStage_Vertex;
-	bindingLayoutEntries0[0].buffer.type = WGPUBufferBindingType_Uniform;
-	bindingLayoutEntries0[0].buffer.minBindingSize = sizeof(Uniforms);
-
-	WGPUBindGroupLayoutDescriptor bindGroupLayoutDescriptor0 = {};
-	bindGroupLayoutDescriptor0.entryCount = (uint32_t)bindingLayoutEntries0.size();
-	bindGroupLayoutDescriptor0.entries = bindingLayoutEntries0.data();
-
-	bindingLayouts[0] = wgpuDeviceCreateBindGroupLayout(wgpContext.device, &bindGroupLayoutDescriptor0);
-
-	std::vector<WGPUBindGroupLayoutEntry> bindingLayoutEntries1(3);
-
-	bindingLayoutEntries1[0].binding = 0u;
-	bindingLayoutEntries1[0].visibility = WGPUShaderStage_Vertex;
-	bindingLayoutEntries1[0].buffer.type = WGPUBufferBindingType_Uniform;
-	bindingLayoutEntries1[0].buffer.minBindingSize = sizeof(glm::mat4);
-
-	bindingLayoutEntries1[1].binding = 1u;
-	bindingLayoutEntries1[1].visibility = WGPUShaderStage_Fragment;
-	bindingLayoutEntries1[1].sampler.type = WGPUSamplerBindingType_Filtering;
-
-	bindingLayoutEntries1[2].binding = 2u;
-	bindingLayoutEntries1[2].visibility = WGPUShaderStage_Fragment;
-	bindingLayoutEntries1[2].texture.viewDimension = WGPUTextureViewDimension_2D;
-	bindingLayoutEntries1[2].texture.sampleType = WGPUTextureSampleType_Float;
-
-	WGPUBindGroupLayoutDescriptor bindGroupLayoutDescriptor1 = {};
-	bindGroupLayoutDescriptor1.entryCount = (uint32_t)bindingLayoutEntries1.size();
-	bindGroupLayoutDescriptor1.entries = bindingLayoutEntries1.data();
-
-	bindingLayouts[1] = wgpuDeviceCreateBindGroupLayout(wgpContext.device, &bindGroupLayoutDescriptor1);
-
-	return bindingLayouts;
-}
-
-std::vector<WGPUBindGroup> NuklearGui::OnBindGroups() {
-	std::vector<WGPUBindGroup> bindGroups(2);
-
-	std::vector<WGPUBindGroupEntry> bindGroupEntries0(1);
-	bindGroupEntries0[0].binding = 0u;
-	bindGroupEntries0[0].buffer = m_uniformBuffer.getBuffer();
-	bindGroupEntries0[0].offset = 0u;
-	bindGroupEntries0[0].size = sizeof(Uniforms);
-
-	WGPUBindGroupDescriptor bindGroupDesc0 = {};
-	bindGroupDesc0.layout = wgpuRenderPipelineGetBindGroupLayout(wgpContext.renderPipelines.at("RP_RENDER_BUNDLES"), 0u);
-	bindGroupDesc0.entryCount = (uint32_t)bindGroupEntries0.size();
-	bindGroupDesc0.entries = bindGroupEntries0.data();
-
-	bindGroups[0] = wgpuDeviceCreateBindGroup(wgpContext.device, &bindGroupDesc0);
-
-	std::vector<WGPUBindGroupEntry> bindGroupEntries1(3);
-	bindGroupEntries1[0].binding = 0u;
-	bindGroupEntries1[0].buffer = m_modelBuffer.getBuffer();
-	bindGroupEntries1[0].offset = 0u;
-	bindGroupEntries1[0].size = sizeof(glm::mat4);
-
-
-	bindGroupEntries1[1].binding = 1u;
-	bindGroupEntries1[1].sampler = wgpContext.getSampler(SS_LINEAR_CLAMP);
-
-	bindGroupEntries1[2].binding = 2u;
-	bindGroupEntries1[2].textureView = m_saturnTexture.getTextureView();
-
-	WGPUBindGroupDescriptor bindGroupDesc1 = {};
-	bindGroupDesc1.layout = wgpuRenderPipelineGetBindGroupLayout(wgpContext.renderPipelines.at("RP_RENDER_BUNDLES"), 1u);
-	bindGroupDesc1.entryCount = (uint32_t)bindGroupEntries1.size();
-	bindGroupDesc1.entries = bindGroupEntries1.data();
-
-	bindGroups[1] = wgpuDeviceCreateBindGroup(wgpContext.device, &bindGroupDesc1);
-
-	return bindGroups;
-}
-
-void NuklearGui::createAsteroid(Renderable& renderable, uint32_t geometryIndex, const glm::mat4& model) {
-	renderable.geometryIndex = geometryIndex;
-
-	renderable.uniformBuffer.createBuffer(sizeof(glm::mat4), WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform);
-	wgpuQueueWriteBuffer(wgpContext.queue, renderable.uniformBuffer.getBuffer(), 0u, &model, sizeof(glm::mat4));
-
-	std::vector<WGPUBindGroupEntry> bindGroupEntries(3);
-	bindGroupEntries[0].binding = 0u;
-	bindGroupEntries[0].buffer = renderable.uniformBuffer.getBuffer();
-	bindGroupEntries[0].offset = 0u;
-	bindGroupEntries[0].size = sizeof(glm::mat4);
-
-	bindGroupEntries[1].binding = 1u;
-	bindGroupEntries[1].sampler = wgpContext.getSampler(SS_LINEAR_CLAMP);
-
-	bindGroupEntries[2].binding = 2u;
-	bindGroupEntries[2].textureView = m_moonTexture.getTextureView();
-
-	WGPUBindGroupDescriptor bindGroupDesc = {};
-	bindGroupDesc.layout = wgpuRenderPipelineGetBindGroupLayout(wgpContext.renderPipelines.at("RP_RENDER_BUNDLES"), 1u);
-	bindGroupDesc.entryCount = (uint32_t)bindGroupEntries.size();
-	bindGroupDesc.entries = bindGroupEntries.data();
-
-	renderable.bindGroup = wgpuDeviceCreateBindGroup(wgpContext.device, &bindGroupDesc);
-}
-
-float random_float_min_max(float min, float max){
-	return ((max - min) * ((float)rand() / (float)RAND_MAX)) + min;
-}
-
-float random_float(void){
-	return random_float_min_max(0.0f, 1.0f); /* [0, 1.0] */
-}
-
-void NuklearGui::placeAsteroids() {
-	for (const Renderable& renderable : m_renderables) {
-		renderable.uniformBuffer.markForDelete();
-		wgpuBindGroupRelease(renderable.bindGroup);
-	}
-	m_renderables.clear();
-	m_renderables.shrink_to_fit();
-
-	m_renderables.resize(m_countAsteroids);
-
-	float radius = 0.0f, radians = 0.0f, x = 0.0f, y = 0.0f, z = 0.0f;
-	Transform tranform;
-	for (uint32_t index = 0u; index < m_countAsteroids; index++) {
-		radius = random_float() * 1.7f + 1.25f;
-		radians = random_float() * M_PI * 2.0f;
-		x = sinf(radians) * radius;
-		y = (random_float() - 0.5f) * 0.015f;
-		z = cosf(radians) * radius;
-
-		tranform.reset();
-		tranform.rotate(0.0f, random_float() * 180.0f, 0.0f);
-		tranform.rotate(random_float() * 180.0f, 0.0f, 0.0f);
-		tranform.translate(x, y, z);
-
-		createAsteroid(m_renderables[index], index % m_wgpAsteroids.size(), tranform.getTransformationMatrix());
-	}
-}
-
-void NuklearGui::updateRenderBundle() {
-
-	WGPURenderBundleEncoderDescriptor renderBundleEncoderDescriptor = {};
-	renderBundleEncoderDescriptor.label = STRVIEW("render_bundle_encoder");
-	renderBundleEncoderDescriptor.colorFormatCount = 1u;
-	renderBundleEncoderDescriptor.colorFormats = &wgpContext.colorFormat;
-	renderBundleEncoderDescriptor.depthStencilFormat = wgpContext.depthFormat;
-	renderBundleEncoderDescriptor.sampleCount = wgpContext.msaaSampleCount;
-
-	renderBundleEncoderDescriptor.depthReadOnly = WGPUOptionalBool::WGPUOptionalBool_False;
-	renderBundleEncoderDescriptor.stencilReadOnly = WGPUOptionalBool::WGPUOptionalBool_True;
-
-	WGPURenderBundleEncoder renderBundleEncoder = wgpuDeviceCreateRenderBundleEncoder(wgpContext.device, &renderBundleEncoderDescriptor);			
-	wgpuRenderBundleEncoderSetPipeline(renderBundleEncoder, wgpContext.renderPipelines.at("RP_RENDER_BUNDLES"));
-	m_wgpSphere.draw(renderBundleEncoder);
-
-	for (uint32_t index = 0u; index < m_countAsteroids; index++) {
-		const Renderable& renderable = m_renderables[index];
-		wgpuRenderBundleEncoderSetBindGroup(renderBundleEncoder, 1u, renderable.bindGroup, 0u, NULL);
-		m_wgpAsteroids[renderable.geometryIndex].draw(renderBundleEncoder);
-	}
-
-	m_renderBundle = wgpuRenderBundleEncoderFinish(renderBundleEncoder, NULL);
 }
