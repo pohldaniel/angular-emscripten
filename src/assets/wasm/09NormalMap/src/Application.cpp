@@ -9,6 +9,7 @@
 
 #include "Application.h"
 #include "Mouse.h"
+#include "Keyboard.h"
 
 GLFWwindow* Application::Window = nullptr;
 StateMachine* Application::Machine = nullptr;
@@ -118,6 +119,7 @@ void Application::fixedUpdate(){
 void Application::update(){
   glfwPollEvents();
   Mouse::instance().update();
+  Keyboard::instance().update();
   Machine->update();
   Machine->render();
 }

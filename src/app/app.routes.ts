@@ -23,6 +23,7 @@ import {OcclusionQueryComponent} from './pages/webgpu/occlusion-query/occlusion-
 import {VideoDecodeComponent} from './pages/webgpu/video-decode/video-decode.component';
 import {RenderBundlesComponent} from './pages/webgpu/render-bundles/render-bundles.component';
 import {NuklearGuiComponent} from './pages/webgpu/nuklear-gui/nuklear-gui.component';
+import {IsometricComponent} from './pages/webgpu/isometric/isometric.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -140,8 +141,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/isometric', 
+    component: IsometricComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/nuklear-gui'
+    redirectTo: 'webgpu/isometric'
   } 
 ];

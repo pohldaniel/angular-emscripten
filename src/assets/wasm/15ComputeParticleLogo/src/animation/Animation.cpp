@@ -60,9 +60,9 @@ void Animation::loadAnimationAssimp(const std::string& filename, const std::stri
 			newTrack->m_channelMask = CHANNEL_POSITION + CHANNEL_ROTATION + CHANNEL_SCALE;
 			size_t numKeyFrames = std::max(aiAnimation->mChannels[c]->mNumPositionKeys, std::max(aiAnimation->mChannels[c]->mNumRotationKeys, aiAnimation->mChannels[c]->mNumScalingKeys));		
 
-			glm::vec3 prevPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-			glm::vec3 prevScale = glm::vec3(1.0f, 1.0f, 1.0f);
-			glm::quat prevRot = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+			glm::vec3 prevPosition;
+			glm::vec3 prevScale;
+			glm::quat prevRot;
 			float timeOffset = 0.0f;
 
 			for (size_t j = 0; j < numKeyFrames; ++j) {

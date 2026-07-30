@@ -11,6 +11,7 @@ class Application {
 	friend void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	friend void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 	friend void glfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos);
+	friend void glfwWindowScroll(GLFWwindow* window, double xoffset, double yoffset);
 	friend void glfwWindowResizeCallback(GLFWwindow* window, int width, int height);
 	friend void glfwFramebufferResizeCallback(GLFWwindow* window, int width, int height);
 	

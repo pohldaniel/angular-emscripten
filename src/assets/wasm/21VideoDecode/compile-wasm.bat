@@ -9,6 +9,7 @@ emcc^
  src/BinaryIO.cpp^
  src/Fade.cpp^
  src/Mouse.cpp^
+ src/Keyboard.cpp^
  src/Material.cpp^
  src/Transform.cpp^
  src/Mesh.cpp^
@@ -56,6 +57,6 @@ emcc^
  -I "./" -I "./include" -I "./include/animation" -I "./libimgui" -I "../include/glm" -I "../include/FreeImage" -I "../include/rapidjson/include" -I "../include/ffmpeg" -I "../include"^
  -Wall -Wno-return-type-c-linkage -Wno-missing-braces -Wunused-result^
  -DFREEIMAGE_LIB -DWEBGPU_BACKEND=WGPU^
- -o webgpu.js -std=c++17 -Os --use-port=contrib.glfw3 --use-port=emdawnwebgpu --preload-file res/models --preload-file res/shader --preload-file res/textures --preload-file res/videos -s ASYNCIFY -s ASSERTIONS -s TOTAL_MEMORY=132251648 -s ALLOW_MEMORY_GROWTH=1 -s "EXPORTED_FUNCTIONS=['_main']" -s "EXPORTED_RUNTIME_METHODS=['ccall']" -s MODULARIZE=1^
+ -o webgpu.js -std=c++17 -Os --use-port=contrib.glfw3 --use-port=emdawnwebgpu --preload-file res/models --preload-file res/shader --preload-file res/textures --preload-file res/videos -s ASYNCIFY -s ASSERTIONS -s TOTAL_MEMORY=167772160 -s ALLOW_MEMORY_GROWTH=1 -s "EXPORTED_FUNCTIONS=['_main']" -s "EXPORTED_RUNTIME_METHODS=['ccall']" -s MODULARIZE=1^
  -s EXPORT_NAME='VideoDecodeModule'^
  && exit
