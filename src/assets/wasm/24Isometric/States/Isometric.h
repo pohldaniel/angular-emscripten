@@ -11,12 +11,15 @@
 
 #include <States/StateMachine.h>
 #include <Nuklear/NkJoystick.h>
+#include <Shape/Shape.h>
 
 #include "Camera.h"
 #include "TrackBall.h"
 
 class Isometric : public State {
 	
+public:
+
 public:
 
 	Isometric(StateMachine& machine);
@@ -39,22 +42,29 @@ public:
 private:
 
 	std::vector<WGPUBindGroupLayout> OnBindGroupLayouts();
+	std::vector<WGPUBindGroupLayout> OnBindGroupLayoutsTexture();
 	std::vector<WGPUBindGroup> OnBindGroups();
+	std::vector<WGPUBindGroup> OnBindGroupsTexture();
+
 	void renderUi(const WGPURenderPassEncoder& renderPassEncoder);
+	bool getWorldPosition(int xPos, int yPos, const glm::vec3& planeNormal, glm::vec3& outIntersection);
+	float getLookAtYRotation(const glm::vec3& objectPos, const glm::vec3& targetPos);
 
 	bool m_initUi = true;
 	bool m_drawUi = false;
 	bool m_isDeath = false;
 
 	Camera m_camera;
-	TrackBall m_trackball;
 	Uniforms m_uniforms;
+	TrackBall m_trackball;
 	JoystickResult m_joystickResult;
-	bool m_isPressed;
+	RotatioButtonResult m_rotatioButtonResult;
 
 	AnimatedModel m_player;
 	AnimationController m_animationController;
+	Shape m_floor;
 
 	WgpBuffer m_uniformBuffer, m_skinBuffer;
-	WgpModel m_wgpPlayer;
+	WgpModel m_wgpPlayer, m_wgpFloor;
+	WgpTexture m_wgpFloorD;
 };
