@@ -198,8 +198,8 @@ void Isometric::update() {
 	if ((mouse.xDelta() || mouse.yDelta()) && !m_isDeath) {
 		glm::vec3 coords;	
 		if (getWorldPosition(mouse.xPos(), mouse.yPos(), glm::vec3(0.0f, 1.0f, 0.0f), coords)) {
-			float degrees = (!m_rotatioButtonResult.isActive && !m_joystickResult.isActive) && mouse.buttonDown(GLFW_MOUSE_BUTTON_LEFT) ? getLookAtYRotation(posistion, coords) : m_rotatioButtonResult.degrees;
-			m_rotatioButtonResult.degrees = degrees;
+			float degrees = (!m_rotationButtonResult.isActive && !m_joystickResult.isActive) && mouse.buttonDown(GLFW_MOUSE_BUTTON_LEFT) ? getLookAtYRotation(posistion, coords) : m_rotationButtonResult.degrees;
+			m_rotationButtonResult.degrees = degrees;
 			if(degrees)
 				m_player.setRotation(0.0f, degrees, 0.0f);
 		}
@@ -252,7 +252,7 @@ void Isometric::update() {
 		m_player.translateRelative(-2.0f * m_dt, 0.0f, 0.0f);
 	}
 
-	if(keyboard.keyPressed(GLFW_KEY_T) || m_rotatioButtonResult.buttonPressed) {
+	if(keyboard.keyPressed(GLFW_KEY_T) || m_rotationButtonResult.buttonPressed) {
 		m_isDeath = true;
 	}
 
@@ -317,7 +317,7 @@ void Isometric::OnDraw(const WGPUCommandEncoder& commandEncoder, const WGPURende
 void Isometric::OnFillBuffer(nk_context& nkCntxt) {
 	set_transparent_window_style();
 	virtual_joystick(nk_rect(20.0f, static_cast<float>(Application::Height) - 200.0f, 180.0f, 180.0f), m_joystickResult);
-	virtual_rotation_button(nk_rect(static_cast<float>(Application::Width) - 180.0f, static_cast<float>(Application::Height) - 180.0f, 140.0f, 140.0f), m_rotatioButtonResult);
+	virtual_rotation_button(nk_rect(static_cast<float>(Application::Width) - 180.0f, static_cast<float>(Application::Height) - 180.0f, 140.0f, 140.0f), m_rotationButtonResult);
 	reset_transparent_window_style();
 }
 
