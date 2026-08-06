@@ -18,6 +18,7 @@ emcc^
  src/Camera.cpp^
  src/CharacterSet.cpp^
  src/Application.cpp^
+ src/bullet_store.cpp^
  src/main.cpp^
  Shape/Capsule.cpp^
  Shape/Cube.cpp^
