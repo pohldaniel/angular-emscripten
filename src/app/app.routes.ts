@@ -23,6 +23,7 @@ import {OcclusionQueryComponent} from './pages/webgpu/occlusion-query/occlusion-
 import {VideoDecodeComponent} from './pages/webgpu/video-decode/video-decode.component';
 import {RenderBundlesComponent} from './pages/webgpu/render-bundles/render-bundles.component';
 import {NuklearGuiComponent} from './pages/webgpu/nuklear-gui/nuklear-gui.component';
+import {CubesComponent} from './pages/webgpu/cubes/cubes.component';
 import {IsometricComponent} from './pages/webgpu/isometric/isometric.component';
 
 export const routes: Routes = [
@@ -138,6 +139,11 @@ export const routes: Routes = [
   },
   { path: 'webgpu/nuklear-gui', 
     component: NuklearGuiComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
+  { path: 'webgpu/cubes', 
+    component: CubesComponent,
     canActivate: [authGuard],
     data : {showSidebar: true}
   },

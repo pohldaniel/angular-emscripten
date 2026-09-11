@@ -172,9 +172,16 @@
             </button>
           </li>
           <li id="three-nineteen" class="list-item-button">
-            <button [attr.tabindex]="router.url=='/webgpu/isometric' ? -1 : (storeTargetedSubmenu=='three' ? 0 : -1)" (click)="navigate('/webgpu/isometric')" [class.active]="router.url == '/webgpu/isometric'">Isometric
+            <button [attr.tabindex]="router.url=='/webgpu/cubes' ? -1 : (storeTargetedSubmenu=='three' ? 0 : -1)" (click)="navigate('/webgpu/cubes')" [class.active]="router.url == '/webgpu/cubes'">Cubes
               <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1" (click)="updateFavorites($event, 23, checked[23]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
                 <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[23] ? 'star' : 'star_outline'}}</mat-icon>                 
+              </span>
+            </button>
+          </li>
+          <li id="three-twenty" class="list-item-button">
+            <button [attr.tabindex]="router.url=='/webgpu/isometric' ? -1 : (storeTargetedSubmenu=='three' ? 0 : -1)" (click)="navigate('/webgpu/isometric')" [class.active]="router.url == '/webgpu/isometric'">Isometric
+              <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1" (click)="updateFavorites($event, 24, checked[24]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
+                <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[24] ? 'star' : 'star_outline'}}</mat-icon>                 
               </span>
             </button>
           </li>

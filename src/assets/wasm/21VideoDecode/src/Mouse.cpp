@@ -137,3 +137,7 @@ bool Mouse::buttonDown(unsigned int button) const {
 bool Mouse::buttonDownInvisible(unsigned int button) const {
     return glfwGetMouseButton(Application::Window, button) == GLFW_PRESS && !m_cursorVisible;
 }
+
+bool Mouse::buttonPressed(unsigned int button) const{
+    return m_currentStates[button] && !m_prevStates[button];
+}

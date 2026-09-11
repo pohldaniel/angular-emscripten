@@ -77,7 +77,8 @@ export class MenuComponent implements OnInit{
       this.router.url == '/webgpu/occlusion-query' ||
       this.router.url == '/webgpu/video-decode' ||
       this.router.url == '/webgpu/render-bundles'||
-      this.router.url == '/webgpu/nuklear-gui'||
+      this.router.url == '/webgpu/nuklear-gui'||    
+      this.router.url == '/webgpu/cubes'||
       this.router.url == '/webgpu/isometric')
     {
       this.targetedSubmenu = 'three';
@@ -116,7 +117,8 @@ export class MenuComponent implements OnInit{
     .set(Math.pow(2, 20), {target : '/webgpu/video-decode', description: 'Video Decode', descriptionLineBreak: '', class : 'three-sixteen', index : 20} as MenuItem)
     .set(Math.pow(2, 21), {target : '/webgpu/render-bundles', description: 'Render Bundles', descriptionLineBreak: '', class : 'three-seventeen', index : 21} as MenuItem)
     .set(Math.pow(2, 22), {target : '/webgpu/nuklear-gui', description: 'Nuklear GUI', descriptionLineBreak: '', class : 'three-eighteen', index : 22} as MenuItem)
-    .set(Math.pow(2, 23), {target : '/webgpu/isometric', description: 'Isometric', descriptionLineBreak: '', class : 'three-nineteen', index : 23} as MenuItem);
+    .set(Math.pow(2, 23), {target : '/webgpu/cubes', description: 'Cubes', descriptionLineBreak: '', class : 'three-nineteen', index : 23} as MenuItem)
+    .set(Math.pow(2, 24), {target : '/webgpu/isometric', description: 'Isometric', descriptionLineBreak: '', class : 'three-twenty', index : 24} as MenuItem);
     
     for(let key of map.keys()) {
       if((this.settings.favorites | key) == this.settings.favorites){

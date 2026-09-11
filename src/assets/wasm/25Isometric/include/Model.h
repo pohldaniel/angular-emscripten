@@ -1,0 +1,52 @@
+#pragma once
+
+#include <vector>
+#include <iterator>
+
+enum ModelColor {
+	MC_WHITE,
+	MC_RED,
+	MC_GREEN,
+	MC_BLUE,
+	MC_BLACK,
+	MC_POSITION
+};
+
+enum ProjectedPlane {
+	XY,
+	XZ,
+	YZ
+};
+
+class Mesh;
+class Model {
+	
+public:
+
+	virtual ~Model() = default;
+	virtual unsigned int getStride() const = 0;
+	const std::vector<Mesh*>& getMeshes() const;
+
+protected:
+
+	std::vector<Mesh*> m_meshes;
+
+	void static GenerateColors(std::vector<float>& vertexBuffer, std::vector<unsigned int>& indexBuffer, unsigned int& stride, ModelColor modelColor);
+	void static GenerateUVs(std::vector<float>& vertexBuffer, unsigned int& stride, ProjectedPlane projectedPlane = XY);
+	void static PackBuffer(std::vector<float>& vertexBuffer, unsigned int stride);
+	void static Rewind(const std::vector<float>& vertexBuffer, std::vector<unsigned int>& indexBuffer, unsigned int stride);
+	void static Scale(float sx, float sy, float sz, std::vector<float>& vertexBuffer, unsigned int stride);
+	void static Rotate(float pitchR, float yawR, float rollR, std::vector<float>& vertexBuffer, unsigned int stride);
+	void static Translate(float dx, float dy, float dz, std::vector<float>& vertexBuffer, unsigned int stride);
+
+	void static GenerateNormals(std::vector<float>& vertexBuffer, std::vector<unsigned int>& indexBuffer, Model& model, bool& hasNormals, unsigned int& stride, unsigned int startIndex, unsigned int endIndex);
+	void static GenerateNormals(std::vector<float>& vertexCoords, std::vector<std::array<int, 10>>& face, std::vector<float>& normalCoords);
+	void static GenerateTangents(std::vector<float>& vertexBuffer, std::vector<unsigned int>& indexBuffer, Model& model, bool& hasNormals, bool& hasTangents, unsigned int& stride, unsigned int startIndex, unsigned int endIndex);
+	void static GenerateTangents(std::vector<float>& vertexCoords, std::vector<float>& textureCoords, std::vector<float>& normalCoords, std::vector<std::array<int, 10>>& face, std::vector<float>& tangentCoords, std::vector<float>& bitangentCoords);
+
+private:
+
+	static std::array<float, 3> Normalize(const std::array<float, 3>& v);
+	static std::array<float, 3> Cross(const std::array<float, 3>& p, const std::array<float, 3>& q);
+	static float Dot(const std::array<float, 3>& p, const std::array<float, 3>& q);
+};

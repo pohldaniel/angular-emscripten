@@ -22,7 +22,8 @@ public:
 
     bool buttonDown(unsigned int button) const;
     bool buttonDownInvisible(unsigned int button) const;
-
+    bool buttonPressed(unsigned int button) const;
+    
 private:
 
     Mouse();

@@ -20,7 +20,7 @@ export class IsometricComponent extends EmscriptenWasmComponent implements OnIni
   useNativeSize: boolean = false;
 
   constructor(private ngZone: NgZone, private renderer: Renderer2) {
-    super("IsometricModule",  'assets/wasm/24Isometric/webgpu.js', 'assets/wasm/24Isometric/webgpu.wasm', 'assets/wasm/24Isometric/webgpu.data');
+    super("IsometricModule",  'assets/wasm/25Isometric/webgpu.js', 'assets/wasm/25Isometric/webgpu.wasm', 'assets/wasm/25Isometric/webgpu.data');
   }
 
   override ngOnInit(): void {
