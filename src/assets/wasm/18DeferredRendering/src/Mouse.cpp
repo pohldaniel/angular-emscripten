@@ -21,6 +21,9 @@ Mouse::Mouse(){
 	m_xDelta = 0.0f;
 	m_yDelta = 0.0f;
 	m_attached = false;
+
+    m_currentStates = m_buttonStates[0];
+    m_prevStates = m_buttonStates[1];
 }
 
 Mouse::~Mouse(){
@@ -34,7 +37,14 @@ void Mouse::update(){
 		m_yDelta = static_cast<float>(m_yPrevPos - m_yPos);
 
         m_xPrevPos = m_xPos;
-        m_yPrevPos = m_yPos;       
+        m_yPrevPos = m_yPos;
+
+        bool *tempStates = m_prevStates;
+        m_prevStates = m_currentStates;
+        m_currentStates = tempStates;
+        m_currentStates[0] = (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
+        m_currentStates[1] = (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS);
+        m_currentStates[2] = (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS);
     }
 }
 
