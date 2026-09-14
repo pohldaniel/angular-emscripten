@@ -20,7 +20,7 @@ export class NuklearGuiComponent extends EmscriptenWasmComponent implements OnIn
   useNativeSize: boolean = false;
 
   constructor(private ngZone: NgZone, private renderer: Renderer2) {
-    super("NuklearGuiModule",  'assets/wasm/23NuklearGui/webgpu.js', 'assets/wasm/23NuklearGui/webgpu.wasm', 'assets/wasm/23NuklearGui/webgpu.data');
+    super("NuklearGuiModule",  'assets/wasm/22NuklearGui/webgpu.js', 'assets/wasm/22NuklearGui/webgpu.wasm', 'assets/wasm/22NuklearGui/webgpu.data');
   }
 
   override ngOnInit(): void {

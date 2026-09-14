@@ -23,6 +23,7 @@ import {OcclusionQueryComponent} from './pages/webgpu/occlusion-query/occlusion-
 import {VideoDecodeComponent} from './pages/webgpu/video-decode/video-decode.component';
 import {RenderBundlesComponent} from './pages/webgpu/render-bundles/render-bundles.component';
 import {NuklearGuiComponent} from './pages/webgpu/nuklear-gui/nuklear-gui.component';
+import {AudioDecodeComponent} from './pages/webgpu/audio-decode/audio-decode.component';
 import {CubesComponent} from './pages/webgpu/cubes/cubes.component';
 import {IsometricComponent} from './pages/webgpu/isometric/isometric.component';
 
@@ -142,6 +143,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/audio-decode', 
+    component: AudioDecodeComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   { path: 'webgpu/cubes', 
     component: CubesComponent,
     canActivate: [authGuard],
@@ -154,6 +160,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'webgpu/isometric'
+    redirectTo: 'webgpu/audio-decode'
   } 
 ];

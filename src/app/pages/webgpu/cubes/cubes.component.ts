@@ -20,7 +20,7 @@ export class CubesComponent extends EmscriptenWasmComponent implements OnInit, A
   useNativeSize: boolean = false;
 
   constructor(private ngZone: NgZone, private renderer: Renderer2) {
-    super("CubesModule",  'assets/wasm/24Cubes/webgpu.js', 'assets/wasm/24Cubes/webgpu.wasm', 'assets/wasm/24Cubes/webgpu.data');
+    super("CubesModule",  'assets/wasm/25Cubes/webgpu.js', 'assets/wasm/25Cubes/webgpu.wasm', 'assets/wasm/25Cubes/webgpu.data');
   }
 
   override ngOnInit(): void {

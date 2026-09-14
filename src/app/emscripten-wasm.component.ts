@@ -33,6 +33,9 @@ export abstract class EmscriptenWasmComponent<M extends EmscriptenModule = Emscr
             if (file.endsWith(".data")) {
               return this.pathData;
             }
+            if (file.endsWith(".js")) {
+              return this.pathJs;
+            }
             return this.pathWasm;
           }
         };

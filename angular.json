@@ -50,7 +50,12 @@
             "inlineStyleLanguage": "sass",
             "assets": [
               "src/assets",
-              "src/404.html"
+              "src/404.html",
+              {
+                "glob": "coi-serviceworker.js",
+                "input": "src/assets",
+                "output": "/"
+              }
             ],
             "styles": [
               "src/sass/styles.sass"
@@ -115,6 +120,12 @@
         "serve": {
           "defaultConfiguration": "dev",
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "headers": {
+              "Cross-Origin-Opener-Policy": "same-origin",
+              "Cross-Origin-Embedder-Policy": "require-corp"
+            }
+          },
           "configurations": {
             "prod": {
               "buildTarget": "angular-emscripten:build:prod"

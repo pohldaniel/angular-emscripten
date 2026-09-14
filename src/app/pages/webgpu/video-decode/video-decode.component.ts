@@ -20,7 +20,7 @@ export class VideoDecodeComponent extends EmscriptenWasmComponent implements OnI
   useNativeSize: boolean = false;
 
   constructor(private ngZone: NgZone, private renderer: Renderer2) {
-    super("VideoDecodeModule",  'assets/wasm/21VideoDecode/webgpu.js', 'assets/wasm/21VideoDecode/webgpu.wasm', 'assets/wasm/21VideoDecode/webgpu.data');
+    super("VideoDecodeModule",  'assets/wasm/24VideoDecode/webgpu.js', 'assets/wasm/24VideoDecode/webgpu.wasm', 'assets/wasm/24VideoDecode/webgpu.data');
   }
 
   override ngOnInit(): void {

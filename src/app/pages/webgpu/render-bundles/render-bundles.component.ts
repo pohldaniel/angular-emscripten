@@ -20,7 +20,7 @@ export class RenderBundlesComponent extends EmscriptenWasmComponent implements O
   useNativeSize: boolean = false;
 
   constructor(private ngZone: NgZone, private renderer: Renderer2) {
-    super("RenderBundlesModule",  'assets/wasm/22RenderBundles/webgpu.js', 'assets/wasm/22RenderBundles/webgpu.wasm', 'assets/wasm/22RenderBundles/webgpu.data');
+    super("RenderBundlesModule",  'assets/wasm/21RenderBundles/webgpu.js', 'assets/wasm/21RenderBundles/webgpu.wasm', 'assets/wasm/21RenderBundles/webgpu.data');
   }
 
   override ngOnInit(): void {
