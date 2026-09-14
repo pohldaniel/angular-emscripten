@@ -148,6 +148,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/video-decode', 
+    component: VideoDecodeComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   { path: 'webgpu/cubes', 
     component: CubesComponent,
     canActivate: [authGuard],
@@ -160,6 +165,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'webgpu/audio-decode'
+    redirectTo: 'webgpu/isometric'
   } 
 ];

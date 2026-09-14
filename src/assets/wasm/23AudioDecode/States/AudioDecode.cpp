@@ -20,13 +20,12 @@
 #include "Mouse.h"
 #include "AudioDecode.h"
 
-AudioDecode::AudioDecode(StateMachine& machine) : State(machine, States::NUKLEAR_GUI) {
+AudioDecode::AudioDecode(StateMachine& machine) : State(machine, States::AUDIO_DECODE) {
 	wgpSetSurfaceColorFormat(WGPUTextureFormat::WGPUTextureFormat_BGRA8Unorm, Application::OnSurfaceChange);
 	wgpSetSurfaceDepthFormat(WGPUTextureFormat::WGPUTextureFormat_Depth24Plus, Application::OnSurfaceChange);
 
 	nkInit(static_cast<float>(Application::Width), static_cast<float>(Application::Height));
 	nkInitFont("res/fonts/upheavtt.ttf");
-	nkInitIcon("res/textures/ui-icons-buttons-set-blue.png");
 
 	m_camera.perspective(glm::radians(72.0f), static_cast<float>(Application::Width) / static_cast<float>(Application::Height), 0.1f, 1000.0f);
 	m_camera.orthographic(0.0f, static_cast<float>(Application::Width), 0.0f, static_cast<float>(Application::Height), -1.0f, 1.0f);

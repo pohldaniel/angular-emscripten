@@ -102,7 +102,7 @@ void Application::initImGUI(){
 }
 
 bool Application::isRunning(){
-   MessageLoop(this);
+  MessageLoop(this);
   return glfwWindowShouldClose(Window);
 }
 
