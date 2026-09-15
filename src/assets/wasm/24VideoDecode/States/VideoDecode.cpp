@@ -43,13 +43,13 @@ VideoDecode::VideoDecode(StateMachine& machine) : State(machine, States::VIDEO_D
     wgpContext.OnDraw = std::bind(&VideoDecode::OnDraw, this, std::placeholders::_1, std::placeholders::_2);
     nkContext.OnFillBuffer = std::bind(&VideoDecode::OnFillBuffer, this, std::placeholders::_1);
 	
-	ctrl_size = 50.0f;
-    side_padding = 10.0f;
+	ctrl_size = 80.0f;
+    side_padding = 50.0f;
 
-    bottom_margin = 10.0f;
+    bottom_margin = 50.0f;
     ctrl_y = static_cast<float>(Application::Height) - ctrl_size - bottom_margin;
-    play_x = side_padding;
-    pause_x = static_cast<float>(Application::Width) - ctrl_size * 1.5f - side_padding;
+    pause_x = side_padding;
+    play_x = static_cast<float>(Application::Width) - ctrl_size * 1.5f - side_padding;
 }
 
 VideoDecode::~VideoDecode() {
@@ -150,8 +150,8 @@ void VideoDecode::OnDraw(const WGPUCommandEncoder& commandEncoder, const WGPURen
 void VideoDecode::OnFillBuffer(nk_context& nkCntxt) {
 
     ctrl_y = static_cast<float>(Application::Height) - ctrl_size - bottom_margin;
-    play_x = side_padding;
-    pause_x = static_cast<float>(static_cast<float>(Application::Width)) - (ctrl_size * 1.5f) - side_padding;
+    pause_x = side_padding;
+    play_x = static_cast<float>(static_cast<float>(Application::Width)) - (ctrl_size * 1.5f) - side_padding;
 
     if (ctrl_y + ctrl_size > static_cast<float>(Application::Height)) {
         ctrl_y = static_cast<float>(Application::Height) - ctrl_size;

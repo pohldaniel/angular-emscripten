@@ -38,23 +38,22 @@ AudioDecode::AudioDecode(StateMachine& machine) : State(machine, States::AUDIO_D
 	wgpContext.setClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 	wgpContext.OnDraw = std::bind(&AudioDecode::OnDraw, this, std::placeholders::_1, std::placeholders::_2);
 	nkContext.OnFillBuffer = std::bind(&AudioDecode::OnFillBuffer, this, std::placeholders::_1);
-	SoundDevice::Init();
 	m_audioDecoder.init<EMPlayer>();
 
-	btn_w = 600.0f;
-    btn_h = 135.0f;
-    spacing = 40.0f;
-    start_x = (static_cast<float>(Application::Width) - btn_w) / 2.0f;
-    total_block_h = (3.0f * btn_h) + (2.0f * spacing);
-    start_y = (static_cast<float>(Application::Height) - total_block_h) / 2.0f;
+	btn_w = 300.0f;
+	btn_h = 85.0f;
+	spacing = 40.0f;
+	start_x = (static_cast<float>(Application::Width) - btn_w) / 2.0f;
+	total_block_h = (3.0f * btn_h) + (2.0f * spacing);
+	start_y = (static_cast<float>(Application::Height) - total_block_h) / 2.0f;
 
-    ctrl_size = 120.0f;
-    side_padding = 50.0f;
+	ctrl_size = 80.0f;
+	side_padding = 50.0f;
 
-    bottom_margin = 50.0f;
-    ctrl_y = static_cast<float>(Application::Height) - ctrl_size - bottom_margin;
-    play_x = side_padding;
-    pause_x = static_cast<float>(Application::Width) - ctrl_size * 1.5f - side_padding;
+	bottom_margin = 50.0f;
+	ctrl_y = static_cast<float>(Application::Height) - ctrl_size - bottom_margin;
+	pause_x = side_padding;
+	play_x = static_cast<float>(Application::Width) - ctrl_size * 1.5f - side_padding;
 }
 
 AudioDecode::~AudioDecode() {
@@ -136,12 +135,12 @@ void AudioDecode::OnDraw(const WGPUCommandEncoder& commandEncoder, const WGPURen
 void AudioDecode::OnFillBuffer(nk_context& nkCntxt) {
 
     start_x = (static_cast<float>(Application::Width) - btn_w) / 2.0f;
-    total_block_h = (3.0f * btn_h) + (2.0f * spacing);
-    start_y = (static_cast<float>(Application::Height) - total_block_h) / 2.0f;
+	total_block_h = (3.0f * btn_h) + (2.0f * spacing);
+	start_y = (static_cast<float>(Application::Height) - total_block_h) / 2.0f;
 
-    ctrl_y = static_cast<float>(Application::Height) - ctrl_size - bottom_margin;
-    play_x = side_padding;
-    pause_x = static_cast<float>(Application::Width) - (ctrl_size * 1.5f) - side_padding;
+	ctrl_y = static_cast<float>(Application::Height) - ctrl_size - bottom_margin;
+	pause_x = side_padding;
+	play_x = static_cast<float>(Application::Width) - (ctrl_size * 1.5f) - side_padding;
 
     set_transparent_window_style();
     float y = start_y;

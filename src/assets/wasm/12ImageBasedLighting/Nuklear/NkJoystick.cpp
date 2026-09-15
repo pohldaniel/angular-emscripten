@@ -324,13 +324,13 @@ bool rounded_button(struct nk_rect dimension, const char* label, bool& isPressed
 	bool is_pressed = false;
 	if (nk_begin(&nkContext.context, label, dimension, NK_WINDOW_NO_INPUT | NK_WINDOW_NO_SCROLLBAR)) {
 		nk_layout_row_static(&nkContext.context, dimension.h, dimension.w, 1);
-		 nk_rounded_button_logic(&nkContext.context, label, is_pressed);
+		 nk_rounded_button(&nkContext.context, label, is_pressed);
 	}
 	nk_end(&nkContext.context);
 	return is_pressed;
 }
 
-void nk_rounded_button_logic(struct nk_context* ctx, const char* label, bool& isPressed){
+void nk_rounded_button(struct nk_context* ctx, const char* label, bool& isPressed){
 	struct nk_rect bounds;
 	nk_widget(&bounds, ctx);
 	isPressed = false;
