@@ -14,7 +14,7 @@
 
 class VideoDecode : public State {
 
-	public:
+public:
 
 	VideoDecode(StateMachine& machine);
 	~VideoDecode();

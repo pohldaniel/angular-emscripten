@@ -66,9 +66,9 @@ void AudioDecode::fixedUpdate() {
 
 void AudioDecode::update() {
 	Mouse &mouse = Mouse::instance();
+	nkUpdateInput(mouse.xPos(), mouse.yPos(), mouse.buttonDown(GLFW_MOUSE_BUTTON_LEFT), mouse.buttonDown(GLFW_MOUSE_BUTTON_RIGHT), Application::ScrollDelta);
 
 	glm::vec3 direction = glm::vec3();
-
 	float dx = 0.0f;
 	float dy = 0.0f;
 	bool move = false;
@@ -119,8 +119,6 @@ void AudioDecode::update() {
 	}
 
 	m_trackball.idle();
-
-	nkUpdateInput(mouse.xPos(), mouse.yPos(), mouse.buttonDown(GLFW_MOUSE_BUTTON_LEFT), mouse.buttonDown(GLFW_MOUSE_BUTTON_RIGHT), Application::ScrollDelta);
 	m_audioDecoder.update();
 }
 
