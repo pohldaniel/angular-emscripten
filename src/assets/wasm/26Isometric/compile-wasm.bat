@@ -1,10 +1,15 @@
 emcc^
+ src/scene/Node.cpp^
+ src/scene/BaseNode.cpp^
+ src/scene/SceneNode.cpp^
+ src/scene/CollisionNode.cpp^
  src/animation/BoneDescription.cpp^
  src/animation/Bone.cpp^
  src/animation/Animation.cpp^
  src/animation/AnimationState.cpp^
  src/animation/AnimatedModel.cpp^
  src/animation/AnimationController.cpp^
+ src/Object.cpp^
  src/BinaryIO.cpp^
  src/Fade.cpp^
  src/Mouse.cpp^
@@ -19,6 +24,11 @@ emcc^
  src/CharacterSet.cpp^
  src/Application.cpp^
  src/bullet_store.cpp^
+ src/enemy_spawner.cpp^
+ src/entities/Entity.cpp^
+ src/entities/CollisionEntity.cpp^
+ src/entities/Enemy.cpp^
+ src/entities/Player.cpp^
  src/main.cpp^
  Shape/Capsule.cpp^
  Shape/Cube.cpp^
@@ -43,15 +53,32 @@ emcc^
  Nuklear/NkCalculator.cpp^
  Nuklear/NkNodeEditor.cpp^
  Nuklear/NkJoystick.cpp^
+ Sound/SoftwareMixer.cpp^
+ Sound/EMPlayer.cpp^
+ Sound/OpenALPlayer.cpp^
+ Sound/SoundDevice.cpp^
+ Sound/AudioDecoder.cpp^
+ Sound/EMEffect.cpp^
+ Sound/OpenALEffect.cpp^
+ Sound/SoundEffect.cpp^
+ Physics/Physics.cpp^
+ Physics/DebugDrawer.cpp^
  states/StateMachine.cpp^
  states/Isometric.cpp^
  libimgui.a^
- ../lib/libfreeimage.a^
- ../lib/libassimp.a^
+ ../lib/libfreeimageT.a^
+ ../lib/libassimpT.a^
  ../lib/libzlib.a^
- -I "./" -I "./include" -I "./include/animation" -I "./libimgui" -I "../include/glm" -I "../include/FreeImage" -I "../include/rapidjson/include" -I "../include"^
+ ../lib/libavcodec.a^
+ ../lib/libavutil.a^
+ ../lib/libavformat.a^
+ ../lib/libswresample.a^
+ ../lib/liblinearmath.a^
+ ../lib/libbulletcollision.a^
+ ../lib/libbulletdynamics.a^
+ -I "./" -I "./include" -I "./include/animation" -I "./include/scene/" -I "./include/entities" -I "./libimgui" -I "../include/glm" -I "../include/FreeImage" -I "../include/rapidjson/include" -I "../include/ffmpeg" -I "../include/bullet" -I "../include"^
  -Wall -Wno-return-type-c-linkage -Wno-missing-braces -Wunused-result^
  -DFREEIMAGE_LIB -DWEBGPU_BACKEND=WGPU^
- -o webgpu.js -std=c++17 -Os --use-port=contrib.glfw3 --use-port=emdawnwebgpu --preload-file res/models --preload-file res/shader --preload-file res/textures --preload-file res/fonts -s ASYNCIFY -s ASSERTIONS -s TOTAL_MEMORY=134217728 -s ALLOW_MEMORY_GROWTH=1 -s "EXPORTED_FUNCTIONS=['_main']" -s "EXPORTED_RUNTIME_METHODS=['ccall']" -s MODULARIZE=1^
+ -o webgpu.js -std=c++17 -Os --use-port=contrib.glfw3 --use-port=emdawnwebgpu --preload-file res/models --preload-file res/shader --preload-file res/textures --preload-file res/fonts --preload-file res/sounds -s ASYNCIFY -s ASSERTIONS -s TOTAL_MEMORY=167772160 -s WASM_WORKERS=1 -s AUDIO_WORKLET=1 -s SHARED_MEMORY=1 -pthread -s ALLOW_MEMORY_GROWTH=1 -s "EXPORTED_FUNCTIONS=['_main']" -s "EXPORTED_RUNTIME_METHODS=['ccall']" -s MODULARIZE=1^
  -s EXPORT_NAME='IsometricModule'^
  && exit

@@ -6,6 +6,9 @@
 #define FIXED_STEP 0.0166666666666667f
 
 struct GLFWwindow;
+class StateMachine;
+class Physics;
+
 class Application {
 
 	friend void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -32,6 +35,7 @@ public:
 	static int Height;
 	static float ScrollDelta;
 	static GLFWwindow* Window;
+	static std::unique_ptr<Physics> physics;
 
 private:
 

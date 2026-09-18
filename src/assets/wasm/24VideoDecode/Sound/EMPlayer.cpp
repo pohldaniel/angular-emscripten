@@ -64,7 +64,10 @@ EM_BOOL OnCanvasClick(int eventType, const EmscriptenMouseEvent *mouseEvent, voi
 }
 
 bool EMPlayer::init() {
-    m_audioContext = emscripten_create_audio_context(nullptr);
+    EmscriptenWebAudioCreateAttributes attr = {};
+    attr.sampleRate = 44100;
+    
+    m_audioContext = emscripten_create_audio_context(&attr);
     emscripten_set_click_callback("canvas", (void*)m_audioContext, EM_FALSE, OnCanvasClick);
 
     static uint8_t wasmAudioWorkletStack[1024 * 64];

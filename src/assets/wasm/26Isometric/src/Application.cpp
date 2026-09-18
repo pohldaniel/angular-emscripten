@@ -5,6 +5,7 @@
 #include <imgui_impl_glfw.h>
 
 #include <WebGPU/WgpContext.h>
+#include <Physics/Physics.h>
 #include <States/Isometric.h>
 
 #include "Application.h"
@@ -13,6 +14,7 @@
 
 GLFWwindow* Application::Window = nullptr;
 StateMachine* Application::Machine = nullptr;
+std::unique_ptr<Physics> Application::physics = nullptr;
 int Application::Width;
 int Application::Height;
 double Application::Time;
@@ -46,6 +48,8 @@ void Application::MessageLoop(void *arg) {
 Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
   Application::Width = 640;
   Application::Height = 480;
+  Application::physics = std::make_unique<Physics>();
+  
   initWindow();
   initWebGPU();
   initImGUI();

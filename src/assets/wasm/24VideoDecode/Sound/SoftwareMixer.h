@@ -42,8 +42,6 @@ struct ActiveSound {
 
 class SoftwareMixer {
 
-    friend class OboeEffect;
-
 public:
 
     SoftwareMixer();
