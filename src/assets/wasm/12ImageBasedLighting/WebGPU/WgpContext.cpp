@@ -145,10 +145,9 @@ bool wgpCreateDevice(void* window) {
 	WGPULimits requiredLimits = {};
 	setDefault(requiredLimits);
 	requiredLimits.nextInChain = NULL;
-	requiredLimits.maxTextureDimension1D = 2048;
-	requiredLimits.maxTextureDimension2D = 2048;
-	requiredLimits.maxTextureDimension3D = 2048;
-	requiredLimits.maxSamplersPerShaderStage = 1;
+	requiredLimits.maxTextureDimension1D = 2048u;
+	requiredLimits.maxTextureDimension2D = 2048u;
+	requiredLimits.maxTextureDimension3D = 2048u;
 
 	//WGPUUncapturedErrorCallbackInfo errorCallbackInfo = {};
 	//errorCallbackInfo.callback = OnErrorDevice;
