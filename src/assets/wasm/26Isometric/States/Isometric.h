@@ -198,7 +198,7 @@ private:
 
 	EnemySpawner m_enemySpawner;
 	std::vector<CollisionEntity*> m_entities;
-	Player* m_playerEnitity;
+	Player* m_playerEntity;
 	std::vector<Enemy*> m_enemies;
 	std::vector<glm::mat4> m_cpuInstanceBuffer;
 	std::vector<SpriteInstance> m_activeBillboards;
