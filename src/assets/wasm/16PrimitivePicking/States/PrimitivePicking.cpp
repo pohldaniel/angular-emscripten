@@ -69,12 +69,12 @@ PrimitivePicking::PrimitivePicking(StateMachine& machine) : State(machine, State
 		WGPUTextureFormat_Undefined,
 		WGPUTextureFormat_Undefined,
 		WGPUCompareFunction_Less,
-		{ WRITE_DEPTH | DEPTH_STENCIL_STATE | BLEND_STATE | FRAGMENT_STATE, BlendMode::ALPHA_BLENDING, WGPUTextureFormat_R32Uint, WGPUCullMode_None}
+		{ DEPTH_STENCIL_STATE | BLEND_STATE | FRAGMENT_STATE, ColorMode::WRITE_RGBA, DepthMode::WRITE, StencilMode::DEFAULT, BlendMode::ALPHA_BLENDING, WGPUTextureFormat_R32Uint, WGPUCullMode_None }
 	);
 
 	wgpContext.addSahderModule("PICK_DEBUG", PICK_DEBUG_WGSL, true);
 	wgpContext.createRenderPipeline("PICK_DEBUG", "RP_PICK_DEBUG", VL_NONE, std::bind(&PrimitivePicking::OnBindGroupLayoutsDebug, this));
-    std::cout << "----------" << std::endl;
+
 	m_computeBindGroup = createComputeBindGroup();
 	m_debugBindGroup = createDebugBindGroup();
 

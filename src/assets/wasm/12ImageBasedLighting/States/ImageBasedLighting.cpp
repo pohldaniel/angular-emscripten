@@ -62,11 +62,11 @@ ImageBasedLighting::ImageBasedLighting(StateMachine& machine) : State(machine, S
 	wgpContext.createRenderPipeline("SKYBOX", "RP_SKYBOX", VL_P, 
 		std::bind(&ImageBasedLighting::OnBindGroupLayoutsSkybox, this), 
 		4u,
-		WGPUPrimitiveTopology_TriangleList,
+	    WGPUPrimitiveTopology_TriangleList,
+	    WGPUTextureFormat_Undefined,
 		WGPUTextureFormat_Undefined,
-		WGPUTextureFormat_Undefined,
-		WGPUCompareFunction_LessEqual,
-		{ WRITE_DEPTH | DEPTH_STENCIL_STATE | FRAGMENT_STATE, BlendMode::ALPHA_BLENDING }
+	    WGPUCompareFunction_LessEqual,
+		{ DEPTH_STENCIL_STATE | FRAGMENT_STATE }
 	);
 
 	wgpContext.addSahderModule("IRRADIANCE", "res/shader/irradiance.wgsl");
@@ -77,7 +77,7 @@ ImageBasedLighting::ImageBasedLighting(StateMachine& machine) : State(machine, S
 		WGPUTextureFormat_RGBA16Float,
 		WGPUTextureFormat_Undefined,
 		WGPUCompareFunction_Less,
-		{ WRITE_DEPTH | FRAGMENT_STATE, BlendMode::ALPHA_BLENDING }
+		{ FRAGMENT_STATE }
 	);
 
 	wgpContext.addSahderModule("CUBE", "res/shader/cube_map.wgsl");
@@ -88,7 +88,7 @@ ImageBasedLighting::ImageBasedLighting(StateMachine& machine) : State(machine, S
 		WGPUTextureFormat_RGBA16Float,
 		WGPUTextureFormat_Undefined,
 		WGPUCompareFunction_Less,
-		{ WRITE_DEPTH | FRAGMENT_STATE, BlendMode::ALPHA_BLENDING }
+		{ FRAGMENT_STATE }
 	);
 
 	wgpContext.addSahderModule("PREFILTER", "res/shader/prefilter.wgsl");
@@ -99,7 +99,7 @@ ImageBasedLighting::ImageBasedLighting(StateMachine& machine) : State(machine, S
 		WGPUTextureFormat_RGBA16Float,
 		WGPUTextureFormat_Undefined,
 		WGPUCompareFunction_Less,
-		{ WRITE_DEPTH | FRAGMENT_STATE, BlendMode::ALPHA_BLENDING }
+		{ FRAGMENT_STATE }
 	);
 
 	wgpContext.addSahderModule("BRDF", "res/shader/brdf.wgsl");
@@ -110,7 +110,7 @@ ImageBasedLighting::ImageBasedLighting(StateMachine& machine) : State(machine, S
 		WGPUTextureFormat_RG16Float,
 		WGPUTextureFormat_Undefined,
 		WGPUCompareFunction_Less,
-		{ WRITE_DEPTH | FRAGMENT_STATE, BlendMode::ALPHA_BLENDING }
+		{ FRAGMENT_STATE }
 	);
 
 	lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 0.0f, 100.0f);
