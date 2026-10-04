@@ -116,8 +116,8 @@ void Specularity::OnMouseMotion(const Event::MouseMoveEvent& event) {
 	}
 }
 
-void Specularity::OnScroll(double xoffset, double yoffset){
-	m_cameraState.zoom += m_drag.scrollSensitivity * (float)yoffset;
+void Specularity::OnScroll(const Event::MouseWheelEvent& event){
+	m_cameraState.zoom += m_drag.scrollSensitivity * (float)event.delta;
 	m_cameraState.zoom = glm::clamp(m_cameraState.zoom, -2.0f, 2.0f);
 	updateViewMatrix();
 }

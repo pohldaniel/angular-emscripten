@@ -138,7 +138,7 @@ void InstancedCube::OnMouseMotion(const Event::MouseMoveEvent& event) {
 
 }
 
-void InstancedCube::OnScroll(double xoffset, double yoffset) {
+void InstancedCube::OnScroll(const Event::MouseWheelEvent& event) {
 	
 }
 

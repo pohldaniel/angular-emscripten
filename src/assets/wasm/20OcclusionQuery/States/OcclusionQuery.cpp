@@ -246,7 +246,7 @@ void OcclusionQuery::OnMouseMotion(const Event::MouseMoveEvent& event) {
 	m_trackball.motion(event.x, event.y);
 }
 
-void OcclusionQuery::OnScroll(double xoffset, double yoffset) {
+void OcclusionQuery::OnScroll(const Event::MouseWheelEvent& event) {
 
 }
 

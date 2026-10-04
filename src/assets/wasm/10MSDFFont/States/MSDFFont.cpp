@@ -238,7 +238,7 @@ void MSDFFont::OnMouseMotion(const Event::MouseMoveEvent& event) {
 
 }
 
-void MSDFFont::OnScroll(double xoffset, double yoffset) {
+void MSDFFont::OnScroll(const Event::MouseWheelEvent& event) {
 	
 }
 

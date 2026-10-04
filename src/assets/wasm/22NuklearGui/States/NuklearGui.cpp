@@ -209,7 +209,7 @@ void NuklearGui::OnMouseButtonUp(const Event::MouseButtonEvent& event) {
 		Mouse::instance().attach(Application::Window, false, false, true);
 }
 
-void NuklearGui::OnScroll(double xoffset, double yoffset) {
+void NuklearGui::OnScroll(const Event::MouseWheelEvent& event) {
 
 }
 

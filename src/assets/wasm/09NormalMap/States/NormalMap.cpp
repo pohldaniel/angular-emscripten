@@ -276,7 +276,7 @@ void NormalMap::OnMouseMotion(const Event::MouseMoveEvent& event) {
 	applyTransformation(m_trackball);
 }
 
-void NormalMap::OnScroll(double xoffset, double yoffset) {
+void NormalMap::OnScroll(const Event::MouseWheelEvent& event) {
 
 }
 
