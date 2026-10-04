@@ -105,7 +105,7 @@ void CharacterSet::loadMsdfBmFromFile(const std::string& pathJson, const std::st
 	}
 
 	for (auto& pair : characters) {
-		pair.second.offset[1] += (heightMax - pair.second.size[1]);
+		pair.second.pos[1] += (heightMax - pair.second.size[1]);
 	}
 
 	for (rapidjson::Value::ConstValueIterator kerning = doc["kernings"].GetArray().Begin(); kerning != doc["kernings"].GetArray().End(); ++kerning) {

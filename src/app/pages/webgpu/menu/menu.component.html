@@ -1,0 +1,6 @@
+<app-spinner [ngStyle]="{'visibility': !moduleLoaded ? 'visible' : 'hidden'}"></app-spinner>
+<div content [ngStyle]="{'visibility': moduleLoaded ? 'visible' : 'hidden'}">
+  <span (resized)="onResized($event)" #span>
+    <canvas class="emscripten" oncontextmenu="event.preventDefault()" id="canvas" #canvas></canvas>
+  </span>
+</div>

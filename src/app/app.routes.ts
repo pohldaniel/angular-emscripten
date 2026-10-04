@@ -26,6 +26,7 @@ import {NuklearGuiComponent} from './pages/webgpu/nuklear-gui/nuklear-gui.compon
 import {AudioDecodeComponent} from './pages/webgpu/audio-decode/audio-decode.component';
 import {CubesComponent} from './pages/webgpu/cubes/cubes.component';
 import {IsometricComponent} from './pages/webgpu/isometric/isometric.component';
+import {MenuComponent} from './pages/webgpu/menu/menu.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -163,8 +164,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/menu', 
+    component: MenuComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/isometric'
+    redirectTo: 'webgpu/menu'
   } 
 ];

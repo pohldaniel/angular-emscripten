@@ -192,6 +192,13 @@
               </span>
             </button>
           </li>
+          <li id="three-twentytwo" class="list-item-button">
+            <button [attr.tabindex]="router.url=='/webgpu/menu' ? -1 : (storeTargetedSubmenu=='three' ? 0 : -1)" (click)="navigate('/webgpu/menu')" [class.active]="router.url == '/webgpu/menu'">Menu
+              <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1" (click)="updateFavorites($event, 26, checked[26]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
+                <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[26] ? 'star' : 'star_outline'}}</mat-icon>                 
+              </span>
+            </button>
+          </li>
         </ul>
        </li>
     </ul>

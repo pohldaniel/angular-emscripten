@@ -1,0 +1,82 @@
+emcc^
+ src/scene/Node.cpp^
+ src/scene/BaseNode.cpp^
+ src/scene/SceneNode.cpp^
+ src/animation/BoneDescription.cpp^
+ src/animation/Bone.cpp^
+ src/animation/Animation.cpp^
+ src/animation/AnimationState.cpp^
+ src/animation/AnimatedModel.cpp^
+ src/animation/AnimationController.cpp^
+ src/ui/UiContext.cpp^
+ src/ui/Widget.cpp^
+ src/ui/Empty.cpp^
+ src/ui/Surface.cpp^
+ src/ui/Button.cpp^
+ src/ui/Label.cpp^
+ src/Object.cpp^
+ src/BinaryIO.cpp^
+ src/Fade.cpp^
+ src/Mouse.cpp^
+ src/Keyboard.cpp^
+ src/Material.cpp^
+ src/Transform.cpp^
+ src/Mesh.cpp^
+ src/Model.cpp^
+ src/ObjModel.cpp^
+ src/AssimpModel.cpp^
+ src/Camera.cpp^
+ src/CharacterSet.cpp^
+ src/Application.cpp^
+ src/bullet_store.cpp^
+ src/enemy_spawner.cpp^
+ src/entities/Entity.cpp^
+ src/entities/CollisionEntity.cpp^
+ src/entities/Enemy.cpp^
+ src/entities/Player.cpp^
+ src/main.cpp^
+ Shape/Capsule.cpp^
+ Shape/Cube.cpp^
+ Shape/Cylinder.cpp^
+ Shape/Quad.cpp^
+ Shape/Segment.cpp^
+ Shape/Sphere.cpp^
+ Shape/Spiral.cpp^
+ Shape/Torus.cpp^
+ Shape/TorusKnot.cpp^
+ Shape/Shape.cpp^
+ WebGPU/WgpContext.cpp^
+ WebGPU/WgpTexture.cpp^
+ WebGPU/WgpBuffer.cpp^
+ WebGPU/WgpMesh.cpp^
+ WebGPU/WgpModel.cpp^
+ WebGPU/WgpBatchRenderer.cpp^
+ WebGPU/WgpFontRenderer.cpp^
+ WebGPU/WgpRenderer.cpp^
+ Nuklear/NkContext.cpp^
+ Nuklear/NkStyle.cpp^
+ Nuklear/NkCalculator.cpp^
+ Nuklear/NkNodeEditor.cpp^
+ Nuklear/NkJoystick.cpp^
+ Physics/Physics.cpp^
+ Physics/DebugDrawer.cpp^
+ states/StateMachine.cpp^
+ states/Menu.cpp^
+ libimgui.a^
+ ../lib/libfreeimageT.a^
+ ../lib/libassimpT.a^
+ ../lib/libzlib.a^
+ ../lib/libavcodec.a^
+ ../lib/libavutil.a^
+ ../lib/libavformat.a^
+ ../lib/libswresample.a^
+ ../lib/liblinearmath.a^
+ ../lib/libbulletcollision.a^
+ ../lib/libbulletdynamics.a^
+ ../lib/libfreetype.a^
+ -I "./" -I "./include" -I "./include/animation" -I "./include/scene/" -I "./include/entities"  -I "./include/ui" -I "./libimgui" -I "../include/glm" -I "../include/FreeImage" -I "../include/rapidjson/include" -I "../include/ffmpeg" -I "../include/bullet" -I "../include/freetype2" -I "../include"^
+ -Wall -Wno-return-type-c-linkage -Wno-missing-braces -Wunused-result^
+ -DFREEIMAGE_LIB -DWEBGPU_BACKEND=WGPU^
+ -o webgpu.js -std=c++17 -Os --use-port=contrib.glfw3 --use-port=emdawnwebgpu --preload-file res/shader --preload-file res/fonts -s ASYNCIFY -s ASSERTIONS -s TOTAL_MEMORY=167772160 -s ALLOW_MEMORY_GROWTH=1 -s "EXPORTED_FUNCTIONS=['_main']" -s "EXPORTED_RUNTIME_METHODS=['ccall']" -s MODULARIZE=1^
+ -s EXPORT_NAME='MenuModule'^
+ && exit

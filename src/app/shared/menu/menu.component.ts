@@ -80,7 +80,8 @@ export class MenuComponent implements OnInit{
       this.router.url == '/webgpu/audio-decode' ||
       this.router.url == '/webgpu/video-decode' ||
       this.router.url == '/webgpu/cubes'||
-      this.router.url == '/webgpu/isometric')
+      this.router.url == '/webgpu/isometric'||
+      this.router.url == '/webgpu/menu')
     {
       this.targetedSubmenu = 'three';
       this.storeTargetedSubmenu = 'three';     
@@ -120,8 +121,9 @@ export class MenuComponent implements OnInit{
     .set(Math.pow(2, 22), {target : '/webgpu/audio-decode', description: 'Audio Decode', descriptionLineBreak: '', class : 'three-eightteen', index : 22} as MenuItem)
     .set(Math.pow(2, 23), {target : '/webgpu/video-decode', description: 'Video Decode', descriptionLineBreak: '', class : 'three-ninenteen', index : 23} as MenuItem)
     .set(Math.pow(2, 24), {target : '/webgpu/cubes', description: 'Cubes', descriptionLineBreak: '', class : 'three-twenty', index : 24} as MenuItem)
-    .set(Math.pow(2, 25), {target : '/webgpu/isometric', description: 'Isometric', descriptionLineBreak: '', class : 'three-twentyone', index : 25} as MenuItem);
-    
+    .set(Math.pow(2, 25), {target : '/webgpu/isometric', description: 'Isometric', descriptionLineBreak: '', class : 'three-twentyone', index : 25} as MenuItem)
+    .set(Math.pow(2, 26), {target : '/webgpu/menu', description: 'Menu', descriptionLineBreak: '', class : 'three-twentytwo', index : 26} as MenuItem);
+
     for(let key of map.keys()) {
       if((this.settings.favorites | key) == this.settings.favorites){
         this.checked.push(true);       
