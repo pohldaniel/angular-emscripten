@@ -55,14 +55,15 @@ void CharacterSet::loadMsdfFromFile(const std::string& pathJson, const std::stri
 		float abottom = glyph->HasMember("atlasBounds") ? (*glyph)["atlasBounds"]["bottom"].GetFloat() : 0.0f;
 
 		characters.insert(std::pair<char, Char>(code,
-			{ (pright - pleft) * size, (ptop - pbottom) * size,
-			  (aleft + 0.5f) / width, (abottom + 0.5f) / height,
-			  ((aright - aleft) - 1.0f) / width, ((atop - abottom) - 1.0f) / height,
-			  pleft * size, pbottom * size + distanceRange,
-			  advance
-			}));
+			{ pleft * size, pbottom * size + distanceRange,
+			(pright - pleft) * size, (ptop - pbottom) * size,
+			(aleft + 0.5f) / width, (abottom + 0.5f) / height,
+			((aright - aleft) - 1.0f) / width, ((atop - abottom) - 1.0f) / height,			  
+			advance
+		}));
 	}
-	m_texture.loadFromFile(pathTexture);
+	texture.loadFromFile(pathTexture);
+	texture.markForDelete();
 }
 
 void CharacterSet::loadMsdfBmFromFile(const std::string& pathJson, const std::string& pathTexture) {
@@ -95,12 +96,12 @@ void CharacterSet::loadMsdfBmFromFile(const std::string& pathJson, const std::st
 
 		heightMax = (std::max)(height, heightMax);
 		characters.insert(std::pair<char, Char>(code,
-			{ width, height,
-			  (posX - 0.5f) / widthT, (heightT - posY - height - 0.5f) / heightT,
-			  (width + 1.0f) / widthT, (height + 1.0f) / heightT,
-			  offsetX, -offsetY,
-			  advance
-			}));
+			{ offsetX, -offsetY,
+			width, height,
+			(posX - 0.5f) / widthT, (heightT - posY - height - 0.5f) / heightT,
+			(width + 1.0f) / widthT, (height + 1.0f) / heightT,			  
+			advance
+		}));
 	}
 
 	for (auto& pair : characters) {
@@ -114,7 +115,8 @@ void CharacterSet::loadMsdfBmFromFile(const std::string& pathJson, const std::st
 		kernings[first].push_back({ second , advance });
 	}
 
-	m_texture.loadFromFile(pathTexture);
+	texture.loadFromFile(pathTexture);
+	texture.markForDelete();
 }
 
 float CharacterSet::getWidth(const std::string& text) const {

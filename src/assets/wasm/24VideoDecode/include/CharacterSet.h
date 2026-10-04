@@ -4,11 +4,13 @@
 #include <string>
 #include <WebGPU/WgpTexture.h>
 
+#define MAXWIDTH 4096
+
 struct Char {
+	float pos[2];
 	float size[2];
 	float textureOffset[2];
 	float textureSize[2];
-	float offset[2];
 	float advance;
 };
 
@@ -32,5 +34,5 @@ struct CharacterSet {
 	float distanceRange;
 	float lineHeight;
 
-	WgpTexture m_texture;
+	WgpTexture texture;
 };
