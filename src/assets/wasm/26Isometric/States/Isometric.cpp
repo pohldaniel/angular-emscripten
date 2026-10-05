@@ -60,26 +60,23 @@ Isometric::Isometric(StateMachine& machine) : State(machine, States::ISOMETRIC),
 	m_floor.rotate(0.0f, 45.0f, 0.0f);
 	m_bullet.buildQuadXZ({ -0.3f * 0.243f, 0.0f, -0.3f * 0.243f }, { 0.3f * 0.5f, 0.3f * 0.5f }, 1u, 1u, true, false);
 
-	AnimationManager::Get().getAnimation("full").loadAnimationAssimp("res/models/Player.fbx", "Player", "full", 0u, 245u);
-	AnimationManager::Get().getAnimation("idle").loadAnimationAssimp("res/models/Player.fbx", "Player", "idle", 5u, 81u);
-	AnimationManager::Get().getAnimation("forward").loadAnimationAssimp("res/models/Player.fbx", "Player", "forward", 85u, 105u);
-	AnimationManager::Get().getAnimation("backward").loadAnimationAssimp("res/models/Player.fbx", "Player", "backward", 110u, 130u);
+	AnimationManager::Get().getAnimation("full").loadAnimationAssimp("res/models/Player/Player.fbx", "Player", "full", 0u, 245u);
+	AnimationManager::Get().getAnimation("idle").loadAnimationAssimp("res/models/Player/Player.fbx", "Player", "idle", 5u, 81u);
+	AnimationManager::Get().getAnimation("forward").loadAnimationAssimp("res/models/Player/Player.fbx", "Player", "forward", 85u, 105u);
+	AnimationManager::Get().getAnimation("backward").loadAnimationAssimp("res/models/Player/Player.fbx", "Player", "backward", 110u, 130u);
 	AnimationManager::Get().getAnimation("backward").shift(10u);
-	AnimationManager::Get().getAnimation("right").loadAnimationAssimp("res/models/Player.fbx", "Player", "right", 135u, 155u);
+	AnimationManager::Get().getAnimation("right").loadAnimationAssimp("res/models/Player/Player.fbx", "Player", "right", 135u, 155u);
 	AnimationManager::Get().getAnimation("right").shift(10u);
-	AnimationManager::Get().getAnimation("left").loadAnimationAssimp("res/models/Player.fbx", "Player", "left", 160u, 180u);
-	AnimationManager::Get().getAnimation("death").loadAnimationAssimp("res/models/Player.fbx", "Player", "death", 185u, 244u);
+	AnimationManager::Get().getAnimation("left").loadAnimationAssimp("res/models/Player/Player.fbx", "Player", "left", 160u, 180u);
+	AnimationManager::Get().getAnimation("death").loadAnimationAssimp("res/models/Player/Player.fbx", "Player", "death", 185u, 244u);
 
-	m_player.loadModelAssimp("res/models/Player.fbx", 1u);
+	m_player.loadModelAssimp("res/models/Player/Player.fbx", 1u);
 	m_player.scale(0.0044f, 0.0044f, 0.0044f);
 	m_rotationButtonResult.degrees = glm::degrees(aimTheta);
 
 	m_enemy.loadModel("res/models/EelDog/EelDog.fbx");
 	m_enemy.rotate(90.0f, 0.0f, 0.0f);
 	m_enemy.scale(0.01f);
-
-	Material::CleanupMaterials();
-	static_cast<const AssimpMesh*>(m_enemy.getMesh())->setMaterialIndex(-1);
 
 	AnimatedMesh* mesh = static_cast<AnimatedMesh*>(m_player.mesh());
 	mesh->boneDescriptions().emplace_back();
@@ -182,15 +179,15 @@ Isometric::Isometric(StateMachine& machine) : State(machine, States::ISOMETRIC),
 	m_sprite.loadFromFile("res/textures/impact_spritesheet_with_00.png");
 	m_muzzle.loadFromFile("res/textures/muzzle_spritesheet.png");
 
-	m_wgpPlayerD.loadFromFile("res/models/Player_D.tga", true);
-	m_wgpPlayerN.loadFromFile("res/models/Player_D.tga", true);
-	m_wgpPlayerS.loadFromFile("res/models/Player_S.tga", true);
-	m_wgpPlayerE.loadFromFile("res/models/Player_E.tga", true);
+	m_wgpPlayerD.loadFromFile("res/models/Player/Player_D.tga", true);
+	m_wgpPlayerN.loadFromFile("res/models/Player/Player_D.tga", true);
+	m_wgpPlayerS.loadFromFile("res/models/Player/Player_S.tga", true);
+	m_wgpPlayerE.loadFromFile("res/models/Player/Player_E.tga", true);
 
-	m_wgpGunD.loadFromFile("res/models/Gun_D.tga", true);
-	m_wgpGunN.loadFromFile("res/models/Gun_D.tga", true);
-	m_wgpGunS.loadFromFile("res/models/Gun_S.tga", true);
-	m_wgpGunE.loadFromFile("res/models/Gun_E.tga", true);
+	m_wgpGunD.loadFromFile("res/models/Player/Gun_D.tga", true);
+	m_wgpGunN.loadFromFile("res/models/Player/Gun_D.tga", true);
+	m_wgpGunS.loadFromFile("res/models/Player/Gun_S.tga", true);
+	m_wgpGunE.loadFromFile("res/models/Player/Gun_E.tga", true);
 
 	m_wgpFloorD.loadFromFile("res/textures/floor/Floor_D.psd");
 	m_wgpFloorN.loadFromFile("res/textures/floor/Floor_N.psd");
