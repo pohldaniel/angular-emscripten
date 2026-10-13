@@ -14,6 +14,9 @@ emcc^
  src/ui/Surface.cpp^
  src/ui/Button.cpp^
  src/ui/Label.cpp^
+ src/ui/Canvas.cpp^
+ src/thread/Thread.cpp^
+ src/thread/LoadingManager.cpp^
  src/Object.cpp^
  src/BinaryIO.cpp^
  src/Fade.cpp^
@@ -28,8 +31,6 @@ emcc^
  src/Camera.cpp^
  src/CharacterSet.cpp^
  src/Application.cpp^
- src/bullet_store.cpp^
- src/enemy_spawner.cpp^
  src/entities/Entity.cpp^
  src/entities/CollisionEntity.cpp^
  src/entities/Enemy.cpp^
@@ -66,17 +67,13 @@ emcc^
  ../lib/libfreeimageT.a^
  ../lib/libassimpT.a^
  ../lib/libzlib.a^
- ../lib/libavcodec.a^
- ../lib/libavutil.a^
- ../lib/libavformat.a^
- ../lib/libswresample.a^
  ../lib/liblinearmath.a^
  ../lib/libbulletcollision.a^
  ../lib/libbulletdynamics.a^
- ../lib/libfreetype.a^
- -I "./" -I "./include" -I "./include/animation" -I "./include/scene/" -I "./include/entities"  -I "./include/ui" -I "./libimgui" -I "../include/glm" -I "../include/FreeImage" -I "../include/rapidjson/include" -I "../include/ffmpeg" -I "../include/bullet" -I "../include/freetype2" -I "../include"^
+ ../lib/libfreetypeT.a^
+ -I "./" -I "./include" -I "./include/animation" -I "./include/scene/" -I "./include/entities" -I "./include/ui" -I "./include/thread" -I "./libimgui" -I "../include/glm" -I "../include/FreeImage" -I "../include/rapidjson/include" -I "../include/ffmpeg" -I "../include/bullet" -I "../include/freetype2" -I "../include"^
  -Wall -Wno-return-type-c-linkage -Wno-missing-braces -Wunused-result^
  -DFREEIMAGE_LIB -DWEBGPU_BACKEND=WGPU^
- -o webgpu.js -std=c++17 -Os --use-port=contrib.glfw3 --use-port=emdawnwebgpu --preload-file res/shader --preload-file res/fonts -s ASYNCIFY -s ASSERTIONS -s TOTAL_MEMORY=167772160 -s ALLOW_MEMORY_GROWTH=1 -s "EXPORTED_FUNCTIONS=['_main']" -s "EXPORTED_RUNTIME_METHODS=['ccall']" -s MODULARIZE=1^
+ -o webgpu.js -std=c++17 -Os --use-port=contrib.glfw3 --use-port=emdawnwebgpu -pthread -sPTHREAD_POOL_SIZE=4 --preload-file res/shader --preload-file res/fonts -s ASYNCIFY -s ASSERTIONS -s TOTAL_MEMORY=167772160 -s ALLOW_MEMORY_GROWTH=1 -s "EXPORTED_FUNCTIONS=['_main']" -s "EXPORTED_RUNTIME_METHODS=['ccall']" -s MODULARIZE=1^
  -s EXPORT_NAME='MenuModule'^
  && exit

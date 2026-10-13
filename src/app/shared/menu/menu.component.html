@@ -158,7 +158,7 @@
             </button>
           </li>
           <li id="three-seventeen" class="list-item-button">
-            <button [attr.tabindex]="router.url=='/webgpu/nuklear-gui' ? -1 : (storeTargetedSubmenu=='three' ? 0 : -1)" (click)="navigate('/webgpu/nuklear-gui')" [class.active]="router.url == '/webgpu/nuklear-gui'">Nuklear GUI
+            <button [attr.tabindex]="router.url=='/webgpu/nuklear-ui' ? -1 : (storeTargetedSubmenu=='three' ? 0 : -1)" (click)="navigate('/webgpu/nuklear-ui')" [class.active]="router.url == '/webgpu/nuklear-ui'">Nuklear UI
               <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1" (click)="updateFavorites($event, 21, checked[21]); $event.stopPropagation();" class="icon-box" aria-label="als favorit auswählen">
                 <mat-icon aria-hidden="false" aria-label="als favorit auswählen">{{checked[21] ? 'star' : 'star_outline'}}</mat-icon>                 
               </span>

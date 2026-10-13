@@ -23,8 +23,7 @@ emcc^
  src/Camera.cpp^
  src/CharacterSet.cpp^
  src/Application.cpp^
- src/bullet_store.cpp^
- src/enemy_spawner.cpp^
+ src/BulletStore.cpp^
  src/entities/Entity.cpp^
  src/entities/CollisionEntity.cpp^
  src/entities/Enemy.cpp^

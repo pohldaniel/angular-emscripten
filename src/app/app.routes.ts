@@ -22,7 +22,7 @@ import {VolumeRenderingComponent} from './pages/webgpu/volume-rendering/volume-r
 import {OcclusionQueryComponent} from './pages/webgpu/occlusion-query/occlusion-query.component';
 import {VideoDecodeComponent} from './pages/webgpu/video-decode/video-decode.component';
 import {RenderBundlesComponent} from './pages/webgpu/render-bundles/render-bundles.component';
-import {NuklearGuiComponent} from './pages/webgpu/nuklear-gui/nuklear-gui.component';
+import {NuklearUiComponent} from './pages/webgpu/nuklear-ui/nuklear-ui.component';
 import {AudioDecodeComponent} from './pages/webgpu/audio-decode/audio-decode.component';
 import {CubesComponent} from './pages/webgpu/cubes/cubes.component';
 import {IsometricComponent} from './pages/webgpu/isometric/isometric.component';
@@ -139,8 +139,8 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
-  { path: 'webgpu/nuklear-gui', 
-    component: NuklearGuiComponent,
+  { path: 'webgpu/nuklear-ui', 
+    component: NuklearUiComponent,
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
