@@ -1,13 +1,14 @@
 #include "Node.h"
 
-Node::Node() : m_parent(nullptr), m_markForRemove(false), m_id(-1), OnChildAdded(nullptr), OnChildRemoved(nullptr){
+Node::Node() : m_parent(nullptr), m_markForRemove(false), m_id(-1), m_sort(10u), OnChildAdded(nullptr), OnChildRemoved(nullptr){
 
 }
 
 Node::Node(const Node& rhs) : 
 	m_parent(rhs.m_parent), 
 	m_markForRemove(rhs.m_markForRemove), 
-	m_id(rhs.m_id),  
+	m_id(rhs.m_id),
+	m_sort(rhs.m_sort),
 	m_name(rhs.m_name),
 	OnChildAdded(rhs.OnChildAdded),
 	OnChildRemoved(rhs.OnChildRemoved) {
@@ -24,6 +25,7 @@ Node& Node::operator=(const Node& rhs) {
 	m_parent = rhs.m_parent;
 	m_markForRemove = rhs.m_markForRemove;
 	m_id = rhs.m_id;
+	m_sort = rhs.m_sort;
 	m_name = rhs.m_name;
 	OnChildAdded = rhs.OnChildAdded;
 	OnChildRemoved = rhs.OnChildRemoved;
@@ -111,6 +113,10 @@ const int Node::getId() const {
 	return m_id;
 }
 
+const size_t Node::getSort() const {
+	return m_sort;
+}
+
 void Node::setParent(Node* node, bool disableDelete) {
 	if (m_parent == node) return;
 	if (m_parent) {
@@ -145,6 +151,10 @@ void Node::setName(const std::string& name) {
 
 void Node::setId(const int id) {
 	m_id = id;
+}
+
+void Node::setSort(size_t sort) {
+	m_sort = sort;
 }
 
 void Node::eraseChild(const int id) {
