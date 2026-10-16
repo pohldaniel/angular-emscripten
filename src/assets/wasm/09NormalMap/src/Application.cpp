@@ -124,13 +124,13 @@ void Application::update(){
   Machine->render();
 }
 
-void Application::Resize(uint32_t width, uint32_t height){
+void Application::Resize(uint32_t width, uint32_t height, int deltaW, int deltaH){
   if(Init){
     Application::Width = static_cast<int>(width);
     Application::Height = static_cast<int>(height);
     glfwSetWindowSize(Window, width, height);
     wgpResize(width, height);
-    Machine->getStates().top()->resize(0, 0);
+    Machine->getStates().top()->resize(deltaW, deltaH);
   }
 }
 
