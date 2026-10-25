@@ -27,6 +27,7 @@ import {AudioDecodeComponent} from './pages/webgpu/audio-decode/audio-decode.com
 import {CubesComponent} from './pages/webgpu/cubes/cubes.component';
 import {IsometricComponent} from './pages/webgpu/isometric/isometric.component';
 import {MenuComponent} from './pages/webgpu/menu/menu.component';
+import {ControllerComponent} from './pages/webgpu/controller/controller.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -169,8 +170,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/controller', 
+    component: ControllerComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/menu'
+    redirectTo: 'webgpu/controller'
   } 
 ];

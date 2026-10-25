@@ -360,7 +360,7 @@ Menu::Menu(StateMachine& machine) : State(machine, States::MENU) {
 }
 
 Menu::~Menu() {
-
+	delete m_uiScene;
 }
 
 void Menu::fixedUpdate() {

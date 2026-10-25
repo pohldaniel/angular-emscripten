@@ -1,0 +1,11 @@
+<app-spinner [ngStyle]="{'visibility': !moduleLoaded ? 'visible' : 'hidden'}"></app-spinner>
+<div content [ngStyle]="{'visibility': moduleLoaded ? 'visible' : 'hidden'}">
+  <span (resized)="onResized($event)" #span>
+    <canvas class="emscripten" oncontextmenu="event.preventDefault()" id="canvas" #canvas></canvas>
+  </span>
+  <button id="connect-controller"
+          (click)="connectGamepad()" 
+          style="display: block; margin-top: 15px; padding: 10px 20px; cursor: pointer;">
+    PS5 Controller Vibration aktivieren
+  </button>
+</div>
