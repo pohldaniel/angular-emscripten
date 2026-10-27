@@ -188,6 +188,7 @@ ImageBasedLighting::~ImageBasedLighting() {
 	m_wgpTextutreEmission.markForDelete();
 	m_wgpTextutreMetalness.markForDelete();
 	m_wgpTextutreLightmap.markForDelete();
+	Material::CleanupMaterials();
 }
 
 void ImageBasedLighting::fixedUpdate() {

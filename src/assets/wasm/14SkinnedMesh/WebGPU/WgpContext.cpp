@@ -809,7 +809,6 @@ void wgpProcessQueue() {
 
 	wgpuQueueOnSubmittedWorkDone(wgpContext.queue, callbackInfo);
 	while(!done.load()) {
-		wgpuDeviceTick(wgpContext.device);
 		wgpuInstanceProcessEvents(wgpContext.instance);
 	}
 }

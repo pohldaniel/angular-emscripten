@@ -181,8 +181,8 @@ void Shape::rewind() {
 	Shape::Rewind(m_indexBuffer);
 }
 
-void Shape::rewind() {
-	Shape::Rewind(m_indexBuffer);
+void Shape::flipNormal() {
+	Shape::FlipNormal(m_vertexBuffer, m_stride);
 }
 
 void Shape::scale(float sx, float sy, float sz) {
