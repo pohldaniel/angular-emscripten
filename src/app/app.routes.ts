@@ -28,6 +28,7 @@ import {CubesComponent} from './pages/webgpu/cubes/cubes.component';
 import {IsometricComponent} from './pages/webgpu/isometric/isometric.component';
 import {MenuComponent} from './pages/webgpu/menu/menu.component';
 import {ControllerComponent} from './pages/webgpu/controller/controller.component';
+import {HDRBloomComponent} from './pages/webgpu/hdr-bloom/hdr-bloom.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -175,8 +176,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/hdr-bloom', 
+    component: HDRBloomComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/controller'
+    redirectTo: 'webgpu/hdr-bloom'
   } 
 ];

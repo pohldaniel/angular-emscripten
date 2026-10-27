@@ -798,18 +798,19 @@ void wgpToggleVerticalSync() {
 void wgpProcessQueue() {
 	if (!wgpContext.device || !wgpContext.queue || !wgpContext.instance) return;
 
-	std::atomic<bool> done{ false };
+	bool userdate =  false;
 	WGPUQueueWorkDoneCallbackInfo callbackInfo = {};
 	callbackInfo.mode = WGPUCallbackMode_AllowProcessEvents;
+	callbackInfo.userdata1 = &userdate;
 	callbackInfo.callback = [](WGPUQueueWorkDoneStatus status, WGPUStringView message, void* userdata1, void* userdata2) {
-		auto* flag = static_cast<std::atomic<bool>*>(userdata1);
-		flag->store(true);
+		auto* userdata = static_cast<bool*>(userdata1);
+		*userdata = true;
 	};
-	callbackInfo.userdata1 = &done;
-
+	
 	wgpuQueueOnSubmittedWorkDone(wgpContext.queue, callbackInfo);
-	while(!done.load()) {
+	while(!userdate) {
 		wgpuInstanceProcessEvents(wgpContext.instance);
+		emscripten_sleep(10);
 	}
 }
 
