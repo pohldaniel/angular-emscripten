@@ -85,7 +85,8 @@ void Application::initWindow() {
 }
 
 void Application::initWebGPU(){
-  wgpInit(Window);
+  wgpInit(Window, static_cast<uint32_t>(Application::Width), static_cast<uint32_t>(Application::Height));
+  wgpContext.OnSurfaceChange = std::bind(&Application::OnSurfaceChange);
 }
 
 void Application::initImGUI(){
