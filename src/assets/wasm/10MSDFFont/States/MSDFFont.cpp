@@ -145,8 +145,8 @@ void MSDFFont::update() {
 		}
 	}
 
-	double sec = glfwGetTime();
-	float now = (float)sec / 5.0f;
+	m_sec += m_dt;
+	float now = m_sec / 5.0f;
 	m_uniforms.model = glm::mat4(1.0f);
 	m_uniforms.model = glm::translate(m_uniforms.model, glm::vec3(0.0f, 2.0f, -3.0f));
 	m_uniforms.model = glm::rotate(m_uniforms.model, 1.0f, glm::vec3(sinf(now), cosf(now), 0.0f));

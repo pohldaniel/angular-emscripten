@@ -11,6 +11,7 @@
 #include "Application.h"
 #include "Mouse.h"
 #include "Keyboard.h"
+#include "GamePad.h"
 
 GLFWwindow* Application::Window = nullptr;
 StateMachine* Application::Machine = nullptr;
@@ -62,7 +63,7 @@ Application::Application(float& dt, float& fdt) : fdt(fdt), dt(dt), last(0.0) {
   glfwSetCursorPosCallback(Window, glfwMouseMoveCallback);
   glfwSetScrollCallback(Window, glfwWindowScroll);
   glfwSetKeyCallback(Window, glfwKeyCallback);
-
+  SDLGamePad::Initialize();
   Application::Init = true;
   last = glfwGetTime();
 }
@@ -123,6 +124,7 @@ void Application::update(){
   glfwPollEvents();
   Mouse::instance().update();
   Keyboard::instance().update();
+  SDLGamePad::Update();
   Machine->update();
   Machine->render();
 }
@@ -158,6 +160,7 @@ void Application::Cleanup(){
   wgpShutDown();
   ImGui_ImplWGPU_Shutdown();
   ImGui_ImplGlfw_Shutdown();
+  SDLGamePad::Shutdown();
   glfwDestroyWindow(Window);
   glfwTerminate();
 }
