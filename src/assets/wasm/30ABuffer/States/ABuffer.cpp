@@ -37,10 +37,10 @@ ABuffer::ABuffer(StateMachine& machine) : State(machine, States::ABUFFER) {
 	m_uniforms.lightPosition = glm::vec3(50.0f, 100.0f, -100.0f);
     wgpuQueueWriteBuffer(wgpContext.queue, m_uniformBuffer.getBuffer(), 0, &m_uniforms, sizeof(Uniforms));
 
-    wgpContext.addSahderModule("ABUFFER_OPAQUE", "res/shader/abuffer_opaque.wgsl");
+    wgpContext.addSahderModule("ABUFFER_OPAQUE", ABUFFER_OPAQUE_WGSL, true);
 	wgpContext.createRenderPipeline("ABUFFER_OPAQUE", "RP_ABUFFER_OPAQUE", VL_PN, std::bind(&ABuffer::OnBindGroupLayouts, this));
 
-	wgpContext.addSahderModule("ABUFFER_TRANSLUCENT", "res/shader/abuffer_translucent.wgsl");
+	wgpContext.addSahderModule("ABUFFER_TRANSLUCENT", ABUFFER_TRANSLUCENT_WGSL, true);
 	wgpContext.createRenderPipeline("ABUFFER_TRANSLUCENT", "RP_ABUFFER_TRANSLUCENT", VL_PN, std::bind(&ABuffer::OnBindGroupLayoutsTranslucent, this),
 		1u,
 		WGPUPrimitiveTopology_TriangleList,
@@ -49,7 +49,7 @@ ABuffer::ABuffer(StateMachine& machine) : State(machine, States::ABUFFER) {
 		WGPUCompareFunction_LessEqual,
 		{ FRAGMENT_STATE | BLEND_STATE, ColorMode::WRITE_NONE, DepthMode::PASS, StencilMode::DEFAULT, BlendMode::ALPHA_BLENDING });
 
-	wgpContext.addSahderModule("ABUFFER_COMPOSITE", "res/shader/abuffer_composite.wgsl");
+	wgpContext.addSahderModule("ABUFFER_COMPOSITE", ABUFFER_COMPOSITE_WGSL, true);
 	wgpContext.createRenderPipeline("ABUFFER_COMPOSITE", "RP_ABUFFER_COMPOSITE", VL_NONE, std::bind(&ABuffer::OnBindGroupLayoutsComposite, this),
 		1u,
 		WGPUPrimitiveTopology_TriangleList,
