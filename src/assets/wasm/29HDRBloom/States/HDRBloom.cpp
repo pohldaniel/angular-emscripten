@@ -8,11 +8,11 @@
 #include <WebGPU/WgpRenderer.h>
 #include <WebGPU/WgpContext.h>
 
-#include "HDRBloom.h"
 #include "Application.h"
 #include "Mouse.h"
 #include "Keyboard.h"
 #include "GamePad.h"
+#include "HDRBloom.h"
 
 HDRBloom::HDRBloom(StateMachine& machine) : State(machine, States::HDR_BLOOM) {
 	wgpSetSurfaceColorFormat(WGPUTextureFormat::WGPUTextureFormat_RGBA8Unorm);
