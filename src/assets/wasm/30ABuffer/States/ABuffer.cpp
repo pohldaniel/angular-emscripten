@@ -173,55 +173,58 @@ void ABuffer::OnDraw(const WGPUCommandEncoder& commandEncoder, const WGPURenderP
 		wgpuRenderPassEncoderRelease(renderPassEncoder);
 	}
 
-	for (uint32_t slice = 0; slice < m_numSlices; ++slice) {
-		wgpuCommandEncoderCopyBufferToBuffer(commandEncoder, m_headsInitBuffer.getBuffer(), 0u, m_headsBuffer.getBuffer(), 0u, wgpuBufferGetSize(m_headsInitBuffer.getBuffer()));
+	if(m_drawTranslucent){
 
-		const uint32_t scissor_x = 0;
-		const uint32_t scissor_y = slice * m_sliceHeight;
-		const uint32_t scissor_width = Application::Width;
-		const uint32_t scissor_height = std::min((slice + 1) * m_sliceHeight, static_cast<uint32_t>(Application::Height)) - slice * m_sliceHeight;
+		for (uint32_t slice = 0; slice < m_numSlices; ++slice) {
+			wgpuCommandEncoderCopyBufferToBuffer(commandEncoder, m_headsInitBuffer.getBuffer(), 0u, m_headsBuffer.getBuffer(), 0u, wgpuBufferGetSize(m_headsInitBuffer.getBuffer()));
 
-		{
-			WGPURenderPassColorAttachment renderPassColorAttachment = renderPassDescriptor.colorAttachments[0];
-			renderPassColorAttachment.loadOp = WGPULoadOp::WGPULoadOp_Load;
+			const uint32_t scissor_x = 0;
+			const uint32_t scissor_y = slice * m_sliceHeight;
+			const uint32_t scissor_width = Application::Width;
+			const uint32_t scissor_height = std::min((slice + 1) * m_sliceHeight, static_cast<uint32_t>(Application::Height)) - slice * m_sliceHeight;
 
-			WGPURenderPassDescriptor rndrPssDscrptor = renderPassDescriptor;
-			rndrPssDscrptor.colorAttachments = &renderPassColorAttachment;
-			rndrPssDscrptor.depthStencilAttachment = nullptr;
+			{
+				WGPURenderPassColorAttachment renderPassColorAttachment = renderPassDescriptor.colorAttachments[0];
+				renderPassColorAttachment.loadOp = WGPULoadOp::WGPULoadOp_Load;
 
-			WGPURenderPassEncoder renderPassEncoder = wgpuCommandEncoderBeginRenderPass(commandEncoder, &rndrPssDscrptor);
-			wgpuRenderPassEncoderSetScissorRect(renderPassEncoder, scissor_x, scissor_y, scissor_width, scissor_height);
+				WGPURenderPassDescriptor rndrPssDscrptor = renderPassDescriptor;
+				rndrPssDscrptor.colorAttachments = &renderPassColorAttachment;
+				rndrPssDscrptor.depthStencilAttachment = nullptr;
 
-			wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_ABUFFER_TRANSLUCENT"));
-			const uint32_t dynamic_offsets[1] = { slice * wgpContext.limits.minUniformBufferOffsetAlignment };
-			wgpuRenderPassEncoderSetBindGroup(renderPassEncoder, 0u, m_bindGroupTranslucent, 1u, dynamic_offsets);
+				WGPURenderPassEncoder renderPassEncoder = wgpuCommandEncoderBeginRenderPass(commandEncoder, &rndrPssDscrptor);
+				wgpuRenderPassEncoderSetScissorRect(renderPassEncoder, scissor_x, scissor_y, scissor_width, scissor_height);
 
-			m_wgpTeapot.drawRaw(renderPassEncoder, 8u);
+				wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_ABUFFER_TRANSLUCENT"));
+				const uint32_t dynamic_offsets[1] = { slice * wgpContext.limits.minUniformBufferOffsetAlignment };
+				wgpuRenderPassEncoderSetBindGroup(renderPassEncoder, 0u, m_bindGroupTranslucent, 1u, dynamic_offsets);
 
-			wgpuRenderPassEncoderEnd(renderPassEncoder);
-			wgpuRenderPassEncoderRelease(renderPassEncoder);
-		}
+				m_wgpTeapot.drawRaw(renderPassEncoder, 8u);
 
-		{
-			WGPURenderPassColorAttachment renderPassColorAttachment = renderPassDescriptor.colorAttachments[0];
-			renderPassColorAttachment.loadOp = WGPULoadOp::WGPULoadOp_Load;
+				wgpuRenderPassEncoderEnd(renderPassEncoder);
+				wgpuRenderPassEncoderRelease(renderPassEncoder);
+			}
 
-			WGPURenderPassDescriptor rndrPssDscrptor = renderPassDescriptor;
-			rndrPssDscrptor.colorAttachments = &renderPassColorAttachment;
-			rndrPssDscrptor.depthStencilAttachment = nullptr;
+			{
+				WGPURenderPassColorAttachment renderPassColorAttachment = renderPassDescriptor.colorAttachments[0];
+				renderPassColorAttachment.loadOp = WGPULoadOp::WGPULoadOp_Load;
 
-			WGPURenderPassEncoder renderPassEncoder = wgpuCommandEncoderBeginRenderPass(commandEncoder, &rndrPssDscrptor);
-			wgpuRenderPassEncoderSetScissorRect(renderPassEncoder, scissor_x, scissor_y, scissor_width, scissor_height);
+				WGPURenderPassDescriptor rndrPssDscrptor = renderPassDescriptor;
+				rndrPssDscrptor.colorAttachments = &renderPassColorAttachment;
+				rndrPssDscrptor.depthStencilAttachment = nullptr;
 
-			wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_ABUFFER_COMPOSITE"));
-			const uint32_t dynamic_offsets[1] = { slice * wgpContext.limits.minUniformBufferOffsetAlignment };
-			wgpuRenderPassEncoderSetBindGroup(renderPassEncoder, 0u, m_bindGroupComposite, 1u, dynamic_offsets);
+				WGPURenderPassEncoder renderPassEncoder = wgpuCommandEncoderBeginRenderPass(commandEncoder, &rndrPssDscrptor);
+				wgpuRenderPassEncoderSetScissorRect(renderPassEncoder, scissor_x, scissor_y, scissor_width, scissor_height);
 
-			wgpuRenderPassEncoderDraw(renderPassEncoder, 6u, 1u, 0u, 0u);
+				wgpuRenderPassEncoderSetPipeline(renderPassEncoder, wgpContext.renderPipelines.at("RP_ABUFFER_COMPOSITE"));
+				const uint32_t dynamic_offsets[1] = { slice * wgpContext.limits.minUniformBufferOffsetAlignment };
+				wgpuRenderPassEncoderSetBindGroup(renderPassEncoder, 0u, m_bindGroupComposite, 1u, dynamic_offsets);
 
-			wgpuRenderPassEncoderEnd(renderPassEncoder);
-			wgpuRenderPassEncoderRelease(renderPassEncoder);
+				wgpuRenderPassEncoderDraw(renderPassEncoder, 6u, 1u, 0u, 0u);
 
+				wgpuRenderPassEncoderEnd(renderPassEncoder);
+				wgpuRenderPassEncoderRelease(renderPassEncoder);
+
+			}
 		}
 	}
 
@@ -331,6 +334,7 @@ void ABuffer::renderUi(const WGPURenderPassEncoder& renderPassEncoder) {
 	if (ImGui::Combo("Memory Strategy", &currentSetting, "multipass\0clamp - pixel - ratio\0\0")) {
 		m_setting = static_cast<Setting>(currentSetting);
 	}
+	ImGui::Checkbox("Draw Translucent", &m_drawTranslucent);
 	ImGui::End();
 
 	ImGui::Render();

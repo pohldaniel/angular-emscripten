@@ -314,6 +314,7 @@ private:
 	void createBuffer();
 	bool m_initUi = true;
 	bool m_drawUi = true;
+    bool m_drawTranslucent = false;
 
 	Camera m_camera;
 	Uniforms m_uniforms;
