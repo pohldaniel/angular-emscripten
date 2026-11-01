@@ -25,6 +25,7 @@ ShadowMapping::ShadowMapping(StateMachine& machine) : State(machine, States::SHA
 
 	m_dragon.loadModelAssimp("res/models/dragon_vrip_res4.ply");
 	m_dragon.scale(500.0f);
+	m_dragon.generateNormals();
 	m_quad.buildQuadXZ({ -100.0f, 20.0f, -100.0f }, { 200.0f, 200.0f }, 1u, 1u, false, true);
 
 	m_uniformBuffer.createBuffer(sizeof(Uniforms), WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform);

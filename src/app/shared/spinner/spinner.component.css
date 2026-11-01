@@ -1,7 +1,7 @@
 div[wait] {
   position: fixed;
   height: 100%;
-  width: calc(100% - 200px);
+  width: calc(100% - 250px);
   background-image: radial-gradient(ellipse farthest-corner at center, #3c4b57aa 0%, #1c262b11 100%);
   cursor: wait;
   z-index: 997;
@@ -9,7 +9,7 @@ div[wait] {
   justify-content: center;
   align-items: center;
   top: 0;
-  left: 200px;
+  left: 250px;
 }
 
 .loader {

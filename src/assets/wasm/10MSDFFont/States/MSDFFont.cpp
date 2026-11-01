@@ -154,7 +154,7 @@ void MSDFFont::update() {
 	m_uniforms.projection = m_camera.getPerspectiveMatrix();
 	m_uniforms.view = m_camera.getViewMatrix();
 
-	float crawl = fmodf((float)sec / 2.5f, 14.0f);
+	float crawl = fmodf((float)m_sec / 2.5f, 14.0f);
 	m_model = glm::mat4(1.0f);
 	m_model = glm::rotate(m_model, glm::radians(-22.5f), glm::vec3(1.0f, 0.0f, 0.0f));
 	m_model = glm::translate(m_model, glm::vec3(0.0f, crawl - 3.0f, 0.0f));

@@ -131,13 +131,7 @@ void NuklearUi::render() {
 
 void NuklearUi::OnDraw(const WGPUCommandEncoder& commandEncoder, const WGPURenderPassDescriptor& renderPassDescriptor) {
 	{
-		WGPURenderPassColorAttachment renderPassColorAttachment = renderPassDescriptor.colorAttachments[0];
-		renderPassColorAttachment.loadOp = WGPULoadOp::WGPULoadOp_Load;
-
-		WGPURenderPassDescriptor rndrPssDscrptor = renderPassDescriptor;
-		rndrPssDscrptor.colorAttachments = &renderPassColorAttachment;
-
-		nkDraw(commandEncoder, rndrPssDscrptor);
+		nkDraw(commandEncoder, renderPassDescriptor);
 	}
 }
 

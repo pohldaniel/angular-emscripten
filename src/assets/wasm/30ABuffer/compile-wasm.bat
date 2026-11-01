@@ -65,8 +65,8 @@ emcc^
  states/StateMachine.cpp^
  states/ABuffer.cpp^
  libimgui.a^
- ../lib/libfreeimageT.a^
- ../lib/libassimpT.a^
+ ../lib/libfreeimage.a^
+ ../lib/libassimp.a^
  ../lib/libzlib.a^
  ../lib/liblinearmath.a^
  ../lib/libbulletcollision.a^

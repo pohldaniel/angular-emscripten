@@ -72,7 +72,7 @@ export class HDRBloomComponent extends EmscriptenWasmComponent implements OnInit
     
   override ngOnDestroy() {
     if(this.module){
-      this.module.ccall!('Cleanup', 'void', [], [])
+      this.module.ccall!('Cleanup', 'void', [], [], { async: true })
     }
   }
 }

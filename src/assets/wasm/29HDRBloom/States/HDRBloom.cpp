@@ -170,6 +170,7 @@ HDRBloom::~HDRBloom() {
 	m_wgpSceneDepth.markForDelete();
 
 	m_bloomFBO.cleanup();
+	wgpCleanState();
 }
 
 void HDRBloom::fixedUpdate() {

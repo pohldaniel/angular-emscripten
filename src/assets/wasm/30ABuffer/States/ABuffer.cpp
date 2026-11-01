@@ -79,6 +79,7 @@ ABuffer::~ABuffer() {
 
 	wgpuBindGroupRelease(m_bindGroupTranslucent);
 	wgpuBindGroupRelease(m_bindGroupComposite);
+	wgpCleanState();
 }
 
 void ABuffer::fixedUpdate() {
