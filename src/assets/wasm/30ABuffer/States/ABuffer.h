@@ -8,7 +8,7 @@
 
 #include "Camera.h"
 #include "TrackBall.h"
-#include "ObjModel.h"
+#include "AssimpModel.h"
 
 #define ABUFFER_OPAQUE_WGSL      "struct VertexInput {                                                                                               \n \
                                       @location(0) position: vec3f,                                                                                  \n \
@@ -319,7 +319,7 @@ private:
 	Camera m_camera;
 	Uniforms m_uniforms;
 	TrackBall m_trackball;
-	ObjModel m_teapot;
+	AssimpModel m_teapot;
 
 	WgpBuffer m_uniformBuffer, m_sliceInfoBuffer, m_linkedListBuffer, m_headsInitBuffer, m_headsBuffer;
 	WgpModel m_wgpTeapot;

@@ -21,7 +21,6 @@ export class AppComponent {
     public router: Router,
     private activatedRoute: ActivatedRoute){
   
-    //immediately logout
     this.showSidebar$ = this.router.events.pipe(
     filter(e => e instanceof NavigationEnd),
       map(() => activatedRoute),

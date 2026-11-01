@@ -59,7 +59,7 @@ ABuffer::ABuffer(StateMachine& machine) : State(machine, States::ABUFFER) {
 		{ FRAGMENT_STATE | BLEND_STATE, ColorMode::WRITE_RGBA, DepthMode::PASS, StencilMode::DEFAULT, BlendMode::ALPHA_BLENDING_ONE });
 
 	m_trackball.reshape(Application::Width, Application::Height);
-	m_teapot.loadModel("res/models/teapot.obj", false, false, true);
+	m_teapot.loadModel("res/models/teapot.mdlc");
 	m_wgpTeapot.create(m_teapot);
 	m_wgpTeapot.setBindGroups("BG_OPAQUE", std::bind(&ABuffer::OnBindGroups, this));
 
