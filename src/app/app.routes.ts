@@ -30,6 +30,7 @@ import {MenuComponent} from './pages/webgpu/menu/menu.component';
 import {ControllerComponent} from './pages/webgpu/controller/controller.component';
 import {HDRBloomComponent} from './pages/webgpu/hdr-bloom/hdr-bloom.component';
 import {ABufferComponent} from './pages/webgpu/abuffer/abuffer.component';
+import {ComputeParticleEasingComponent} from './pages/webgpu/compute-particle-easing/compute-particle-easing.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -187,8 +188,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/cpe', 
+    component: ComputeParticleEasingComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/abuffer'
+    redirectTo: 'webgpu/cpe'
   } 
 ];

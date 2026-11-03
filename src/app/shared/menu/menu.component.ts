@@ -84,7 +84,8 @@ export class MenuComponent implements OnInit{
       this.router.url == '/webgpu/menu'||
       this.router.url == '/webgpu/controller'||
       this.router.url == '/webgpu/hdr-bloom'||
-      this.router.url == '/webgpu/abuffer')
+      this.router.url == '/webgpu/abuffer'||
+      this.router.url == '/webgpu/cpe')
     {
       this.targetedSubmenu = 'three';
       this.storeTargetedSubmenu = 'three';     
@@ -128,7 +129,8 @@ export class MenuComponent implements OnInit{
     .set(Math.pow(2, 26), {target : '/webgpu/menu', description: 'Menu', descriptionLineBreak: '', class : 'three-twentytwo', index : 26} as MenuItem)
     .set(Math.pow(2, 27), {target : '/webgpu/controller', description: 'Controller', descriptionLineBreak: '', class : 'three-twentythree', index : 27} as MenuItem)
     .set(Math.pow(2, 28), {target : '/webgpu/hdr-bloom', description: 'HDR Bloom', descriptionLineBreak: '', class : 'three-twentyfour', index : 28} as MenuItem)
-    .set(Math.pow(2, 29), {target : '/webgpu/abuffer', description: 'A Buffer', descriptionLineBreak: '', class : 'three-twentyfive', index : 29} as MenuItem);
+    .set(Math.pow(2, 29), {target : '/webgpu/abuffer', description: 'A Buffer', descriptionLineBreak: '', class : 'three-twentyfive', index : 29} as MenuItem)
+    .set(Math.pow(2, 30), {target : '/webgpu/cpe', description: 'Compute Particle Easing', descriptionLineBreak: '', class : 'three-twentysix', index : 30} as MenuItem);
 
     for(let key of map.keys()) {
       if((this.settings.favorites | key) == this.settings.favorites){

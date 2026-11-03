@@ -1,0 +1,334 @@
+ struct VertexOutput {
+   @builtin(position) pos: vec4<f32>,
+   @location(0) tUV: vec2<f32>,
+   @location(1) vAlpha: f32,
+ };
+
+ @vertex
+ fn vs_main(
+   @location(0) position: vec3<f32>,
+   @location(1) scale: vec3<f32>,
+   @location(2) alpha: f32,
+   @location(3) a_pos: vec4<f32>,
+   @location(4) a_uv: vec2<f32>,
+ ) -> VertexOutput {
+   var output: VertexOutput;
+
+   let ratio: f32 = 976.0 / 1920.0;
+   let scaleMTX: mat4x4<f32> = mat4x4<f32>(
+     vec4<f32>(scale.x, 0.0, 0.0, 0.0),
+     vec4<f32>(0.0, scale.y, 0.0, 0.0),
+     vec4<f32>(0.0, 0.0, scale.z, 0.0),
+     vec4<f32>(position, 1.0)
+   );
+   output.pos = scaleMTX * vec4<f32>(a_pos.x, a_pos.y / ratio, a_pos.z, 1.0);
+   output.tUV = a_uv;
+   output.vAlpha = alpha;
+
+   return output;
+ }
+ 
+@group(0) @binding(0) var uSampler: sampler;
+@group(0) @binding(1) var uTexture: texture_2d<f32>;
+
+struct FragmentOutput {
+  @location(0) outColor: vec4<f32>,
+};
+
+@fragment
+fn fs_main(
+  @location(0) tUV: vec2<f32>,
+  @location(1) vAlpha: f32,
+) -> FragmentOutput {
+  var output: FragmentOutput;
+
+  output.outColor = textureSample(uTexture, uSampler, tUV);
+  output.outColor = vec4<f32>(mix(output.outColor.rgb, vec3<f32>(vAlpha, 0.0, 0.0), 1.0 - vAlpha), output.outColor.a);
+  output.outColor.a *= vAlpha;
+
+  return output;
+}  const PARTICLE_NUM: u32 = 60000u;
+
+ struct Info {
+   startValue: f32,
+   endValue: f32,
+   easeType: f32,
+   value: f32,
+ };
+
+ struct InfoGroup {
+   infoX: Info,
+   infoY: Info,
+   infoZ: Info,
+ };
+
+ struct Particle {
+   startTime: f32,
+   life: f32,
+   valuePosition: vec4<f32>,
+   valueScale: vec4<f32>,
+   infoPosition: InfoGroup,
+   infoScale: InfoGroup,
+   infoAlpha: Info,
+ };
+
+ struct SimParams {
+   time: f32,
+   minLife: f32,
+   maxLife: f32,
+ };
+
+ @group(0) @binding(0) var<uniform> params: SimParams;
+
+ @group(0) @binding(1) var<storage, read_write> particlesA: array<Particle, PARTICLE_NUM>;
+
+ fn rand(co: vec2<f32>) -> f32 {
+   return fract(sin(dot(co, vec2<f32>(12.9898, 78.233))) * 43758.5453);
+ }
+
+ const PI: f32 = 3.141592653589793;
+ const HPI: f32 = PI * 0.5;
+ const PI2: f32 = PI * 2.0;
+
+ fn calEasing(n_in: f32, type_in: f32) -> f32 {
+   var n = n_in;
+   switch (i32(type_in)) {
+     // linear
+     case 0: { }
+     // QuintIn
+     case 1: { n = n * n * n * n * n; }
+     // QuintOut
+     case 2: { n = ((n - 1.0) * n * n * n * n) + 1.0; }
+     // QuintInOut
+     case 3: {
+       n = n * 2.0;
+       if (n < 1.0) {
+         n = n * n * n * n * n * 0.5;
+       } else {
+         n = n - 2.0;
+         n = 0.5 * (n * n * n * n * n + 2.0);
+       }
+     }
+     // BackIn
+     case 4: { n = n * n * (n * 1.70158 + n - 1.70158); }
+     // BackOut
+     case 5: { n = (n - 1.0) * n * (n * 1.70158 + n + 1.70158) + 1.0; }
+     // BackInOut
+     case 6: {
+       n = n * 2.0;
+       if (n < 1.0) {
+         n = 0.5 * n * n * (n * 1.70158 + n - 1.70158);
+       } else {
+         n = n - 2.0;
+         n = 0.5 * (n * n * (n * 1.70158 + n + 1.70158) + 2.0);  // Note: Added +2 for consistency with other InOut patterns
+       }
+     }
+     // CircIn
+     case 7: { n = -1.0 * (sqrt(1.0 - n * n) - 1.0); }
+     // CircOut
+     case 8: { n = sqrt(1.0 - (n - 1.0) * n); }
+     // CircInOut
+     case 9: {
+       n = n * 2.0;
+       if (n < 1.0) {
+         n = -0.5 * (sqrt(1.0 - n * n) - 1.0);
+       } else {
+         n = n - 2.0;
+         n = 0.5 * (sqrt(1.0 - n * n) + 1.0);
+       }
+     }
+     // CubicIn
+     case 10: { n = n * n * n; }
+     // CubicOut
+     case 11: { n = ((n - 1.0) * n * n) + 1.0; }
+     // CubicInOut
+     case 12: {
+       n = n * 2.0;
+       if (n < 1.0) {
+         n = n * n * n * 0.5;
+       } else {
+         n = n - 2.0;
+         n = 0.5 * (n * n * n + 2.0);
+       }
+     }
+     // ExpoIn
+     case 13: {
+       if (n == 0.0) {
+         n = 0.0;
+       } else {
+         n = pow(2.0, 10.0 * (n - 1.0));
+       }
+     }
+     // ExpoOut
+     case 14: {
+       if (n == 1.0) {
+         n = 1.0;
+       } else {
+         n = -pow(2.0, -10.0 * n) + 1.0;
+       }
+     }
+     // ExpoInOut
+     case 15: {
+       n = n * 2.0;
+       if (n < 1.0) {
+         if (n == 0.0) {
+           n = 0.0;
+         } else {
+           n = 0.5 * pow(2.0, 10.0 * (n - 1.0));
+         }
+       } else {
+         if (n == 2.0) {
+           n = 1.0;
+         } else {
+           n = -0.5 * pow(2.0, -10.0 * (n - 1.0)) + 1.0;
+         }
+       }
+     }
+     // QuadIn
+     case 16: { n = n * n; }
+     // QuadOut
+     case 17: { n = (2.0 - n) * n; }
+     // QuadInOut
+     case 18: {
+       n = n * 2.0;
+       if (n < 1.0) {
+         n = n * n * 0.5;
+       } else {
+         n = n - 1.0;
+         n = 0.5 * ((2.0 - n) * n + 1.0);
+       }
+     }
+     // QuartIn
+     case 19: { n = n * n * n * n; }
+     // QuartOut
+     case 20: { n = 1.0 - ((n - 1.0) * n * n * n); }
+     // QuartInOut
+     case 21: {
+       n = n * 2.0;
+       if (n < 1.0) {
+         n = n * n * n * n * 0.5;
+       } else {
+         n = n - 2.0;
+         n = 1.0 - (n * n * n * n * 0.5);
+       }
+     }
+     // SineIn
+     case 22: { n = -cos(n * HPI) + 1.0; }
+     // SineOut
+     case 23: { n = sin(n * HPI); }
+     // SineInOut
+     case 24: { n = (-cos(n * PI) + 1.0) * 0.5; }
+     // ElasticIn
+     case 25: {
+       if (n == 0.0) {
+         n = 0.0;
+       } else if (n == 1.0) {
+         n = 1.0;
+       } else {
+         n = n - 1.0;
+         n = -1.0 * pow(2.0, 10.0 * n) * sin((n - 0.075) * PI2 / 0.3);
+       }
+     }
+     // ElasticOut
+     case 26: {
+       if (n == 0.0) {
+         n = 0.0;
+       } else if (n == 1.0) {
+         n = 1.0;
+       } else {
+         n = pow(2.0, -10.0 * n) * sin((n - 0.075) * PI2 / 0.3) + 1.0;
+       }
+     }
+     // ElasticInOut
+     case 27: {
+       if (n == 0.0) {
+         return 0.0;
+       }
+       if (n == 1.0) {
+         return 1.0;
+       }
+       n = n * 2.0;
+       if (n < 1.0) {
+         n = n - 1.0;
+         n = -0.5 * pow(2.0, 10.0 * n) * sin((n - 0.075) * PI2 / 0.3);
+       } else {
+         n = n - 1.0;
+         n = 0.5 * pow(2.0, -10.0 * n) * sin((n - 0.075) * PI2 / 0.3) + 1.0;
+       }
+     }
+     default: { }
+   }
+   return n;
+ }
+ 
+ @compute @workgroup_size(256)
+ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
+   let index = global_id.x;
+   if (index >= PARTICLE_NUM) {
+     return;
+   }
+
+   var targetParticle = particlesA[index];
+
+   var n: f32;
+   let age = params.time - targetParticle.startTime;
+   var lifeRatio = age / targetParticle.life;
+
+   if (lifeRatio >= 1.0) {
+     particlesA[index].startTime = params.time;
+     var t0 = rand(vec2<f32>(params.minLife, params.maxLife) + params.time) * params.maxLife;
+     t0 = max(params.minLife, t0);
+     particlesA[index].life = t0;
+     lifeRatio = 0.0;
+   }
+
+   // position
+   n = lifeRatio;
+   n = calEasing(n, targetParticle.infoPosition.infoX.easeType);
+   particlesA[index].valuePosition.x = targetParticle.infoPosition.infoX.startValue + (targetParticle.infoPosition.infoX.endValue - targetParticle.infoPosition.infoX.startValue) * n;
+   n = lifeRatio;
+   n = calEasing(n, targetParticle.infoPosition.infoY.easeType);
+   particlesA[index].valuePosition.y = targetParticle.infoPosition.infoY.startValue + (targetParticle.infoPosition.infoY.endValue - targetParticle.infoPosition.infoY.startValue) * n;
+   n = lifeRatio;
+   n = calEasing(n, targetParticle.infoPosition.infoZ.easeType);
+   particlesA[index].valuePosition.z = targetParticle.infoPosition.infoZ.startValue + (targetParticle.infoPosition.infoZ.endValue - targetParticle.infoPosition.infoZ.startValue) * n;
+
+   // scale
+   n = lifeRatio;
+   n = calEasing(n, targetParticle.infoScale.infoX.easeType);
+   particlesA[index].valueScale.x = targetParticle.infoScale.infoX.startValue + (targetParticle.infoScale.infoX.endValue - targetParticle.infoScale.infoX.startValue) * n;
+   n = lifeRatio;
+   n = calEasing(n, targetParticle.infoScale.infoY.easeType);
+   particlesA[index].valueScale.y = targetParticle.infoScale.infoY.startValue + (targetParticle.infoScale.infoY.endValue - targetParticle.infoScale.infoY.startValue) * n;
+   n = lifeRatio;
+   n = calEasing(n, targetParticle.infoScale.infoZ.easeType);
+   particlesA[index].valueScale.z = targetParticle.infoScale.infoZ.startValue + (targetParticle.infoScale.infoZ.endValue - targetParticle.infoScale.infoZ.startValue) * n;
+
+   // alpha
+   n = lifeRatio;
+   n = calEasing(n, targetParticle.infoAlpha.easeType);
+   particlesA[index].infoAlpha.value = targetParticle.infoAlpha.startValue + (targetParticle.infoAlpha.endValue - targetParticle.infoAlpha.startValue) * n;
+ }‰PNG
+
+   IHDR   @   @   ªiqŞ   	pHYs     šœ  
+OiCCPPhotoshop ICC profile  xÚSgTSé=÷ŞôBKˆ€”KoR RB‹€‘&*!	Jˆ!¡ÙQÁEEÈ ˆ€ŒQ,Š
+Øä!¢ƒ£ˆŠÊûá{£kÖ¼÷æÍşµ×>ç¬ó³ÏÀ–H3Q5€©BàƒÇÄÆáä.@
+$p ³d!sı# ø~<<+"À¾ xÓ ÀM›À0‡ÿêB™\€„Àt‘8K€ @zB¦ @F€˜&S   `Ëcbã P- `'æÓ €ø™{ [”! ‘  eˆD h; ¬ÏVŠE X0 fKÄ9 Ø- 0IWfH °· ÀÎ²  0Qˆ…) { `È##x „™ FòW<ñ+®ç*  x™²<¹$9E[-qWW.(ÎI+6aaš@.Ây™24àóÌ   ‘àƒóıxÎ®ÎÎ6¶_-ê¿ÿ"bbãşåÏ«p@  át~Ñş,/³€;€mş¢%îh^ u÷‹f²@µ  éÚWópø~<<E¡¹ÙÙåääØJÄB[aÊW}şgÂ_ÀWılù~<ü÷õà¾â$2]GøàÂÌôL¥Ï’	„bÜæGü·ÿüÓ"ÄIb¹X*ãQqDšŒó2¥"‰B’)Å%Òÿdâß,û>ß5 °j>{‘-¨]cöK'XtÀâ÷  ò»oÁÔ(€hƒáÏwÿï?ıG % €fI’q  ^D$.TÊ³?Ç  D *°AôÁ,ÀÁÜÁü`6„B$ÄÂBB
+d€r`)¬‚B(†Í°*`/Ô@4ÀQh†“p.ÂU¸=púaÁ(¼	AÈa!ÚˆbŠX#™…ø!ÁH‹$ ÉˆQ"K‘5H1RŠT UHò=r9‡\Fº‘;È 2‚ü†¼G1”²Q=ÔµC¹¨7„F¢Ğdt1š ›Ğr´=Œ6¡çĞ«hÚ>CÇ0Àè3Äl0.ÆÃB±8,	“cË±"¬«Æ°V¬»‰õcÏ±wEÀ	6wB aAHXLXNØH¨ $4Ú	7	„QÂ'"“¨K´&ºùÄb21‡XH,#Ö/{ˆCÄ7$‰C2'¹I±¤TÒÒFÒnR#é,©›4H#“ÉÚdk²9”, +È…ääÃä3ää!ò[
+b@q¤øSâ(RÊjJåå4åe˜2AU£šRİ¨¡T5ZB­¡¶R¯Q‡¨4uš9ÍƒIK¥­¢•Óhh÷i¯ètºİ•N—ĞWÒËéGè—èôw†ƒÇˆg(›gw¯˜L¦Ó‹ÇT071ë˜ç™™oUX*¶*|‘Ê
+•J•&•*/T©ª¦ªŞªUóUËT©^S}®FU3Sã©	Ô–«UªPëSSg©;¨‡ªg¨oT?¤~Yı‰YÃLÃOC¤Q ±_ã¼Æ c³x,!k«†u5Ä&±ÍÙ|v*»˜ı»‹=ª©¡9C3J3W³Ró”f?ã˜qøœtN	ç(§—ó~ŠŞï)â)¦4L¹1e\kª–—–X«H«Q«Gë½6®í§¦½E»YûAÇJ'\'GgÎçSÙSİ§
+§M=:õ®.ªk¥¡»Dw¿n§î˜¾^€Lo§Şy½çú}/ıTımú§õGX³$ÛÎ<Å5qo</ÇÛñQC]Ã@C¥a•a—á„‘¹Ñ<£ÕFFŒiÆ\ã$ãmÆmÆ£&&!&KMêMîšRM¹¦)¦;L;LÇÍÌÍ¢ÍÖ™5›=1×2ç›ç›×›ß·`ZxZ,¶¨¶¸eI²äZ¦Yî¶¼n…Z9Y¥XUZ]³F­­%Ö»­»§§¹N“N«ÖgÃ°ñ¶É¶©·°åØÛ®¶m¶}agbg·Å®Ãî“½“}º}ı=‡Ù«Z~s´r:V:ŞšÎœî?}Åô–é/gXÏÏØ3ã¶Ë)ÄiS›ÓGgg¹sƒóˆ‹‰K‚Ë.—>.›ÆİÈ½äJtõq]ázÒõ›³›Âí¨Û¯î6îiî‡ÜŸÌ4Ÿ)Y3sĞÃÈCàQåÑ?Ÿ•0kß¬~OCOgµç#/c/‘W­×°·¥wª÷aï>ö>rŸã>ã<7Ş2ŞY_Ì7À·È·ËOÃo_…ßC#ÿdÿzÿÑ §€%g‰A[ûøz|!¿?:Ûeö²ÙíAŒ ¹AA‚­‚åÁ­!hÈì­!÷ç˜Î‘Îi…P~èÖĞaæa‹Ã~'…‡…W†?pˆXÑ1—5wÑÜCsßDúD–DŞ›g1O9¯-J5*>ª.j<Ú7º4º?Æ.fYÌÕXXIlK9.*®6nl¾ßüíó‡ââã{˜/È]py¡ÎÂô…§©.,:–@LˆN8”ğA*¨Œ%òw%
+yÂÂg"/Ñ6ÑˆØC\*NòH*Mz’ì‘¼5y$Å3¥,å¹„'©¼LLİ›:šv m2=:½1ƒ’‘qBª!M“¶gêgæfvË¬e…²şÅn‹·/•Ék³¬Y-
+¶B¦èTZ(×*²geWf¿Í‰Ê9–«+ÍíÌ³ÊÛ7œïŸÿíÂá’¶¥†KW-Xæ½¬j9²<qyÛ
+ã+†V¬<¸Š¶*mÕO«íW—®~½&zMk^ÁÊ‚ÁµkëU
+å…}ëÜ×í]OX/Yßµaú†>‰Š®Û—Ø(Üxå‡oÊ¿™Ü”´©«Ä¹dÏfÒféæŞ-[–ª—æ—nÙÚ´ßV´íõöEÛ/—Í(Û»ƒ¶C¹£¿<¸¼e§ÉÎÍ;?T¤TôTúT6îÒİµa×ønÑî{¼ö4ìÕÛ[¼÷ı>É¾ÛUUMÕfÕeûIû³÷?®‰ªéø–ûm]­NmqíÇÒı#¶×¹ÔÕÒ=TRÖ+ëGÇ¾şïw-6UœÆâ#pDyäé÷	ß÷:ÚvŒ{¬áÓvg/jBšòšF›Sšû[b[ºOÌ>ÑÖêŞzüGÛœ4<YyJóTÉiÚé‚Ó“gòÏŒ•}~.ùÜ`Û¢¶{çcÎßjoïºtáÒEÿ‹ç;¼;Î\ò¸tò²ÛåW¸Wš¯:_mêtê<ş“ÓOÇ»œ»š®¹\k¹îz½µ{f÷é7Îİô½yñÿÖÕ9=İ½ózo÷Å÷õßİ~r'ıÎË»Ùw'î­¼O¼_ô@íAÙCİ‡Õ?[şÜØïÜjÀw óÑÜG÷…ƒÏş‘õC™Ë††ë8>99â?rıéü§CÏdÏ&ş¢şË®/~øÕë×ÎÑ˜Ñ¡—ò—“¿m|¥ıêÀë¯ÛÆÂÆ¾Éx31^ôVûíÁwÜwï£ßOä| (ÿhù±õSĞ§û“““ÿ˜óüc3-Û    cHRM  z%  €ƒ  ùÿ  €é  u0  ê`  :˜  o’_ÅF  ÊIDATxÚì›ıvâ Å‡|¨í>Î¾ÿ#ìël„°âõ:P‰í“s8Q›ç7w`¨	!È+¼ø±Øì v ;€Ààuîî+ÿ˜GŸe 5ô9¦£S|èóåÇïPÀc*kãÙÀ9µt Ñœ}<³–{;Ş€–T€
+H†û@/F<€?@2¼' ¢À^Áx/"®¶"ºÊ^O†æZK
+à@x©5ğÚ×PCWÑø.z½§×½¢ˆ¦ `šqQZºßEá»4dğÎú†v† |zØÌF÷"bãı:Ññ‘è*x>y<|„×‚‚¡ĞĞpˆŞO2wÑpGı‰¡>Ä®UBWAöhü‰ à{@)J~É[àzÕ„ghIö'0˜ÏGE· ÌlÈHÆw>¹üa| Œ{”~jo „UÑ+ı Ç2^SLˆf‡Œûik <Üõ`à)í”	… —ñşuî`®Æ\aQ
+İ­ô~¯(à ²S‡B« ğŠñ¹árTŒG ›ÀÌ®§ïD ŞcC%\‡A˜ÍËÉ¿‘ L”-zJÚ-4
+ ƒ#Ax‘_˜4Ñ4ôªí"}sÕÙa–ˆyBJŒ’²¦- pnßf:Â’
+  …ğ ` ™¨“LÆ@1ı¾ê t\’îæ@ °/èèùÉ0Œ}!£GHŒøÙ.Şç¨o©
+Àd¦º]‚Ö/$ô
+ Ìõ…bÜ×yˆä)·Ù
+ ®Íş. ‚ÄÜôo’«xŞRÑf™­2dVĞPàëVÉz0^‹£ …˜OCâ<Ş+F7…ßækw‚¥VRæ	€Ïğ/õL­ÔV@-IÖ8nûJF›%²^jüW3Êt5®¦p­¼[º¾*€@³/ş\›å®æ±ßR”ï’B©¼t}õ…2v©İÖ÷ÌóØpĞßñİá§T°ŞèËX>@Ìã(0À5µ`T0‘áA™²¡ÉØ¥·:<Îh– 8â3¿'l‘
+eúYò²…$&—Şj™à "g€€ßURO‹Ã B„fø Tt0½-Íùˆ Î D¡¶ ÍÈßƒÇ»Œçİ³Á3A2XÓV
+Åë^ñ:=¥âs jVH °å@xE›ŒÓìƒôqcP–¿Œ2«ãÂ¨(ê°àùù›Qƒƒ{¸cÜ¬$vÀÌ+6M¦ŞÈ¸%5Á!£‚ÔPãRï¯0AÑÁÑ¬ì«"¦[Q>S8p‡hI	›—Å±ÃjÆuİşÚ«8¯_².ÀÎ18GX½b¼va$ıĞ†f„8™”Š-®Iveˆs­#\µHúÈÒ˜§•Ú[Éîî`éß»8ª…‚UŞ;	º8@z¾`æ˜®±:l	€¥	ÔÓW‡“±N™²ò¶'kö\'9–`àßVo’¨±AbÚâEâ²"isÆWÅøZ 0‚š,]êõîå‡îBÚºİú]bòÿìÓêX«w²fŸàÊiîw’ñKîex{ş^á{Jİû¿Í½ø±Øì v ;€Àÿ œW~ı|OR    IEND®B`‚

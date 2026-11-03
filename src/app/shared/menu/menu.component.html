@@ -220,6 +220,13 @@
               </span>
             </button>
           </li>
+          <li id="three-twentysix" class="list-item-button">
+            <button [attr.tabindex]="router.url=='/webgpu/cpe' ? -1 : (storeTargetedSubmenu=='three' ? 0 : -1)" (click)="navigate('/webgpu/cpe')" [class.active]="router.url == '/webgpu/cpe'">Compute Particle Easing
+              <span [attr.tabindex]="storeTargetedSubmenu=='two' ? 0 : -1" (click)="updateFavorites($event, 30, checked[30]); $event.stopPropagation();" class="icon-box" aria-label="favorite">
+                <mat-icon aria-hidden="false" aria-label="favorite">{{checked[30] ? 'star' : 'star_outline'}}</mat-icon>                 
+              </span>
+            </button>
+          </li>
         </ul>
        </li>
     </ul>
