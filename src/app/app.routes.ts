@@ -31,6 +31,7 @@ import {ControllerComponent} from './pages/webgpu/controller/controller.componen
 import {HDRBloomComponent} from './pages/webgpu/hdr-bloom/hdr-bloom.component';
 import {ABufferComponent} from './pages/webgpu/abuffer/abuffer.component';
 import {ComputeParticleEasingComponent} from './pages/webgpu/compute-particle-easing/compute-particle-easing.component';
+import {PristineGridComponent} from './pages/webgpu/pristine-grid/pristine-grid.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -193,8 +194,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/pristine-grid', 
+    component: PristineGridComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/cpe'
+    redirectTo: 'webgpu/pristine-grid'
   } 
 ];

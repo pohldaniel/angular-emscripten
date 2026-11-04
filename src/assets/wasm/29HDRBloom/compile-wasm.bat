@@ -71,7 +71,7 @@ emcc^
  ../lib/liblinearmath.a^
  ../lib/libbulletcollision.a^
  ../lib/libbulletdynamics.a^
- ../lib/libfreetypeT.a^
+ ../lib/libfreetype.a^
  -I "./" -I "./include" -I "./include/animation" -I "./include/scene/" -I "./include/entities" -I "./include/ui" -I "./include/thread" -I "./libimgui" -I "../include/glm" -I "../include/FreeImage" -I "../include/rapidjson/include" -I "../include/ffmpeg" -I "../include/bullet" -I "../include/freetype2" -I "../include"^
  -Wall -Wno-return-type-c-linkage -Wno-missing-braces -Wunused-result^
  -DFREEIMAGE_LIB -DWEBGPU_BACKEND=WGPU^
