@@ -371,7 +371,9 @@ void Menu::update() {
 	LoadingManager::Get().update();
 	Mouse &mouse = Mouse::instance();	
 	m_uiScene->input(mouse.xPos(), mouse.yPos(), mouse.buttonDown(GLFW_MOUSE_BUTTON_LEFT));
-	m_uiScene->draw();
+	
+	if(m_isRunning)
+		m_uiScene->draw();
 }
 
 void Menu::render() {
