@@ -24,9 +24,9 @@ void StateMachine::popState() {
 }
 
 void StateMachine::update() {
-	if (!m_states.empty()) {
+	if (!m_states.empty()) {	
+		m_states.top()->update();
 		popState();
-		m_states.top()->update();	
 	}else {
 		m_isRunning = false;
 	}
