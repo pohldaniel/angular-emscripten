@@ -17,13 +17,6 @@ struct Uniforms {
   float _pad1;
 };
 
-struct ComputeUniforms {
-  glm::mat3x4 kernel = glm::mat3x4(0.0);
-  float test = 0.5f;
-  uint32_t filterType = 0;
-  float _pad[2];
-};
-
 struct LightingUniforms {
 	std::array<glm::vec4, 2> directions;
 	std::array<glm::vec4, 2> colors;

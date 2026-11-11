@@ -76,7 +76,7 @@ emcc^
  ../lib/liblinearmath.a^
  ../lib/libbulletcollision.a^
  ../lib/libbulletdynamics.a^
- -I "./" -I "./include" -I "./include/animation" -I "./include/scene/" -I "./include/entities" -I "./libimgui" -I "../include/glm" -I "../include/FreeImage" -I "../include/rapidjson/include" -I "../include/ffmpeg" -I "../include/bullet" -I "../include"^
+ -I "./" -I "./include" -I "./include/animation" -I "./include/scene/" -I "./include/entities" -I "./libimgui" -I "../include/glm" -I "../include/FreeImage" -I "../include/rapidjson/include" -I "../include/ffmpeg" -I "../include/bullet" -I "../include/freetype2" -I "../include"^
  -Wall -Wno-return-type-c-linkage -Wno-missing-braces -Wunused-result^
  -DFREEIMAGE_LIB -DWEBGPU_BACKEND=WGPU^
  -o webgpu.js -std=c++17 -Os --use-port=contrib.glfw3 -s USE_SDL=3 --use-port=emdawnwebgpu --preload-file res/models --preload-file res/shader --preload-file res/textures --preload-file res/fonts --preload-file res/sounds -s ASYNCIFY -s ASSERTIONS -s TOTAL_MEMORY=167772160 -s WASM_WORKERS=1 -s AUDIO_WORKLET=1 -s SHARED_MEMORY=1 -pthread -s ALLOW_MEMORY_GROWTH=1 -s "EXPORTED_FUNCTIONS=['_main']" -s "EXPORTED_RUNTIME_METHODS=['ccall']" -s MODULARIZE=1^

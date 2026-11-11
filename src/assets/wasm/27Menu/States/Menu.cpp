@@ -111,7 +111,7 @@ Menu::Menu(StateMachine& machine) : State(machine, States::MENU) {
 	label = button->addChild<Label>(m_characterSet);
 	label->setText("Instanced Cube");
 	label->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	label->setPadding(5.0f, paddingBottom);
+	label->setPadding(0.0f, paddingBottom);
 
 	button = surface->addChild<Button>();
 	button->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));

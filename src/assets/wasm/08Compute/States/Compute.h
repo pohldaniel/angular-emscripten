@@ -10,21 +10,24 @@
 #include <WebGPU/WgpBuffer.h>
 #include <WebGPU/WgpData.h>
 
-
-enum class FilterType {
-  Sum,
-  Maximum,
-  Minimum,
-};
-
-struct Parameters {
-  FilterType filterType = FilterType::Sum;
-  glm::mat3x4 kernel = glm::mat3x4(1.0);
-  bool normalize = true;
-};
-
 class Compute : public State {
+	enum class FilterType {
+		Sum,
+		Maximum,
+		Minimum,
+	};
+	struct Parameters {
+		FilterType filterType = FilterType::Sum;
+		glm::mat3x4 kernel = glm::mat3x4(1.0);
+		bool normalize = true;
+	};
 
+	struct ComputeUniforms {
+		glm::mat3x4 kernel = glm::mat3x4(0.0);
+		float test = 0.5f;
+		uint32_t filterType = 0;
+		float _pad[2];
+	};
 public:
 
 	Compute(StateMachine& machine);

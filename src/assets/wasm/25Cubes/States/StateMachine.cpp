@@ -15,7 +15,7 @@ void StateMachine::fixedUpdate() {
 
 void StateMachine::popState() {
 	if (!m_states.top()->isRunning()) {
-		States state = m_states.top()->getCurrentState();
+		m_states.top()->getCurrentState();
 		delete m_states.top();
 		m_states.pop();
 	}

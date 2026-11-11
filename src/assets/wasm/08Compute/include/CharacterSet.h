@@ -22,6 +22,8 @@ struct Kerning {
 struct CharacterSet {
 	void loadMsdfFromFile(const std::string& pathJson, const std::string& pathTexture);
 	void loadMsdfBmFromFile(const std::string& pathJson, const std::string& pathTexture);
+	void loadFromFile(const std::string& path, uint32_t characterSize);
+
 	const Char& getCharacter(const char c) const;
 	const std::vector<Kerning>& getKernings(const char c) const;
 	bool hasKernings() const;

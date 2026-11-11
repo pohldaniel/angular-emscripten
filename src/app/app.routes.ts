@@ -32,6 +32,7 @@ import {HDRBloomComponent} from './pages/webgpu/hdr-bloom/hdr-bloom.component';
 import {ABufferComponent} from './pages/webgpu/abuffer/abuffer.component';
 import {ComputeParticleEasingComponent} from './pages/webgpu/compute-particle-easing/compute-particle-easing.component';
 import {PristineGridComponent} from './pages/webgpu/pristine-grid/pristine-grid.component';
+import {WireframeOverlayComponent} from './pages/webgpu/wireframe-overlay/wireframe-overlay.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -199,8 +200,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/wireframe-overlay', 
+    component: WireframeOverlayComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/pristine-grid'
+    redirectTo: 'webgpu/wireframe-overlay'
   } 
 ];

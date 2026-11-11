@@ -11,23 +11,22 @@
 #include "TrackBall.h"
 #include "ObjModel.h"
 
-struct CameraState {
-  glm::vec2 angles = { 0.8f, 0.5f };
-  float zoom = -1.2f;
-};
-
-struct DragState {
-  bool active = false;
-  glm::vec2 startMouse;
-  CameraState startCameraState;
-  glm::vec2 velocity = { 0.0, 0.0 };
-  glm::vec2 previousDelta;
-  float intertia = 0.9f;
-  float sensitivity = 0.01f;
-  float scrollSensitivity = 0.1f;
-};
-
 class Specularity : public State {
+	struct CameraState {
+		glm::vec2 angles = { 0.8f, 0.5f };
+		float zoom = -1.2f;
+	};
+
+	struct DragState {
+		bool active = false;
+		glm::vec2 startMouse;
+		CameraState startCameraState;
+		glm::vec2 velocity = { 0.0, 0.0 };
+		glm::vec2 previousDelta;
+		float intertia = 0.9f;
+		float sensitivity = 0.01f;
+		float scrollSensitivity = 0.1f;
+	};
 
 public:
 
