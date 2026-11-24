@@ -6,7 +6,7 @@ import {MatIconRegistry, MatIconModule} from '@angular/material/icon';
 
 export interface Settings {
   id: number;
-  favorites: number;
+  favorites: bigint;
 }
 
 export interface MenuItem {
@@ -29,7 +29,7 @@ export class MenuComponent implements OnInit{
   public checked : boolean[] =[];
   public favoriteList : MenuItem[] =[];
   favorites: number = 0;
-  settings: Settings = {id: 0, favorites: 0};
+  settings: Settings = {id: 0, favorites: 0n};
 
   targetedSubmenu: string = "one";
   targetedSubSubmenu: string = "";
@@ -102,41 +102,41 @@ export class MenuComponent implements OnInit{
   refreshItems(){
     this.favoriteList = [];
     this.checked = [];
-    let map = new Map<number, MenuItem>()
-    .set(Math.pow(2, 0), {target : '/imgui', description: 'ImGUI', descriptionLineBreak: '', class : 'two-one', index : 0} as MenuItem)
-    .set(Math.pow(2, 1), {target : '/open-gl', description: 'OpenGL', descriptionLineBreak: '', class : 'two-two', index : 1} as MenuItem)
-    .set(Math.pow(2, 2), {target : '/cube', description: 'Cube', descriptionLineBreak: '', class : 'two-three', index : 2} as MenuItem)
-    .set(Math.pow(2, 3), {target : '/triangle', description: 'Triangle', descriptionLineBreak: '', class : 'two-four', index : 3} as MenuItem)
-    .set(Math.pow(2, 4), {target : '/shape', description: 'Shape', descriptionLineBreak: '', class : 'two-eight', index : 4} as MenuItem)
-    .set(Math.pow(2, 5), {target : '/webgpu/wireframe', description: 'Wireframe', descriptionLineBreak: '', class : 'three-one', index : 5} as MenuItem)
-    .set(Math.pow(2, 6), {target : '/webgpu/specularity', description: 'Specularity', descriptionLineBreak: '', class : 'three-two', index : 6} as MenuItem)
-    .set(Math.pow(2, 7), {target : '/webgpu/compute', description: 'Compute', descriptionLineBreak: '', class : 'three-three', index : 7} as MenuItem)
-    .set(Math.pow(2, 8), {target : '/webgpu/normal-map', description: 'Normal Mapping', descriptionLineBreak: '', class : 'three-four', index : 8} as MenuItem)
-    .set(Math.pow(2, 9), {target : '/webgpu/msdf-font', description: 'MSDF Font', descriptionLineBreak: '', class : 'three-five', index : 9} as MenuItem)
-    .set(Math.pow(2, 10), {target : '/webgpu/instanced-cube', description: 'Instanced Cube', descriptionLineBreak: '', class : 'three-six', index : 10} as MenuItem)
-    .set(Math.pow(2, 11), {target : '/webgpu/ibl', description: 'Image Based Lighting', descriptionLineBreak: '', class : 'three-seven', index : 11} as MenuItem)
-    .set(Math.pow(2, 12), {target : '/webgpu/shadow-mapping', description: 'Shadow Mapping', descriptionLineBreak: '', class : 'three-eight', index : 12} as MenuItem)
-    .set(Math.pow(2, 13), {target : '/webgpu/skinned-mesh', description: 'Skinned Mesh', descriptionLineBreak: '', class : 'three-nine', index : 13} as MenuItem)
-    .set(Math.pow(2, 14), {target : '/webgpu/cpl', description: 'Compute Particle Logo', descriptionLineBreak: '', class : 'three-ten', index : 14} as MenuItem)
-    .set(Math.pow(2, 15), {target : '/webgpu/primitive-picking', description: 'Primitive Picking', descriptionLineBreak: '', class : 'three-eleven', index : 15} as MenuItem)
-    .set(Math.pow(2, 16), {target : '/webgpu/stencil-mask', description: 'Stencil Mask', descriptionLineBreak: '', class : 'three-twelve', index : 16} as MenuItem)
-    .set(Math.pow(2, 17), {target : '/webgpu/deferred-rendering', description: 'Deferred Rendering', descriptionLineBreak: '', class : 'three-thirteen', index : 17} as MenuItem)
-    .set(Math.pow(2, 18), {target : '/webgpu/volume-rendering', description: 'Volume Rendering', descriptionLineBreak: '', class : 'three-fourteen', index : 18} as MenuItem)
-    .set(Math.pow(2, 19), {target : '/webgpu/occlusion-query', description: 'Occlusion Query', descriptionLineBreak: '', class : 'three-fifteen', index : 19} as MenuItem) 
-    .set(Math.pow(2, 20), {target : '/webgpu/render-bundles', description: 'Render Bundles', descriptionLineBreak: '', class : 'three-sixteen', index : 20} as MenuItem)
-    .set(Math.pow(2, 21), {target : '/webgpu/nuklear-ui', description: 'Nuklear UI', descriptionLineBreak: '', class : 'three-seventeen', index : 21} as MenuItem)
-    .set(Math.pow(2, 22), {target : '/webgpu/audio-decode', description: 'Audio Decode', descriptionLineBreak: '', class : 'three-eightteen', index : 22} as MenuItem)
-    .set(Math.pow(2, 23), {target : '/webgpu/video-decode', description: 'Video Decode', descriptionLineBreak: '', class : 'three-ninenteen', index : 23} as MenuItem)
-    .set(Math.pow(2, 24), {target : '/webgpu/cubes', description: 'Cubes', descriptionLineBreak: '', class : 'three-twenty', index : 24} as MenuItem)
-    .set(Math.pow(2, 25), {target : '/webgpu/isometric', description: 'Isometric', descriptionLineBreak: '', class : 'three-twentyone', index : 25} as MenuItem)
-    .set(Math.pow(2, 26), {target : '/webgpu/menu', description: 'Menu', descriptionLineBreak: '', class : 'three-twentytwo', index : 26} as MenuItem)
-    .set(Math.pow(2, 27), {target : '/webgpu/controller', description: 'Controller', descriptionLineBreak: '', class : 'three-twentythree', index : 27} as MenuItem)
-    .set(Math.pow(2, 28), {target : '/webgpu/hdr-bloom', description: 'HDR Bloom', descriptionLineBreak: '', class : 'three-twentyfour', index : 28} as MenuItem)
-    .set(Math.pow(2, 29), {target : '/webgpu/abuffer', description: 'A Buffer', descriptionLineBreak: '', class : 'three-twentyfive', index : 29} as MenuItem)
-    .set(Math.pow(2, 30), {target : '/webgpu/cpe', description: 'Compute Particle Easing', descriptionLineBreak: '', class : 'three-twentysix', index : 30} as MenuItem)
-    .set(Math.pow(2, 31), {target : '/webgpu/pristine-grid', description: 'Pristine Grid', descriptionLineBreak: '', class : 'three-twentyseven', index : 31} as MenuItem)
-    .set(Math.pow(2, 32), {target : '/webgpu/wireframe-overlay', description: 'Wireframe Overlay', descriptionLineBreak: '', class : 'three-twentyeight', index : 32} as MenuItem)
-    .set(Math.pow(2, 34), {target : '/webgpu/volumetric-texture', description: 'Volumetric Texture', descriptionLineBreak: '', class : 'three-thirty', index : 34} as MenuItem);
+    let map = new Map<bigint, MenuItem>()
+    .set(1n << 0n, {target : '/imgui', description: 'ImGUI', descriptionLineBreak: '', class : 'two-one', index : 0} as MenuItem)
+    .set(1n << 1n, {target : '/open-gl', description: 'OpenGL', descriptionLineBreak: '', class : 'two-two', index : 1} as MenuItem)
+    .set(1n << 2n, {target : '/cube', description: 'Cube', descriptionLineBreak: '', class : 'two-three', index : 2} as MenuItem)
+    .set(1n << 3n, {target : '/triangle', description: 'Triangle', descriptionLineBreak: '', class : 'two-four', index : 3} as MenuItem)
+    .set(1n << 4n, {target : '/shape', description: 'Shape', descriptionLineBreak: '', class : 'two-eight', index : 4} as MenuItem)
+    .set(1n << 5n, {target : '/webgpu/wireframe', description: 'Wireframe', descriptionLineBreak: '', class : 'three-one', index : 5} as MenuItem)
+    .set(1n << 6n, {target : '/webgpu/specularity', description: 'Specularity', descriptionLineBreak: '', class : 'three-two', index : 6} as MenuItem)
+    .set(1n << 7n, {target : '/webgpu/compute', description: 'Compute', descriptionLineBreak: '', class : 'three-three', index : 7} as MenuItem)
+    .set(1n << 8n, {target : '/webgpu/normal-map', description: 'Normal Mapping', descriptionLineBreak: '', class : 'three-four', index : 8} as MenuItem)
+    .set(1n << 9n, {target : '/webgpu/msdf-font', description: 'MSDF Font', descriptionLineBreak: '', class : 'three-five', index : 9} as MenuItem)
+    .set(1n << 10n, {target : '/webgpu/instanced-cube', description: 'Instanced Cube', descriptionLineBreak: '', class : 'three-six', index : 10} as MenuItem)
+    .set(1n << 11n, {target : '/webgpu/ibl', description: 'Image Based Lighting', descriptionLineBreak: '', class : 'three-seven', index : 11} as MenuItem)
+    .set(1n << 12n, {target : '/webgpu/shadow-mapping', description: 'Shadow Mapping', descriptionLineBreak: '', class : 'three-eight', index : 12} as MenuItem)
+    .set(1n << 13n, {target : '/webgpu/skinned-mesh', description: 'Skinned Mesh', descriptionLineBreak: '', class : 'three-nine', index : 13} as MenuItem)
+    .set(1n << 14n, {target : '/webgpu/cpl', description: 'Compute Particle Logo', descriptionLineBreak: '', class : 'three-ten', index : 14} as MenuItem)
+    .set(1n << 15n, {target : '/webgpu/primitive-picking', description: 'Primitive Picking', descriptionLineBreak: '', class : 'three-eleven', index : 15} as MenuItem)
+    .set(1n << 16n, {target : '/webgpu/stencil-mask', description: 'Stencil Mask', descriptionLineBreak: '', class : 'three-twelve', index : 16} as MenuItem)
+    .set(1n << 17n, {target : '/webgpu/deferred-rendering', description: 'Deferred Rendering', descriptionLineBreak: '', class : 'three-thirteen', index : 17} as MenuItem)
+    .set(1n << 18n, {target : '/webgpu/volume-rendering', description: 'Volume Rendering', descriptionLineBreak: '', class : 'three-fourteen', index : 18} as MenuItem)
+    .set(1n << 19n, {target : '/webgpu/occlusion-query', description: 'Occlusion Query', descriptionLineBreak: '', class : 'three-fifteen', index : 19} as MenuItem) 
+    .set(1n << 20n, {target : '/webgpu/render-bundles', description: 'Render Bundles', descriptionLineBreak: '', class : 'three-sixteen', index : 20} as MenuItem)
+    .set(1n << 21n, {target : '/webgpu/nuklear-ui', description: 'Nuklear UI', descriptionLineBreak: '', class : 'three-seventeen', index : 21} as MenuItem)
+    .set(1n << 22n, {target : '/webgpu/audio-decode', description: 'Audio Decode', descriptionLineBreak: '', class : 'three-eightteen', index : 22} as MenuItem)
+    .set(1n << 23n, {target : '/webgpu/video-decode', description: 'Video Decode', descriptionLineBreak: '', class : 'three-ninenteen', index : 23} as MenuItem)
+    .set(1n << 24n, {target : '/webgpu/cubes', description: 'Cubes', descriptionLineBreak: '', class : 'three-twenty', index : 24} as MenuItem)
+    .set(1n << 25n, {target : '/webgpu/isometric', description: 'Isometric', descriptionLineBreak: '', class : 'three-twentyone', index : 25} as MenuItem)
+    .set(1n << 26n, {target : '/webgpu/menu', description: 'Menu', descriptionLineBreak: '', class : 'three-twentytwo', index : 26} as MenuItem)
+    .set(1n << 27n, {target : '/webgpu/controller', description: 'Controller', descriptionLineBreak: '', class : 'three-twentythree', index : 27} as MenuItem)
+    .set(1n << 28n, {target : '/webgpu/hdr-bloom', description: 'HDR Bloom', descriptionLineBreak: '', class : 'three-twentyfour', index : 28} as MenuItem)
+    .set(1n << 29n, {target : '/webgpu/abuffer', description: 'A Buffer', descriptionLineBreak: '', class : 'three-twentyfive', index : 29} as MenuItem)
+    .set(1n << 30n, {target : '/webgpu/cpe', description: 'Compute Particle Easing', descriptionLineBreak: '', class : 'three-twentysix', index : 30} as MenuItem)
+    .set(1n << 31n, {target : '/webgpu/pristine-grid', description: 'Pristine Grid', descriptionLineBreak: '', class : 'three-twentyseven', index : 31} as MenuItem)
+    .set(1n << 32n, {target : '/webgpu/wireframe-overlay', description: 'Wireframe Overlay', descriptionLineBreak: '', class : 'three-twentyeight', index : 32} as MenuItem)
+    .set(1n << 33n, {target : '/webgpu/volumetric-texture', description: 'Volumetric Texture', descriptionLineBreak: '', class : 'three-thirty', index : 33} as MenuItem);
     
     for(let key of map.keys()) {
       if((this.settings.favorites | key) == this.settings.favorites){
@@ -244,13 +244,18 @@ export class MenuComponent implements OnInit{
 
   updateFavorites(event: any, _number: number, checked: boolean, menuItem?: MenuItem){
     let settings: Settings = this.settings;
-    let number = menuItem ? Math.pow(2, menuItem.index) : Math.pow(2, _number);
-    if(checked){       
-      settings.favorites = settings.favorites ^ number;
-    }else{
-      settings.favorites = settings.favorites | number;        
+    const index = BigInt(menuItem ? menuItem.index : _number);
+    const bitValue = 1n << index;
+    let currentFavorites = BigInt(settings.favorites);
+
+    if (checked) {       
+      currentFavorites = currentFavorites ^ bitValue;
+    } else {
+      currentFavorites = currentFavorites | bitValue;        
     }
-    this.postSettings(settings);        
+
+    settings.favorites = currentFavorites;
+    this.postSettings(settings);     
   }
 
   postSettings(settings: Settings) {      
