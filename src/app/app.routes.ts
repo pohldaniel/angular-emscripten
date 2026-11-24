@@ -33,6 +33,7 @@ import {ABufferComponent} from './pages/webgpu/abuffer/abuffer.component';
 import {ComputeParticleEasingComponent} from './pages/webgpu/compute-particle-easing/compute-particle-easing.component';
 import {PristineGridComponent} from './pages/webgpu/pristine-grid/pristine-grid.component';
 import {WireframeOverlayComponent} from './pages/webgpu/wireframe-overlay/wireframe-overlay.component';
+import {VolumetricTextureComponent} from './pages/webgpu/volumetric-texture/volumetric-texture.component';
 
 export const routes: Routes = [
   { path: 'imgui', 
@@ -205,8 +206,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data : {showSidebar: true}
   },
+  { path: 'webgpu/volumetric-texture', 
+    component: VolumetricTextureComponent,
+    canActivate: [authGuard],
+    data : {showSidebar: true}
+  },
   {
     path: '**',
-    redirectTo: 'webgpu/wireframe-overlay'
+    redirectTo: 'webgpu/volumetric-texture'
   } 
 ];

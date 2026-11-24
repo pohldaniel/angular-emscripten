@@ -87,7 +87,8 @@ export class MenuComponent implements OnInit{
       this.router.url == '/webgpu/abuffer' ||
       this.router.url == '/webgpu/cpe' ||
       this.router.url == '/webgpu/pristine-grid' ||
-      this.router.url == '/webgpu/wireframe-overlay')
+      this.router.url == '/webgpu/wireframe-overlay'||
+      this.router.url == '/webgpu/volumetric-texture')
     {
       this.targetedSubmenu = 'three';
       this.storeTargetedSubmenu = 'three';     
@@ -134,7 +135,8 @@ export class MenuComponent implements OnInit{
     .set(Math.pow(2, 29), {target : '/webgpu/abuffer', description: 'A Buffer', descriptionLineBreak: '', class : 'three-twentyfive', index : 29} as MenuItem)
     .set(Math.pow(2, 30), {target : '/webgpu/cpe', description: 'Compute Particle Easing', descriptionLineBreak: '', class : 'three-twentysix', index : 30} as MenuItem)
     .set(Math.pow(2, 31), {target : '/webgpu/pristine-grid', description: 'Pristine Grid', descriptionLineBreak: '', class : 'three-twentyseven', index : 31} as MenuItem)
-    .set(Math.pow(2, 32), {target : '/webgpu/wireframe-overlay', description: 'Wireframe Overlay', descriptionLineBreak: '', class : 'three-twentyeight', index : 32} as MenuItem);
+    .set(Math.pow(2, 32), {target : '/webgpu/wireframe-overlay', description: 'Wireframe Overlay', descriptionLineBreak: '', class : 'three-twentyeight', index : 32} as MenuItem)
+    .set(Math.pow(2, 34), {target : '/webgpu/volumetric-texture', description: 'Volumetric Texture', descriptionLineBreak: '', class : 'three-thirty', index : 34} as MenuItem);
     
     for(let key of map.keys()) {
       if((this.settings.favorites | key) == this.settings.favorites){
